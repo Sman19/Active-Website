@@ -1074,23 +1074,21 @@ document.getElementById("total-count").textContent = vehicles.length;
     }
 
     function openSidePanel(vehicleInfo) {
-      const panel = document.getElementById("side-panel");
-      const vehicleName = document.getElementById("panel-vehicle-name");
-      const vehicleInfoEl = document.getElementById("panel-vehicle-info");
+  const panel = document.getElementById("side-panel");
+  const vehicleName = document.getElementById("panel-vehicle-name");
+  const vehicleInfoEl = document.getElementById("panel-vehicle-info");
 
-      vehicleName.textContent = `F87 M2`;
-      }
+  vehicleName.textContent = "F87 M2";
+  vehicleInfoEl.textContent = vehicleInfo.vin || "Unknown VIN";
 
-      vehicleName.textContent = `${modelType} M2`;
-      vehicleInfoEl.textContent = `${vehicleInfo.vin || "Unknown VIN"}`;
+  panel.dataset.currentVin = vehicleInfo.vin || "";
+  panel.dataset.currentDetails = vehicleInfo.details || "";
+  panel.dataset.currentVspec = vehicleInfo.vspec || "";
+  panel.dataset.currentSticker = vehicleInfo.sticker || "";
+  panel.dataset.currentInvoice = vehicleInfo.invoice || "";
 
-      panel.dataset.currentVin = vehicleInfo.vin;
-      panel.dataset.currentDetails = vehicleInfo.details || "";
-      panel.dataset.currentVspec = vehicleInfo.vspec || "";
-      panel.dataset.currentSticker = vehicleInfo.sticker || "";
-      panel.dataset.currentInvoice = vehicleInfo.invoice || "";
+  panel.classList.add("open");
 
-      panel.classList.add("open");
     }
 
     function closeSidePanel() {
