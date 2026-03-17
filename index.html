@@ -890,30 +890,29 @@
 
         const vehicles = [];
 
-        for (let i = 1; i < lines.length; i++) {
-          if (!lines[i].trim()) continue;
+for (let i = 1; i < lines.length; i++) {
+  if (!lines[i].trim()) continue;
 
-          const cols = parseCSVLine(lines[i]);
-          const vin = cols[4] ? cols[4].trim() : "";
+  const cols = parseCSVLine(lines[i]);
+  const vin = cols[4] ? cols[4].trim() : "";
 
-          // stop marker logic (your original)
-          if (vin && vin.endsWith("8958")) {
-            if (vin.length > 5) {
-              vehicles.push({
-                exterior: cols[0] || "",
-                interior: cols[2] || "",
-                year: cols[3] || "",
-                vin,
-                model: cols[5] || "",
-                packages: cols[7] || "",
-                msrp: cols[9] || "",
-                dealer: cols[13] || "",
-                details: cols[17] || "",
-                vspec: cols[18] || "",
-                sticker: cols[19] || "",
-                invoice: cols[20] || "",
-              });
-            }
+  if (vin && /^WBS/i.test(vin)) {
+    vehicles.push({
+      exterior: cols[0] || "",
+      interior: cols[2] || "",
+      year: cols[1] || "",
+      vin: cols[4] || "",
+      model: "F87",
+      packages: cols[7] || "",
+      msrp: cols[8] || "",
+      dealer: cols[13] || "",
+      details: "",
+      vspec: "",
+      sticker: "",
+      invoice: "",
+    });
+  }
+}
             break;
           }
 
