@@ -890,10 +890,14 @@
 
         const vehicles = [];
 
+const vehicles = [];
+
 for (let i = 1; i < lines.length; i++) {
   if (!lines[i].trim()) continue;
 
   const cols = parseCSVLine(lines[i]);
+  console.log("ROW", i, cols[0], cols[1], cols[2], cols[4], cols[13]);
+
   const vin = cols[4] ? cols[4].trim() : "";
 
   if (vin && /^WBS/i.test(vin)) {
@@ -915,26 +919,6 @@ for (let i = 1; i < lines.length; i++) {
     if (vehicles.length >= 25) break;
   }
 }
-            break;
-          }
-
-          if (vin && vin.length > 5) {
-            vehicles.push({
-              exterior: cols[0] || "",
-              interior: cols[2] || "",
-              year: cols[1] || "",
-              vin: cols[4] || "",
-              model: "F87",
-              packages: cols[7] || "",
-              msrp: cols[8] || "",
-              dealer: cols[13] || "",
-              details: "",
-              vspec: "",
-              sticker: "",
-              invoice: "",
-            });
-          }
-        }
 
         document.getElementById("count").textContent = vehicles.length;
         document.getElementById("total-count").textContent = vehicles.length;
