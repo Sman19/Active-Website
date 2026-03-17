@@ -762,17 +762,17 @@
     }
 
     function extractPaintCode(exteriorStr) {
-      if (!exteriorStr) return "";
-      exteriorStr = exteriorStr.trim();
+  if (!exteriorStr) return "";
+  const raw = exteriorStr.replace(/\s+/g, " ").trim().toUpperCase();
 
-      const codeMatch = exteriorStr.match(/^([A-Z0-9]+)\s*-/i);
-      if (codeMatch) return codeMatch[1].trim().toUpperCase();
+  const dashMatch = raw.match(/^([A-Z0-9]{3,4})\s*-\s*/);
+  if (dashMatch) return dashMatch[1];
 
-      if (exteriorStr.toLowerCase().includes("space gray")) return "A52";
-      if (exteriorStr.toLowerCase().includes("silverstone")) return "A29";
+  const spaceMatch = raw.match(/^([A-Z0-9]{3,4})\s+/);
+  if (spaceMatch) return spaceMatch[1];
 
-      return "";
-    }
+  return "";
+}
 
       function extractInteriorCode(interiorStr) {
     if (!interiorStr) return "";
