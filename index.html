@@ -547,15 +547,19 @@
     </div>
 
     <div class="page-layout">
-      <aside class="left-sidebar">
-        <div class="sidebar-title">Filter Inventory</div>
-
-        <div class="sidebar-section">
-          <label class="sidebar-label" for="dataset-select">Dataset</label>
-          <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
-            <option value="2016 F87 M2.csv">Main CSV</option>
-            <option value="2017 F87 M2.csv">2016 CSV</option>
-          </select>
+         <aside class="left-sidebar" id="left-sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Hide filters">◀</button>
+      
+        <div class="sidebar-content">
+          <div class="sidebar-title">Filter Inventory</div>
+      
+          <div class="sidebar-section">
+            <label class="sidebar-label" for="dataset-select">Dataset</label>
+            <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
+              <option value="2016 F87 M2.csv">2016 CSV</option>
+              <option value="2017 F87 M2.csv">2017 CSV</option>
+            </select>
+          </div>
         </div>
       </aside>
 
