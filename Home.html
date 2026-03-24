@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>M Database</title>
+
   <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
 
   <style>
@@ -106,10 +107,6 @@
       z-index: 1000;
     }
 
-    .user-dropdown-name {
-      display: none;
-    }
-
     .logout-btn {
       width: 100%;
       border: none;
@@ -121,6 +118,8 @@
       padding: 14px 16px;
       cursor: pointer;
       text-align: left;
+      text-decoration: none;
+      display: block;
     }
 
     .logout-btn:hover {
@@ -483,13 +482,12 @@
 
     <div class="topbar-user">
       <button id="userMenuBtn" class="user-menu-btn" type="button">
-        <span id="authUsername">Account</span>
+        <span id="auth-username">Member</span>
         <span class="user-icon">👤</span>
       </button>
 
       <div id="userDropdown" class="user-dropdown hidden">
-        <div class="user-dropdown-name" id="authUsernameDropdown">Account</div>
-        <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+        <a class="logout-btn" href="https://www.authpro.com/auth/sman201/?action=logout">Logout</a>
       </div>
     </div>
   </header>
@@ -566,7 +564,7 @@
         <div class="series-cell" data-label="Body Style">Coupe</div>
         <div class="series-cell muted" data-label="Notes">Live search enabled</div>
         <div class="series-cell" data-label="Open">
-          <a class="open-link" href="https://sman19.github.io/2017-BMW-M2-Active-Website/">Open</a>
+          <a class="open-link" href="index.html">Open</a>
         </div>
       </div>
 
@@ -602,9 +600,7 @@
 
     const userMenuBtn = document.getElementById("userMenuBtn");
     const userDropdown = document.getElementById("userDropdown");
-    const authUsername = document.getElementById("authUsername");
-    const authUsernameDropdown = document.getElementById("authUsernameDropdown");
-    const logoutBtn = document.getElementById("logoutBtn");
+    const authUsername = document.getElementById("auth-username");
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -848,29 +844,14 @@
       }
     }
 
-    function goToHomeAfterLogout() {
-      window.location.href = "Home.html";
-    }
+    function updateAuthUser() {
+      if (!authUsername) return;
 
-    function setAuthUsername() {
-      const possibleNames = [
-        window.authUserName,
-        window.authUsername,
-        window.AuthProUserName,
-        window.AuthProUsername,
-        window.apCurrentUser,
-        localStorage.getItem("authUsername"),
-        localStorage.getItem("AuthProUserName"),
-        sessionStorage.getItem("authUsername"),
-        sessionStorage.getItem("AuthProUserName")
-      ];
-
-      const currentUserName = possibleNames.find(
-        value => typeof value === "string" && value.trim() !== ""
-      ) || "Account";
-
-      authUsername.textContent = currentUserName;
-      authUsernameDropdown.textContent = currentUserName;
+      if (typeof login !== "undefined" && login) {
+        authUsername.textContent = login;
+      } else {
+        authUsername.textContent = "Member";
+      }
     }
 
     searchBtn.addEventListener("click", runSearch);
@@ -890,27 +871,9 @@
       }
     });
 
-    logoutBtn.addEventListener("click", function () {
-      userDropdown.classList.add("hidden");
-
-      if (window.authPro && typeof window.authPro.logout === "function") {
-        window.authPro.logout();
-        setTimeout(goToHomeAfterLogout, 500);
-        return;
-      }
-
-      if (window.AuthPro && typeof window.AuthPro.logout === "function") {
-        window.AuthPro.logout();
-        setTimeout(goToHomeAfterLogout, 500);
-        return;
-      }
-
-      goToHomeAfterLogout();
-    });
-
-    setAuthUsername();
-    setTimeout(setAuthUsername, 500);
-    setTimeout(setAuthUsername, 1500);
+    updateAuthUser();
+    setTimeout(updateAuthUser, 500);
+    setTimeout(updateAuthUser, 1500);
 
     loadCSVs();
   </script>
