@@ -54,59 +54,65 @@
     }
 
     .user-menu-btn {
-      border: none;
+      border: 2px solid #4da3ff;
       background: transparent;
       color: #ffffff;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      min-width: 120px;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+    }
+
+    .user-menu-btn:hover {
+      background: rgba(255,255,255,0.04);
     }
 
     .user-icon {
-      font-size: 22px;
+      font-size: 20px;
       line-height: 1;
+      opacity: 0.9;
     }
 
     .user-dropdown {
       position: absolute;
       top: calc(100% + 12px);
       right: 0;
-      min-width: 190px;
+      min-width: 180px;
       background: #ffffff;
       color: #202124;
       border: 1px solid #d8d8d8;
       border-radius: 12px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.16);
-      padding: 10px;
+      padding: 8px;
       z-index: 1000;
     }
 
     .user-dropdown-name {
-      font-size: 16px;
-      font-weight: 700;
-      padding: 10px 12px;
-      border-bottom: 1px solid #ececec;
-      margin-bottom: 8px;
+      display: none;
     }
 
     .logout-btn {
       width: 100%;
       border: none;
-      background: #f5f5f5;
+      background: transparent;
       color: #d71920;
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 600;
       border-radius: 8px;
-      padding: 12px 14px;
+      padding: 14px 16px;
       cursor: pointer;
       text-align: left;
     }
 
     .logout-btn:hover {
-      background: #ececec;
+      background: #f3f4f6;
     }
 
     .hero {
@@ -545,7 +551,7 @@
         <div class="series-cell" data-label="CSV File">2016 F87 M2.csv / 2017 F87 M2.csv</div>
         <div class="series-cell muted" data-label="Notes">Live search enabled</div>
         <div class="series-cell" data-label="Open">
-          <a class="open-link" href="https://sman19.github.io/2017-BMW-M2-Active-Website/">Open</a>
+          <a class="open-link" href="Home.html">Open</a>
         </div>
       </div>
 
