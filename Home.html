@@ -393,90 +393,87 @@
   </section>
 
   <main class="page">
-    <div class="overview-bar">
-      <div class="overview-title">Overview</div>
-      <button class="custom-view-btn" type="button">My Custom Views ▼</button>
+  <section class="panel">
+    <div class="section-title">My BMW Series</div>
+
+    <div class="toolbar">
+      <div class="left-controls">
+        <button class="control-btn active" type="button">Grouped</button>
+        <button class="control-btn" type="button">A-Z ▼</button>
+      </div>
+
+      <div class="right-controls">
+        <div class="filter-box">F87 SERIES</div>
+        <div class="filter-box">2 CSV FILES</div>
+        <div class="filter-box">LIVE SEARCH</div>
+        <div class="filter-box">RESULTS</div>
+      </div>
     </div>
 
-    <section class="panel">
-      <div class="toolbar">
-        <div class="left-controls">
-          <button class="control-btn active" type="button">Grouped</button>
-          <button class="control-btn" type="button">A-Z ▼</button>
-        </div>
+    <div class="divider"></div>
 
-        <div class="right-controls">
-          <div class="filter-box">F87 SERIES</div>
-          <div class="filter-box">2 CSV FILES</div>
-          <div class="filter-box">LIVE SEARCH</div>
-          <div class="filter-box">RESULTS</div>
-        </div>
-      </div>
+    <div id="loadingStatus" class="status">Loading CSV files...</div>
 
-      <div class="divider"></div>
-
-      <div id="loadingStatus" class="status">Loading CSV files...</div>
-
-      <div id="resultsSection" class="hidden">
-        <div class="results-header">
-          <div>Match</div>
-          <div>VIN</div>
-          <div>Year</div>
-          <div>Source File</div>
-          <div>Details</div>
-        </div>
-        <div id="resultsList"></div>
-      </div>
-
-      <div id="emptyState" class="status hidden">
-        Start typing above to search the linked F87 M2 CSV files.
-      </div>
-    </section>
-
-    <section class="panel" style="margin-top: 24px;">
-      <div class="section-title">My BMW Series</div>
-
-      <div class="toolbar">
-        <div class="left-controls">
-          <button class="control-btn active" type="button">Grouped</button>
-          <button class="control-btn" type="button">A-Z ▼</button>
-        </div>
-
-        <div class="right-controls">
-          <div class="filter-box">BMW M SERIES</div>
-          <div class="filter-box">DATABASES</div>
-          <div class="filter-box">CSV FILES</div>
-          <div class="filter-box">OPEN</div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
+    <div id="resultsSection" class="hidden">
       <div class="results-header">
-        <div>Series</div>
-        <div>Generation</div>
-        <div>Body Style</div>
-        <div>CSV File</div>
-        <div>Open</div>
+        <div>Match</div>
+        <div>VIN</div>
+        <div>Year</div>
+        <div>Source File</div>
+        <div>Details</div>
+      </div>
+      <div id="resultsList"></div>
+    </div>
+
+    <div id="emptyState" class="status hidden">
+      Start typing above to search the linked F87 M2 CSV files.
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top: 24px;">
+    <div class="section-title">My BMW Series</div>
+
+    <div class="toolbar">
+      <div class="left-controls">
+        <button class="control-btn active" type="button">Grouped</button>
+        <button class="control-btn" type="button">A-Z ▼</button>
       </div>
 
-      <a class="result-row" href="f87-m2-database.html" style="text-decoration:none; color:inherit;">
-        <div class="result-main">F87 M2</div>
-        <div class="result-cell" data-label="Generation">F87</div>
-        <div class="result-cell" data-label="Body Style">Coupe</div>
-        <div class="result-cell" data-label="CSV File">2016 F87 M2.csv / 2017 F87 M2.csv</div>
-        <div class="result-cell" data-label="Open" style="color:#1f73ff; font-weight:700;">Open</div>
-      </a>
+      <div class="right-controls">
+        <div class="filter-box">BMW M SERIES</div>
+        <div class="filter-box">DATABASES</div>
+        <div class="filter-box">CSV FILES</div>
+        <div class="filter-box">OPEN</div>
+      </div>
+    </div>
 
-      <a class="result-row" href="e90-m3-database.html" style="text-decoration:none; color:inherit;">
-        <div class="result-main">E90 M3</div>
-        <div class="result-cell" data-label="Generation">E90</div>
-        <div class="result-cell" data-label="Body Style">Sedan</div>
-        <div class="result-cell" data-label="CSV File">E90 M3 Data.csv</div>
-        <div class="result-cell" data-label="Open" style="color:#1f73ff; font-weight:700;">Open</div>
-      </a>
-    </section>
-  </main>
+    <div class="divider"></div>
+
+    <div class="results-header">
+      <div>Series</div>
+      <div>Generation</div>
+      <div>Body Style</div>
+      <div>CSV File</div>
+      <div>Open</div>
+    </div>
+
+    <a class="result-row" href="f87-m2-database.html" style="text-decoration:none; color:inherit;">
+      <div class="result-main">F87 M2</div>
+      <div class="result-cell" data-label="Generation">F87</div>
+      <div class="result-cell" data-label="Body Style">Coupe</div>
+      <div class="result-cell" data-label="CSV File">2016 F87 M2.csv / 2017 F87 M2.csv</div>
+      <div class="result-cell" data-label="Open" style="color:#1f73ff; font-weight:700;">Open</div>
+    </a>
+
+    <a class="result-row" href="e90-m3-database.html" style="text-decoration:none; color:inherit;">
+      <div class="result-main">E90 M3</div>
+      <div class="result-cell" data-label="Generation">E90</div>
+      <div class="result-cell" data-label="Body Style">Sedan</div>
+      <div class="result-cell" data-label="CSV File">E90 M3 Data.csv</div>
+      <div class="result-cell" data-label="Open" style="color:#1f73ff; font-weight:700;">Open</div>
+    </a>
+  </section>
+</main>
 
   <script>
     const CSV_FILES = [
