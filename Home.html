@@ -62,6 +62,7 @@
 
     .topbar-user {
       justify-self: end;
+      position: relative;
     }
 
     .user-menu-btn {
@@ -71,17 +72,59 @@
       font-size: 18px;
       font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 10px;
       padding: 12px 16px;
       border-radius: 10px;
       min-width: 120px;
+      justify-content: center;
       box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
     }
 
     .user-menu-btn:hover {
       background: rgba(255,255,255,0.04);
+    }
+
+    .user-icon {
+      font-size: 20px;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      min-width: 180px;
+      background: #ffffff;
+      color: #202124;
+      border: 1px solid #d8d8d8;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      padding: 8px;
+      z-index: 1000;
+    }
+
+    .user-dropdown-name {
+      display: none;
+    }
+
+    .logout-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #d71920;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 14px 16px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .logout-btn:hover {
+      background: #f3f4f6;
     }
 
     .hero {
@@ -439,7 +482,15 @@
     </div>
 
     <div class="topbar-user">
-      <button id="logoutBtn" class="user-menu-btn" type="button">Logout</button>
+      <button id="userMenuBtn" class="user-menu-btn" type="button">
+        <span id="authUsername">Account</span>
+        <span class="user-icon">👤</span>
+      </button>
+
+      <div id="userDropdown" class="user-dropdown hidden">
+        <div class="user-dropdown-name" id="authUsernameDropdown">Account</div>
+        <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+      </div>
     </div>
   </header>
 
@@ -549,6 +600,10 @@
     const resultsSection = document.getElementById("resultsSection");
     const resultsList = document.getElementById("resultsList");
 
+    const userMenuBtn = document.getElementById("userMenuBtn");
+    const userDropdown = document.getElementById("userDropdown");
+    const authUsername = document.getElementById("authUsername");
+    const authUsernameDropdown = document.getElementById("authUsernameDropdown");
     const logoutBtn = document.getElementById("logoutBtn");
 
     function escapeHtml(value) {
@@ -797,13 +852,47 @@
       window.location.href = "Home.html";
     }
 
+    function setAuthUsername() {
+      const possibleNames = [
+        window.authUserName,
+        window.authUsername,
+        window.AuthProUserName,
+        window.AuthProUsername,
+        window.apCurrentUser,
+        localStorage.getItem("authUsername"),
+        localStorage.getItem("AuthProUserName"),
+        sessionStorage.getItem("authUsername"),
+        sessionStorage.getItem("AuthProUserName")
+      ];
+
+      const currentUserName = possibleNames.find(
+        value => typeof value === "string" && value.trim() !== ""
+      ) || "Account";
+
+      authUsername.textContent = currentUserName;
+      authUsernameDropdown.textContent = currentUserName;
+    }
+
     searchBtn.addEventListener("click", runSearch);
 
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") runSearch();
     });
 
+    userMenuBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      userDropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!userDropdown.contains(event.target) && !userMenuBtn.contains(event.target)) {
+        userDropdown.classList.add("hidden");
+      }
+    });
+
     logoutBtn.addEventListener("click", function () {
+      userDropdown.classList.add("hidden");
+
       if (window.authPro && typeof window.authPro.logout === "function") {
         window.authPro.logout();
         setTimeout(goToHomeAfterLogout, 500);
@@ -818,6 +907,10 @@
 
       goToHomeAfterLogout();
     });
+
+    setAuthUsername();
+    setTimeout(setAuthUsername, 500);
+    setTimeout(setAuthUsername, 1500);
 
     loadCSVs();
   </script>
