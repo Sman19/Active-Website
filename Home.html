@@ -116,8 +116,8 @@
         linear-gradient(rgba(0,0,0,0.10), rgba(0,0,0,0.10)),
         url("https://speedwaymedia.com/wp-content/uploads/2022/12/2012-E90-BMW-M3-CRT.jpg");
       background-repeat: no-repeat;
-      background-position: center 24%;
-      background-size: 92%;
+      background-position: center 20%;
+      background-size: 88%;
       background-color: #d9d9d9;
       display: flex;
       align-items: center;
@@ -197,6 +197,13 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
 
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+
     .toolbar {
       display: flex;
       justify-content: space-between;
@@ -249,63 +256,96 @@
 
     .divider {
       border-top: 1px solid #e2e2e2;
-      margin-bottom: 10px;
+      margin: 10px 0 18px;
     }
 
-    .results-header {
-      display: grid;
-      grid-template-columns: 1.7fr 1.25fr 0.8fr 1.3fr 1.3fr;
-      gap: 16px;
-      font-size: 14px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #5a5a5a;
-      padding: 12px 14px;
-      border-bottom: 1px solid #ececec;
+    .subheading {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 4px 0 12px;
+      color: #202124;
     }
 
-    .result-row {
-      display: grid;
-      grid-template-columns: 1.7fr 1.25fr 0.8fr 1.3fr 1.3fr;
-      gap: 16px;
-      align-items: center;
-      padding: 16px 14px;
-      border-bottom: 1px solid #ececec;
+    .status {
+      padding: 14px 4px 18px;
       font-size: 16px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .result-row:hover {
-      background: #f7f9fc;
-    }
-
-    .result-main {
-      font-weight: 700;
-      color: #1f1f1f;
-      word-break: break-word;
-    }
-
-    .result-cell {
-      color: #333;
-      word-break: break-word;
-    }
-
-    .section-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      padding-left: 4px;
+      color: #555;
     }
 
     .hidden {
       display: none !important;
     }
 
-    @media (max-width: 1100px) {
+    .results-header,
+    .series-header,
+    .result-row,
+    .series-row {
+      display: grid;
+      grid-template-columns: 1.25fr 1.4fr 0.95fr 1.1fr 1.25fr 0.8fr;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 12px;
+      border-bottom: 1px solid #ececec;
+    }
+
+    .results-header,
+    .series-header {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #5a5a5a;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .result-row,
+    .series-row {
+      font-size: 16px;
+      color: #202124;
+    }
+
+    .result-row:hover,
+    .series-row:hover {
+      background: #f7f9fc;
+    }
+
+    .result-main,
+    .series-main {
+      font-weight: 700;
+      color: #1f1f1f;
+      word-break: break-word;
+    }
+
+    .result-cell,
+    .series-cell {
+      color: #333;
+      word-break: break-word;
+    }
+
+    .open-link {
+      color: #1f73ff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .open-link:hover {
+      text-decoration: underline;
+    }
+
+    .muted {
+      color: #777;
+    }
+
+    .panel-spacer {
+      height: 18px;
+    }
+
+    @media (max-width: 1200px) {
       .results-header,
-      .result-row {
-        grid-template-columns: 1.4fr 1.1fr 0.8fr 1.1fr 1.1fr;
+      .series-header,
+      .result-row,
+      .series-row {
+        grid-template-columns: 1.1fr 1.25fr 0.9fr 1fr 1.15fr 0.8fr;
       }
 
       .filter-box {
@@ -379,16 +419,19 @@
     }
 
     @media (max-width: 760px) {
-      .results-header {
+      .results-header,
+      .series-header {
         display: none;
       }
 
-      .result-row {
+      .result-row,
+      .series-row {
         grid-template-columns: 1fr;
         gap: 8px;
       }
 
-      .result-cell::before {
+      .result-cell::before,
+      .series-cell::before {
         content: attr(data-label) ": ";
         font-weight: 700;
         color: #555;
@@ -463,29 +506,59 @@
 
       <div class="divider"></div>
 
-      <div class="results-header">
+      <div class="subheading">F87 Search Results</div>
+      <div id="loadingStatus" class="status">Loading CSV files...</div>
+
+      <div id="emptyState" class="status hidden">
+        Start typing above to search the linked F87 M2 CSV files.
+      </div>
+
+      <div id="resultsSection" class="hidden">
+        <div class="results-header">
+          <div>Match</div>
+          <div>VIN</div>
+          <div>Last 7</div>
+          <div>Year</div>
+          <div>Details</div>
+          <div>Source</div>
+        </div>
+        <div id="resultsList"></div>
+      </div>
+
+      <div class="panel-spacer"></div>
+      <div class="divider"></div>
+
+      <div class="subheading">Series Launcher</div>
+      <div class="series-header">
         <div>Series</div>
         <div>Generation</div>
         <div>Body Style</div>
         <div>CSV File</div>
+        <div>Notes</div>
         <div>Open</div>
       </div>
 
-      <a class="result-row" href="f87-m2-database.html">
-        <div class="result-main">F87 M2</div>
-        <div class="result-cell" data-label="Generation">F87</div>
-        <div class="result-cell" data-label="Body Style">Coupe</div>
-        <div class="result-cell" data-label="CSV File">2016 F87 M2.csv / 2017 F87 M2.csv</div>
-        <div class="result-cell" data-label="Open" style="color:#1f73ff; font-weight:700;">Open</div>
-      </a>
+      <div class="series-row">
+        <div class="series-main">F87 M2</div>
+        <div class="series-cell" data-label="Generation">F87</div>
+        <div class="series-cell" data-label="Body Style">Coupe</div>
+        <div class="series-cell" data-label="CSV File">2016 F87 M2.csv / 2017 F87 M2.csv</div>
+        <div class="series-cell muted" data-label="Notes">Live search enabled</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="f87-m2-database.html">Open</a>
+        </div>
+      </div>
 
-      <a class="result-row" href="e90-m3-database.html">
-        <div class="result-main">E90 M3</div>
-        <div class="result-cell" data-label="Generation">E90</div>
-        <div class="result-cell" data-label="Body Style">Sedan</div>
-        <div class="result-cell" data-label="CSV File">E90 M3 Data.csv</div>
-        <div class="result-cell" data-label="Open" style="color:#1f73ff; font-weight:700;">Open</div>
-      </a>
+      <div class="series-row">
+        <div class="series-main">E90 M3</div>
+        <div class="series-cell" data-label="Generation">E90</div>
+        <div class="series-cell" data-label="Body Style">Sedan</div>
+        <div class="series-cell" data-label="CSV File">E90 M3 Data.csv</div>
+        <div class="series-cell muted" data-label="Notes">Separate page</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="e90-m3-database.html">Open</a>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -496,16 +569,174 @@
     ];
 
     const recentTerms = [];
+    const allRows = [];
 
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
     const recentSearches = document.getElementById("recentSearches");
+
+    const loadingStatus = document.getElementById("loadingStatus");
+    const emptyState = document.getElementById("emptyState");
+    const resultsSection = document.getElementById("resultsSection");
+    const resultsList = document.getElementById("resultsList");
 
     const userMenuBtn = document.getElementById("userMenuBtn");
     const userDropdown = document.getElementById("userDropdown");
     const authUsername = document.getElementById("authUsername");
     const authUsernameDropdown = document.getElementById("authUsernameDropdown");
     const logoutBtn = document.getElementById("logoutBtn");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          result.push(current.trim());
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current.trim());
+      return result;
+    }
+
+    function parseCSV(text, sourceFile) {
+      const lines = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .filter(line => line.trim() !== "");
+
+      if (!lines.length) return [];
+
+      const headers = parseCSVLine(lines[0]).map(h => h.trim());
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+        const row = { __sourceFile: sourceFile };
+
+        headers.forEach((header, index) => {
+          row[header] = values[index] || "";
+        });
+
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function getField(row, possibleNames) {
+      const keys = Object.keys(row);
+
+      for (const name of possibleNames) {
+        const foundKey = keys.find(key => key.toLowerCase().trim() === name.toLowerCase().trim());
+        if (foundKey && row[foundKey]) return row[foundKey];
+      }
+
+      return "";
+    }
+
+    function getBestVin(row) {
+      return getField(row, [
+        "VIN",
+        "vin",
+        "Full VIN",
+        "FullVin",
+        "Full_VIN",
+        "Full VIN Number"
+      ]);
+    }
+
+    function getBestLast7(row) {
+      let last7 = getField(row, [
+        "Last 7",
+        "Last7",
+        "last 7",
+        "last7",
+        "VIN Last 7"
+      ]);
+
+      if (!last7) {
+        const vin = getBestVin(row);
+        if (vin && vin.length >= 7) last7 = vin.slice(-7);
+      }
+
+      return last7;
+    }
+
+    function getBestYear(row) {
+      return getField(row, [
+        "Year",
+        "year",
+        "Model Year",
+        "Production Year",
+        "MY"
+      ]);
+    }
+
+    function getBestTitle(row) {
+      return getField(row, [
+        "Model",
+        "Series",
+        "Description",
+        "Vehicle",
+        "Name"
+      ]) || "F87 M2";
+    }
+
+    function getBestDetails(row) {
+      const color = getField(row, [
+        "Color",
+        "Exterior",
+        "Exterior Color",
+        "Paint",
+        "Paint Code"
+      ]);
+
+      const interior = getField(row, [
+        "Interior",
+        "Interior Color",
+        "Trim",
+        "Upholstery"
+      ]);
+
+      const transmission = getField(row, [
+        "Transmission",
+        "Trans",
+        "Gearbox"
+      ]);
+
+      const parts = [color, interior, transmission].filter(Boolean);
+      return parts.length ? parts.join(" • ") : "F87 M2 record";
+    }
+
+    function getSearchText(row) {
+      return Object.values(row).join(" ").toLowerCase();
+    }
 
     function updateRecent(term) {
       if (!term.trim()) return;
@@ -519,10 +750,82 @@
       recentSearches.textContent = "Recent searches: " + recentTerms.join(" | ");
     }
 
+    function renderResults(matches, term) {
+      resultsList.innerHTML = "";
+
+      if (!term.trim()) {
+        resultsSection.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        emptyState.textContent = "Start typing above to search the linked F87 M2 CSV files.";
+        return;
+      }
+
+      resultsSection.classList.remove("hidden");
+      emptyState.classList.add("hidden");
+
+      if (!matches.length) {
+        resultsList.innerHTML = `<div class="status">No matches found for "${escapeHtml(term)}".</div>`;
+        return;
+      }
+
+      matches.forEach(row => {
+        const item = document.createElement("div");
+        item.className = "result-row";
+
+        item.innerHTML = `
+          <div class="result-main">${escapeHtml(getBestTitle(row))}</div>
+          <div class="result-cell" data-label="VIN">${escapeHtml(getBestVin(row) || "—")}</div>
+          <div class="result-cell" data-label="Last 7">${escapeHtml(getBestLast7(row) || "—")}</div>
+          <div class="result-cell" data-label="Year">${escapeHtml(getBestYear(row) || "—")}</div>
+          <div class="result-cell muted" data-label="Details">${escapeHtml(getBestDetails(row))}</div>
+          <div class="result-cell" data-label="Source">${escapeHtml(row.__sourceFile || "—")}</div>
+        `;
+
+        resultsList.appendChild(item);
+      });
+    }
+
     function runSearch() {
-      const term = searchInput.value.trim();
-      if (!term) return;
-      updateRecent(term);
+      const term = searchInput.value.trim().toLowerCase();
+
+      if (!term) {
+        renderResults([], "");
+        return;
+      }
+
+      updateRecent(searchInput.value.trim());
+
+      const matches = allRows
+        .filter(row => getSearchText(row).includes(term))
+        .slice(0, 100);
+
+      renderResults(matches, searchInput.value.trim());
+    }
+
+    async function loadCSVs() {
+      try {
+        const responses = await Promise.all(
+          CSV_FILES.map(async file => {
+            const response = await fetch(encodeURI(file));
+            if (!response.ok) {
+              throw new Error(`Could not load ${file}`);
+            }
+
+            const text = await response.text();
+            return parseCSV(text, file);
+          })
+        );
+
+        responses.flat().forEach(row => allRows.push(row));
+
+        loadingStatus.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        emptyState.textContent = `Loaded ${allRows.length} records. Search above to filter the dataset.`;
+      } catch (error) {
+        loadingStatus.classList.remove("hidden");
+        loadingStatus.textContent = "Error loading CSV files. Check the exact file names and make sure GitHub Pages is serving them.";
+        console.error(error);
+      }
     }
 
     searchBtn.addEventListener("click", runSearch);
@@ -542,7 +845,6 @@
       }
     });
 
-    // Replace this with your actual Auth Pro user/session value if available
     const currentUserName =
       window.authUserName ||
       window.AuthProUserName ||
@@ -553,7 +855,6 @@
     authUsernameDropdown.textContent = currentUserName;
 
     logoutBtn.addEventListener("click", function () {
-      // Replace this with your actual Auth Pro logout method if needed
       if (window.authPro && typeof window.authPro.logout === "function") {
         window.authPro.logout();
         return;
@@ -566,6 +867,8 @@
 
       window.location.href = "index.html";
     });
+
+    loadCSVs();
   </script>
 </body>
 </html>
