@@ -14,393 +14,365 @@
 
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 24%),
-        linear-gradient(135deg, #111111 0%, #1a1a1a 35%, #202020 100%);
-      color: #ffffff;
-      min-height: 100vh;
+      background: #f3f3f3;
+      color: #202124;
     }
 
     .topbar {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.35);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(8px);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .topbar-inner {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 18px 24px;
+      background: #3e434a;
+      color: #fff;
+      height: 54px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      padding: 0 24px;
+      font-size: 15px;
+      font-weight: 600;
     }
 
-    .brand {
+    .topbar-left {
       display: flex;
       align-items: center;
-      gap: 14px;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    .brand-badge {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #2b2b2b, #121212);
-      border: 1px solid rgba(255,255,255,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.28);
-    }
-
-    .topbar-right {
-      color: rgba(255,255,255,0.72);
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .hero {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 56px 24px 24px;
-    }
-
-    .hero h1 {
-      font-size: clamp(36px, 5vw, 62px);
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 14px;
-    }
-
-    .hero p {
-      max-width: 760px;
-      font-size: 18px;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.72);
-    }
-
-    .hero-divider {
-      width: 96px;
-      height: 4px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #ffffff, rgba(255,255,255,0.15));
-      margin: 24px 0 0;
-    }
-
-    .cards-wrap {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 32px 24px 64px;
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 28px;
-    }
-
-    .db-card {
-      position: relative;
-      min-height: 560px;
-      border-radius: 28px;
-      overflow: hidden;
-      text-decoration: none;
-      color: #ffffff;
-      background: #181818;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.32);
-      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-    }
-
-    .db-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 24px 50px rgba(0,0,0,0.42);
-      border-color: rgba(255,255,255,0.18);
-    }
-
-    .db-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.48) 36%, rgba(0,0,0,0.12) 64%, rgba(0,0,0,0.06) 100%);
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .db-card img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      z-index: 1;
-      transition: transform 0.45s ease;
-    }
-
-    .db-card:hover img {
-      transform: scale(1.04);
-    }
-
-    .card-top {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      z-index: 3;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
       gap: 12px;
     }
 
-    .series-tag {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.16);
-      backdrop-filter: blur(8px);
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .csv-tag {
-      background: rgba(0,0,0,0.34);
-      border: 1px solid rgba(255,255,255,0.14);
-      backdrop-filter: blur(8px);
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.88);
-    }
-
-    .card-bottom {
-      position: absolute;
-      left: 28px;
-      right: 28px;
-      bottom: 28px;
-      z-index: 3;
-    }
-
-    .card-title {
-      font-size: clamp(28px, 4vw, 44px);
-      font-weight: 800;
+    .menu-icon {
+      font-size: 20px;
       line-height: 1;
-      letter-spacing: -0.03em;
+      opacity: 0.9;
+    }
+
+    .topbar-center {
+      font-size: 15px;
+      font-weight: 600;
+      opacity: 0.95;
+    }
+
+    .nav-row {
+      background: #fff;
+      border-bottom: 1px solid #d9d9d9;
+      display: flex;
+      align-items: center;
+      gap: 54px;
+      padding: 0 52px;
+      height: 64px;
+      overflow-x: auto;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      color: #2f3338;
+      font-size: 17px;
+      font-weight: 700;
+      padding-top: 4px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      border-top: 4px solid transparent;
+      white-space: nowrap;
+    }
+
+    .nav-item.active {
+      color: #d71920;
+      border-top-color: #d71920;
+    }
+
+    .page {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 34px 36px 60px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #d8d8d8;
+      border-radius: 14px;
+      padding: 18px 20px 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .left-controls {
+      display: flex;
+      border: 1px solid #cfcfcf;
+      border-radius: 6px;
+      overflow: hidden;
+      min-width: 290px;
+    }
+
+    .control-btn {
+      border: none;
+      background: #fff;
+      color: #1f1f1f;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 14px 26px;
+      cursor: pointer;
+      min-width: 135px;
+    }
+
+    .control-btn.active {
+      background: #1f73ff;
+      color: #fff;
+    }
+
+    .right-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-box {
+      min-width: 170px;
+      background: #efefef;
+      color: #222;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 14px 18px;
+      text-align: center;
+    }
+
+    .divider {
+      border-top: 1px solid #e2e2e2;
       margin-bottom: 10px;
     }
 
-    .card-subtitle {
-      font-size: 16px;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.6;
-      max-width: 520px;
-      margin-bottom: 22px;
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
     }
 
-    .card-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 22px;
+    .table {
+      width: 100%;
+      min-width: 980px;
     }
 
-    .meta-pill {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.14);
-      backdrop-filter: blur(8px);
-      font-size: 13px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.88);
-    }
-
-    .card-button {
-      display: inline-flex;
+    .row {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr 1fr 1fr 1fr;
       align-items: center;
-      gap: 10px;
-      padding: 14px 18px;
-      border-radius: 14px;
-      background: #ffffff;
-      color: #111111;
-      font-size: 15px;
+      column-gap: 16px;
+      padding: 10px 10px;
+    }
+
+    .row.header-main {
+      font-size: 18px;
       font-weight: 800;
-      letter-spacing: 0.01em;
-      transition: transform 0.18s ease, background 0.18s ease;
+      color: #1f1f1f;
+      padding-top: 2px;
+      padding-bottom: 14px;
     }
 
-    .db-card:hover .card-button {
-      transform: translateX(4px);
-      background: #f1f1f1;
+    .row.header-main .big {
+      font-size: 24px;
+      font-weight: 800;
     }
 
-    .footer-note {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 0 24px 36px;
-      color: rgba(255,255,255,0.56);
+    .group-row {
+      background: #e9e9e9;
+      border-radius: 6px;
       font-size: 13px;
-      letter-spacing: 0.02em;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #1f1f1f;
+      margin-bottom: 2px;
     }
 
-    @media (max-width: 980px) {
-      .cards-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .db-card {
-        min-height: 500px;
-      }
+    .data-row {
+      text-decoration: none;
+      color: inherit;
+      border-radius: 8px;
+      transition: background 0.15s ease;
     }
 
-    @media (max-width: 640px) {
-      .topbar-inner {
-        padding: 16px 18px;
+    .data-row:hover {
+      background: #f5f7fa;
+    }
+
+    .series-cell {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .series-thumb {
+      width: 54px;
+      height: 32px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #d7d7d7;
+      background: #f2f2f2;
+      flex-shrink: 0;
+    }
+
+    .series-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e1e1e;
+      white-space: nowrap;
+    }
+
+    .value {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      color: #1f1f1f;
+    }
+
+    .open-link {
+      display: inline-block;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: #1f73ff;
+    }
+
+    .small-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #6b6b6b;
+      padding: 0 4px 6px;
+    }
+
+    @media (max-width: 900px) {
+      .nav-row {
+        gap: 28px;
+        padding: 0 20px;
       }
 
-      .topbar-right {
-        display: none;
+      .page {
+        padding: 20px 14px 40px;
       }
 
-      .hero {
-        padding: 40px 18px 16px;
+      .toolbar {
+        align-items: stretch;
       }
 
-      .cards-wrap {
-        padding: 24px 18px 44px;
+      .left-controls {
+        min-width: unset;
+        width: 100%;
       }
 
-      .db-card {
-        min-height: 440px;
-        border-radius: 22px;
+      .right-controls {
+        width: 100%;
       }
 
-      .card-bottom {
-        left: 20px;
-        right: 20px;
-        bottom: 20px;
-      }
-
-      .card-top {
-        top: 16px;
-        left: 16px;
-        right: 16px;
-        flex-direction: column;
-        align-items: flex-start;
+      .filter-box {
+        flex: 1 1 140px;
+        min-width: 140px;
       }
     }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-badge">M</div>
-        <div>M Database</div>
-      </div>
-      <div class="topbar-right">BMW Series Home</div>
+    <div class="topbar-left">
+      <div class="menu-icon">☰</div>
+      <div>Dashboard</div>
     </div>
+    <div class="topbar-center">M Database</div>
+    <div></div>
   </header>
 
-  <section class="hero">
-    <h1>Select Your Database</h1>
-    <p>
-      Choose a series below to open the correct database page. Each section can connect
-      to its own CSV file, filters, photos, VIN data, colors, interiors, and options.
-    </p>
-    <div class="hero-divider"></div>
-  </section>
+  <nav class="nav-row">
+    <a href="#" class="nav-item active">Vehicles Dashboard</a>
+    <a href="#" class="nav-item">Dashboard</a>
+    <a href="#" class="nav-item">Vehicle Management</a>
+    <a href="#" class="nav-item">Inquiries And Reports</a>
+    <a href="#" class="nav-item">Sales Application</a>
+  </nav>
 
-  <main class="cards-wrap">
-    <div class="cards-grid">
-      <!-- F87 M2 CARD -->
-      <a class="db-card" href="f87-m2-database.html">
-        <!-- Replace this image with your actual M2 photo -->
-        <img
-          src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80"
-          alt="BMW F87 M2"
-        />
+  <main class="page">
+    <div class="page-title">My Vehicles</div>
 
-        <div class="card-top">
-          <div class="series-tag">F87 Series</div>
-          <div class="csv-tag">F87 M2 Data.csv</div>
+    <section class="panel">
+      <div class="toolbar">
+        <div class="left-controls">
+          <button class="control-btn active" type="button">Grouped</button>
+          <button class="control-btn" type="button">A-Z ▼</button>
         </div>
 
-        <div class="card-bottom">
-          <div class="card-title">F87 M2</div>
-          <div class="card-subtitle">
-            Open the F87 M2 database page to view VIN records, exterior colors, interior trims,
-            production details, and option data.
-          </div>
-
-          <div class="card-meta">
-            <div class="meta-pill">Coupe</div>
-            <div class="meta-pill">CSV Linked</div>
-            <div class="meta-pill">VIN Database</div>
-          </div>
-
-          <div class="card-button">
-            Open Database
-            <span>→</span>
-          </div>
+        <div class="right-controls">
+          <div class="filter-box">F87 SERIES</div>
+          <div class="filter-box">E90 SERIES</div>
+          <div class="filter-box">CSV FILES</div>
+          <div class="filter-box">OPEN ▼</div>
         </div>
-      </a>
+      </div>
 
-      <!-- E90 M3 CARD -->
-      <a class="db-card" href="e90-m3-database.html">
-        <!-- Replace this image with your actual E90 photo -->
-        <img
-          src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80"
-          alt="BMW E90 M3"
-        />
+      <div class="divider"></div>
 
-        <div class="card-top">
-          <div class="series-tag">E90 Series</div>
-          <div class="csv-tag">E90 M3 Data.csv</div>
+      <div class="table-wrap">
+        <div class="table">
+          <div class="row header-main">
+            <div class="big">All Series</div>
+            <div class="value">2</div>
+            <div class="value">2</div>
+            <div class="value">2</div>
+            <div class="value">2</div>
+          </div>
+
+          <div class="row group-row">
+            <div>BMW M DATABASE</div>
+            <div class="value">F87</div>
+            <div class="value">E90</div>
+            <div class="value">CSV</div>
+            <div class="value">OPEN</div>
+          </div>
+
+          <a class="row data-row" href="f87-m2-database.html">
+            <div class="series-cell">
+              <img
+                class="series-thumb"
+                src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=300&q=80"
+                alt="F87 M2"
+              />
+              <div class="series-name">F87 M2</div>
+            </div>
+            <div class="value">2016</div>
+            <div class="value">2017</div>
+            <div class="value">F87 M2 Data.csv</div>
+            <div class="open-link">Open</div>
+          </a>
+
+          <a class="row data-row" href="e90-m3-database.html">
+            <div class="series-cell">
+              <img
+                class="series-thumb"
+                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=300&q=80"
+                alt="E90 M3"
+              />
+              <div class="series-name">E90 M3</div>
+            </div>
+            <div class="value">2008</div>
+            <div class="value">2011</div>
+            <div class="value">E90 M3 Data.csv</div>
+            <div class="open-link">Open</div>
+          </a>
         </div>
+      </div>
 
-        <div class="card-bottom">
-          <div class="card-title">E90 M3</div>
-          <div class="card-subtitle">
-            Open the E90 M3 database page to view VIN records, paint codes, upholstery,
-            production information, and package details.
-          </div>
-
-          <div class="card-meta">
-            <div class="meta-pill">Sedan</div>
-            <div class="meta-pill">CSV Linked</div>
-            <div class="meta-pill">M Registry</div>
-          </div>
-
-          <div class="card-button">
-            Open Database
-            <span>→</span>
-          </div>
-        </div>
-      </a>
-    </div>
+      <div class="small-note">
+        This is just the launcher layout. The CSV files do not need to be connected yet.
+      </div>
+    </section>
   </main>
-
-  <div class="footer-note">
-    Replace the image URLs with your own M2 and E90 images once you’re happy with the layout.
-  </div>
 </body>
 </html>
