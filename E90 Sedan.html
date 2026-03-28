@@ -886,7 +886,7 @@
           }
         }
       } catch (err) {
-        console.error("Error loading reference data from main.csv:", err);
+        console.error("Error loading reference data from 2011 E90 M3 Sedan.csv:", err);
       }
 
       // Fallbacks
@@ -901,7 +901,7 @@
       await loadReferenceData();
 
       try {
-        const response = await fetch("main.csv");
+        const response = await fetch("2011 E90 M3 Sedan.csv");
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const csvText = await response.text();
