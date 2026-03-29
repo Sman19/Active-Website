@@ -97,15 +97,16 @@
       display: none;
       margin: 12px 14px 0;
       padding: 10px 12px;
-      background: rgba(215, 25, 32, 0.10);
-      border: 1px solid rgba(215, 25, 32, 0.35);
-      color: #d71920;
+      background: rgba(215, 25, 32, 0.14);
+      border: 1px solid rgba(215, 25, 32, 0.28);
+      color: #ffffff;
       font-size: 13px;
       font-weight: 600;
-      border-radius: 8px;
+      border-radius: 10px;
       text-align: center;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
 
     .info-message {
@@ -439,7 +440,13 @@
     const infoEl = document.getElementById("ap_form_infmes");
 
     function checkMessages() {
-      if (errEl.textContent.trim()) {
+      const params = new URLSearchParams(window.location.search);
+      const failed = params.get("failed");
+
+      if (failed === "1") {
+        errEl.textContent = "Failed login. Please try again or reset your password.";
+        errEl.style.display = "block";
+      } else if (errEl.textContent.trim()) {
         errEl.style.display = "block";
       } else {
         errEl.style.display = "none";
