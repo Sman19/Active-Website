@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>CarboiCreations Database Login</title>
 
   <link
@@ -28,15 +28,19 @@
     body {
       width: 100%;
       height: 100%;
+      margin: 0;
       overflow: hidden;
+      overscroll-behavior: none;
       font-family: Arial, Helvetica, sans-serif;
     }
 
     body {
-      position: relative;
+      position: fixed;
+      inset: 0;
       background:
         linear-gradient(rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.16)),
         url("crtrep login.png") no-repeat center center / cover;
+      -webkit-text-size-adjust: 100%;
     }
 
     .top-strip {
@@ -68,6 +72,7 @@
       justify-content: center;
       padding-top: 98px;
       z-index: 3;
+      touch-action: manipulation;
     }
 
     .login-card {
@@ -213,16 +218,6 @@
     }
 
     @media (max-width: 600px) {
-      html,
-      body {
-        overflow: auto;
-        min-height: 100%;
-      }
-
-      body {
-        min-height: 100vh;
-      }
-
       .top-strip {
         height: 74px;
       }
@@ -238,7 +233,7 @@
         padding-top: 88px;
         padding-left: 16px;
         padding-right: 16px;
-        padding-bottom: 28px;
+        padding-bottom: 20px;
       }
 
       .login-card {
@@ -260,6 +255,10 @@
         width: 100%;
       }
 
+      .login-input {
+        font-size: 16px;
+      }
+
       .bumper-text {
         bottom: 198px;
         font-size: 13px;
@@ -267,7 +266,7 @@
     }
 
     /* iPhone / iPad tweaks */
-    @media (max-width: 700px) {
+    @media (max-width: 600px) {
       .ios-device .login-stage {
         padding-top: 78px;
       }
@@ -314,7 +313,7 @@
       }
 
       .android-device .login-input {
-        font-size: 15px;
+        font-size: 16px;
       }
 
       .android-device .login-label {
