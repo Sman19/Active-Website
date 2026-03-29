@@ -4,44 +4,236 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CarboiCreations Database Login</title>
-</head>
-<body>
 
-<div id="ap_style" class="ap_class limiter">
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://raw.githubusercontent.com/Sman19/2017-BMW-M2-Active-Website/2525b21e9ace94c054370ce981c41a612d5f9a6d/carbo-insta_1080x1080%20Favicon.png"
+  />
 
   <style>
-    #ap_style { 
-      --ap-backcol: #E6E6E6;
-      --ap-formcol: #FFFFFF;
-      --ap-forecol: #333333;
-      --ap-headcol: #FFFFFF;
-      --ap-linkcol: #0000FF;
-      --ap-errcolor: #FF0000;
-      --ap-bdcolor: #000F91;
-      --ap-bdwidth: 1px;
-      --ap-fontsize: 14px;
-      --ap-fontsizew: normal;
-      --ap-fontsizei: normal;
-      --ap-fontsizec: none;
-      --ap-fontsizeh: 14px;
-      --ap-fontsizehw: bold;
-      --ap-fontsizehi: normal;
-      --ap-fontsizehc: none;
-      --ap-fontface: verdana, arial;
-      --ap-headuc: none;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      position: relative;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)),
+        url("https://raw.githubusercontent.com/Sman19/2017-BMW-M2-Active-Website/2525b21e9ace94c054370ce981c41a612d5f9a6d/crtrep%20login.png")
+        no-repeat center center / cover;
+    }
+
+    .top-strip {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      height: 92px;
+      background: rgba(0, 0, 0, 0.78);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      z-index: 1;
+    }
+
+    .top-logo {
+      position: absolute;
+      top: 28px;
+      left: 42px;
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      z-index: 2;
+    }
+
+    .login-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .login-card {
+      width: 370px;
+      background: #efefef;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+    }
+
+    .login-header {
+      background: #0a1ea8;
+      color: #ffffff;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 16px 18px;
+      letter-spacing: 0.2px;
+    }
+
+    .login-body {
+      padding: 26px 18px 12px;
+    }
+
+    .login-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      align-items: center;
+      column-gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .login-label {
+      font-size: 18px;
+      color: #2f2f2f;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .login-input {
+      width: 100%;
+      height: 54px;
+      background: #d8dee9;
+      border: none;
+      border-bottom: 2px solid #7a7a7a;
+      padding: 0 10px;
+      font-size: 16px;
+      color: #222;
+      outline: none;
+    }
+
+    .login-input:focus {
+      border-bottom-color: #0a1ea8;
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0 20px 118px;
+      font-size: 17px;
+      color: #2f2f2f;
+    }
+
+    .remember-row input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #0a1ea8;
+    }
+
+    .button-wrap {
+      margin-left: 118px;
+      margin-bottom: 18px;
+    }
+
+    .login-button {
+      width: 214px;
+      height: 52px;
+      border: none;
+      border-radius: 18px;
+      background: #0a1ea8;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .login-button:hover {
+      background: #08157a;
+    }
+
+    .login-links {
+      padding: 0 14px 14px;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .login-links p {
+      margin-bottom: 12px;
+      color: #2f2f2f;
+    }
+
+    .login-links a {
+      color: #001dff;
+      text-decoration: underline;
+    }
+
+    .error-message {
+      display: none;
+      padding: 16px 18px 0;
+      color: #d71920;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .info-message {
+      display: none;
+      padding: 16px 18px 0;
+      color: #333;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+      .top-strip {
+        height: 74px;
+      }
+
+      .top-logo {
+        top: 20px;
+        left: 22px;
+        width: 48px;
+        height: 48px;
+      }
+
+      .login-card {
+        width: 92vw;
+        max-width: 370px;
+      }
+
+      .login-row {
+        grid-template-columns: 1fr;
+        row-gap: 6px;
+      }
+
+      .remember-row,
+      .button-wrap {
+        margin-left: 0;
+      }
+
+      .login-button {
+        width: 100%;
+      }
     }
   </style>
+</head>
+<body>
+  <div class="top-strip"></div>
 
-  <style>
-    @import "https://authpro.com/templ/3.css?230705";
-  </style>
+  <img
+    class="top-logo"
+    src="https://raw.githubusercontent.com/Sman19/2017-BMW-M2-Active-Website/2525b21e9ace94c054370ce981c41a612d5f9a6d/carbo-insta_1080x1080%20Favicon.png"
+    alt="CarboiCreations"
+  />
 
-  <div class="container-apform">
-    <div class="wrap-apform" id="ap_form_box">
-      <div class="apform-form-title">
-        <span class="apform-form-title-1" id="ap_form_head">CarboiCreations Database Login</span>
-      </div>
-      <br id="ap_hbr">
+  <div class="login-stage">
+    <div class="login-card">
+      <div class="login-header">Enter your Login and Password</div>
+
+      <div id="ap_form_errmes" class="error-message"></div>
+      <div id="ap_form_infmes" class="info-message"></div>
 
       <form method="post" action="https://www.authpro.com/auth/sman201/" name="aform" target="_top">
         <input type="hidden" name="action" value="login">
@@ -49,65 +241,75 @@
         <input type="hidden" name="remember_func" value="">
         <input type="hidden" name="hide" value="O">
 
-        <table id="ap_table_login" class="center">
-          <tr style="display:none" id="ap_form_err">
-            <td colspan="2" id="ap_form_errmes" class="error"></td>
-          </tr>
+        <div class="login-body">
+          <div class="login-row">
+            <label class="login-label" for="login">Username:</label>
+            <input
+              class="login-input"
+              id="login"
+              type="text"
+              name="login"
+              value=""
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="username"
+            >
+          </div>
 
-          <tr style="display:none" id="ap_form_inf">
-            <td colspan="2" id="ap_form_infmes"></td>
-          </tr>
+          <div class="login-row">
+            <label class="login-label" for="password">Password:</label>
+            <input
+              class="login-input"
+              id="password"
+              type="password"
+              name="password"
+              autocomplete="current-password"
+            >
+          </div>
 
-          <tr class="ap_form_inp">
-            <td>Username:</td>
-            <td>
-              <input type="text" name="login" value="" autocorrect="off" autocapitalize="off" autocomplete="username">
-            </td>
-          </tr>
+          <div class="remember-row">
+            <input type="checkbox" id="remember" name="remember" value="1">
+            <label for="remember">Remember me</label>
+          </div>
 
-          <tr class="ap_form_inp">
-            <td>Password:</td>
-            <td>
-              <input type="password" name="password" autocomplete="current-password">
-            </td>
-          </tr>
+          <div class="button-wrap">
+            <input class="login-button" type="submit" value="LOGIN">
+          </div>
+        </div>
 
-          <tr>
-            <td>&nbsp;</td>
-            <td align="left">
-              <input type="checkbox" name="remember" value="1"> Remember me
-            </td>
-          </tr>
+        <div class="login-links">
+          <p>
+            <a href="https://www.authpro.com/auth/sman201/?action=lost">
+              Forgot your username or password?
+            </a>
+          </p>
 
-          <tr id="ap_form_isb">
-            <td>&nbsp;</td>
-            <td>
-              <input type="submit" id="ap_form_btn" value="Login">
-            </td>
-          </tr>
-
-          <tr id="ap_form_space">
-            <td colspan="2">&nbsp;</td>
-          </tr>
-
-          <tr>
-            <td colspan="2" id="ap_form_lostmes">
-              <a href="https://www.authpro.com/auth/sman201/?action=lost">Forgot your username or password?</a>
-            </td>
-          </tr>
-
-          <tr>
-            <td colspan="2" id="ap_form_regmes">
-              Need access? Click <a href="https://www.authpro.com/auth/sman201/?action=reg">here</a> to register.
-            </td>
-          </tr>
-        </table>
+          <p>
+            Not member yet? Click
+            <a href="https://www.authpro.com/auth/sman201/?action=reg">here</a>
+            to register.
+          </p>
+        </div>
       </form>
-
-      <script type="text/javascript" src="https://www.authpro.com/js/aform.js?1711251"></script>
     </div>
   </div>
-</div>
 
+  <script type="text/javascript" src="https://www.authpro.com/js/aform.js?1711251"></script>
+  <script>
+    const errEl = document.getElementById("ap_form_errmes");
+    const infoEl = document.getElementById("ap_form_infmes");
+
+    const observer = new MutationObserver(() => {
+      if (errEl.textContent.trim()) {
+        errEl.style.display = "block";
+      }
+      if (infoEl.textContent.trim()) {
+        infoEl.style.display = "block";
+      }
+    });
+
+    observer.observe(errEl, { childList: true, subtree: true });
+    observer.observe(infoEl, { childList: true, subtree: true });
+  </script>
 </body>
 </html>
