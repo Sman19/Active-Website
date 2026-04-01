@@ -748,10 +748,10 @@
     <div class="page-layout">
       <aside class="left-sidebar" id="left-sidebar">
         <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Hide filters">◀</button>
-
+      
         <div class="sidebar-content">
           <div class="sidebar-title">Filter Inventory</div>
-
+      
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
@@ -759,16 +759,7 @@
               <option value="2017 F87 M2.csv">2017 M2</option>
             </select>
           </div>
-
-          <div class="sidebar-section">
-            <label class="sidebar-label" for="sidebar-year-filter">Model Year</label>
-            <select id="sidebar-year-filter" class="sidebar-select" onchange="handleSidebarYearFilter(this.value)">
-              <option value="">All Years</option>
-              <option value="2016">2016</option>
-              <option value="2017">2017</option>
-            </select>
-          </div>
-
+      
           <div class="sidebar-section">
             <label class="sidebar-label">Exterior Breakdown</label>
             <div class="sidebar-chart-card">
@@ -777,7 +768,7 @@
               </div>
             </div>
           </div>
-
+      
           <div class="sidebar-section">
             <label class="sidebar-label">Transmission Breakdown</label>
             <div class="sidebar-chart-card">
@@ -788,7 +779,7 @@
           </div>
         </div>
       </aside>
-
+      
       <div class="main-content">
         <div class="summary-row">
           <div class="summary-left">
