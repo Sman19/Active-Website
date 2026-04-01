@@ -960,13 +960,6 @@
       window.location.href = url.toString();
     }
 
-    function handleSidebarYearFilter(value) {
-      const yearInput = document.querySelector('.filter-input[data-field="year"]');
-      if (!yearInput) return;
-      yearInput.value = value;
-      applyFilters();
-    }
-
     function toggleSidebar() {
       const sidebar = document.getElementById("left-sidebar");
       const toggle = document.getElementById("sidebar-toggle");
