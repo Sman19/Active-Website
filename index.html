@@ -698,7 +698,7 @@
         <div class="series-cell" data-label="Body Style">Coupe</div>
         <div class="series-cell muted" data-label="Notes">ACTIVE</div>
         <div class="series-cell" data-label="Open">
-          <a class="open-link" href="F87%20M2.html">Open</a>
+          <a class="open-link" href="F87%20M2.html" onclick="playF87OpenAudio(event, this.href)">Open</a>
         </div>
       </div>
 
@@ -723,6 +723,11 @@
       <button id="closeMonroneyModal" class="monroney-modal-btn" type="button">Cancel</button>
     </div>
   </div>
+
+  <audio id="f87OpenAudio" preload="auto">
+    <source src="https://raw.githubusercontent.com/Sman19/Active-Website/db6085b3f05258e7c93e8591bf30affcc48553e7/M2%20rev%20clip.m4a" type="audio/mp4">
+    Your browser does not support the audio element.
+  </audio>
 
   <script>
     const CSV_FILES = [
@@ -1087,6 +1092,36 @@
       } else {
         authUsername.textContent = "Member";
       }
+    }
+
+    function playF87OpenAudio(event, url) {
+      event.preventDefault();
+
+      const audio = document.getElementById("f87OpenAudio");
+
+      if (!audio) {
+        window.location.href = url;
+        return;
+      }
+
+      audio.pause();
+      audio.currentTime = 0;
+
+      const goToPage = () => {
+        window.location.href = url;
+      };
+
+      audio.play()
+        .then(() => {
+          const durationMs = (audio.duration && isFinite(audio.duration) && audio.duration > 0)
+            ? audio.duration * 1000
+            : 8000;
+
+          setTimeout(goToPage, durationMs);
+        })
+        .catch(() => {
+          goToPage();
+        });
     }
 
     searchBtn.addEventListener("click", runSearch);
