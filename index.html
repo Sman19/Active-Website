@@ -708,7 +708,7 @@
         <div class="series-cell" data-label="Body Style">Sedan</div>
         <div class="series-cell muted" data-label="Notes">ACTIVE</div>
         <div class="series-cell" data-label="Open">
-          <a class="open-link" href="E90%20Sedan.html">Open</a>
+          <a class="open-link" href="E90%20Sedan.html" onclick="playE90OpenAudio(event, this.href)">Open</a>
         </div>
       </div>
     </section>
@@ -726,6 +726,11 @@
 
   <audio id="f87OpenAudio" preload="auto">
     <source src="https://raw.githubusercontent.com/Sman19/Active-Website/db6085b3f05258e7c93e8591bf30affcc48553e7/M2%20rev%20clip.m4a" type="audio/mp4">
+    Your browser does not support the audio element.
+  </audio>
+
+  <audio id="e90OpenAudio" preload="auto">
+    <source src="https://raw.githubusercontent.com/Sman19/Active-Website/94c7980b355c8ddbf90fd3862060c80797266cd4/E90%20M3%20Exhaust.m4a" type="audio/mp4">
     Your browser does not support the audio element.
   </audio>
 
@@ -1118,6 +1123,32 @@
             : 8000;
 
           setTimeout(goToPage, durationMs);
+        })
+        .catch(() => {
+          goToPage();
+        });
+    }
+
+    function playE90OpenAudio(event, url) {
+      event.preventDefault();
+
+      const audio = document.getElementById("e90OpenAudio");
+
+      if (!audio) {
+        window.location.href = url;
+        return;
+      }
+
+      audio.pause();
+      audio.currentTime = 0;
+
+      const goToPage = () => {
+        window.location.href = url;
+      };
+
+      audio.play()
+        .then(() => {
+          setTimeout(goToPage, 4000);
         })
         .catch(() => {
           goToPage();
