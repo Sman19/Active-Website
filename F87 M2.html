@@ -1061,10 +1061,12 @@
 
     function getField(row, possibleNames) {
       const keys = Object.keys(row);
+
       for (const name of possibleNames) {
         const foundKey = keys.find(key => key.toLowerCase().trim() === name.toLowerCase().trim());
         if (foundKey && row[foundKey]) return row[foundKey];
       }
+
       return "";
     }
 
@@ -1131,9 +1133,26 @@
       const exteriorRaw = getField(row, ["EXTERIOR", "Exterior", "Color", "Paint Code", "PAINT"]);
       const interiorRaw = getField(row, ["INTERIOR", "Interior", "Trim", "Upholstery"]);
       const year = getField(row, ["YEAR", "Year", "Model Year", "MY"]);
-      const vin = getField(row, ["VIN", "Vin", "Full VIN", "Full VIN Number"]);
-      const msrp = getField(row, ["MSRP", "Price", "Retail"]);
-      const dealer = getField(row, ["DEALER NAME", "Dealer Name", "Dealer"]);
+      const vin = getField(row, ["VIN", "Vin", "Full VIN", "Full VIN Number"]).trim();
+
+      const msrp = getField(row, [
+        "MSRP",
+        "msrp",
+        "Total MSRP",
+        "TOTAL MSRP",
+        "Base MSRP",
+        "Retail Price",
+        "Vehicle MSRP"
+      ]);
+
+      const dealer = getField(row, [
+        "DEALER NAME",
+        "Dealer Name",
+        "Dealer",
+        "Selling Dealer",
+        "Dealer Name "
+      ]);
+
       const details = getField(row, ["DETAILS", "Details"]);
       const vspec = getField(row, ["V-SPEC", "VSPEC", "VSpec"]);
       const sticker = getField(row, ["STICKER", "Monroney", "Window Sticker"]);
@@ -1161,8 +1180,8 @@
         packageCodes,
         packageDetails,
         packageText: packageDetails.length ? packageDetails.join(" | ") : (packageCodesRaw || "-"),
-        msrp,
-        dealer,
+        msrp: msrp || "-",
+        dealer: dealer || "-",
         details,
         vspec,
         sticker,
@@ -1576,7 +1595,13 @@
         const text = await response.text();
         const rows = parseCSV(text);
 
-        vehicles = rows.map(buildVehicle);
+        vehicles = rows
+          .map(buildVehicle)
+          .filter(vehicle => {
+            const vin = String(vehicle.vin || "").trim();
+            return vin !== "" && vin !== "-" && vin.length >= 11;
+          });
+
         filteredVehicles = [...vehicles];
 
         document.getElementById("total-count").textContent = vehicles.length;
