@@ -363,7 +363,7 @@
     .series-header,
     .series-row {
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 1.4fr 0.8fr;
+      grid-template-columns: 1.5fr 1fr 1fr 1.4fr 0.8fr 1fr;
       gap: 14px;
       align-items: center;
       padding: 14px 12px;
@@ -684,13 +684,14 @@
       <div class="divider"></div>
 
       <div class="subheading">Series Launcher</div>
-      <div class="series-header">
-        <div>Series</div>
-        <div>Generation</div>
-        <div>Body Style</div>
-        <div>Notes</div>
-        <div>Open</div>
-      </div>
+     <div class="series-header">
+      <div>Series</div>
+      <div>Generation</div>
+      <div>Body Style</div>
+      <div>Notes</div>
+      <div>Open</div>
+      <div></div>
+    </div>
 
       <div class="series-row">
         <div class="series-main">F87 M2</div>
@@ -698,7 +699,10 @@
         <div class="series-cell" data-label="Body Style">Coupe</div>
         <div class="series-cell muted" data-label="Notes">ACTIVE</div>
         <div class="series-cell" data-label="Open">
-          <a class="open-link" href="F87%20M2.html" onclick="playF87OpenAudio(event, this.href)">Open</a>
+          <a class="open-link" href="F87%20M2.html">Open</a>
+        </div>
+        <div class="series-cell">
+          <a class="open-link" href="#" onclick="playF87OpenAudio(event)">Exhaust Clip</a>
         </div>
       </div>
 
@@ -708,7 +712,10 @@
         <div class="series-cell" data-label="Body Style">Sedan</div>
         <div class="series-cell muted" data-label="Notes">ACTIVE</div>
         <div class="series-cell" data-label="Open">
-          <a class="open-link" href="E90%20Sedan.html" onclick="playE90OpenAudio(event, this.href)">Open</a>
+          <a class="open-link" href="E90%20Sedan.html">Open</a>
+        </div>
+        <div class="series-cell">
+          <a class="open-link" href="#" onclick="playE90OpenAudio(event)">Exhaust Clip</a>
         </div>
       </div>
     </section>
