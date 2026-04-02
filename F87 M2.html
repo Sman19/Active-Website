@@ -858,7 +858,7 @@
   <div class="side-panel" id="side-panel">
     <div class="side-panel-header">
       <div class="side-panel-header-top">
-        <div class="side-panel-title">1 Selected</div>
+        <div class="side-panel-title" id="side-panel-title">1 Selected</div>
         <button class="side-panel-close" onclick="closeSidePanel()">✕</button>
       </div>
       <div class="side-panel-vehicle-name" id="panel-vehicle-name">-</div>
@@ -1117,228 +1117,78 @@
         .filter(Boolean);
     }
 
-    function getExteriorChartColor(code) {
-      const colorData = defaultColors[code];
-      if (!colorData || !colorData.rgb) return "rgb(180,180,180)";
-      return `rgb(${colorData.rgb})`;
-    }
-
     function buildVehicle(row) {
-      const exteriorRaw = getField(row, ["EXTERIOR", "Exterior", "Color", "Paint Code", "PAINT"]);
-      const interiorRaw = getField(row, ["INTERIOR", "Interior", "Trim", "Upholstery"]);
-      const year = getField(row, ["YEAR", "Year", "Model Year", "MY"]);
-      const vin = getField(row, ["VIN", "Vin", "Full VIN", "Full VIN Number"]).trim();
+      const exteriorRaw = getField(row, ["EXTERIOR", "Exterior", "COLOR", "Color"]);
+      const interiorRaw = getField(row, ["INTERIOR", "Interior", "UPHOLSTERY", "Upholstery"]);
+      const packageRaw = getField(row, ["PACKAGES", "Packages", "PACKAGE CODES", "Package Codes", "Package Codes "]);
+      const vin = cleanLabel(getField(row, ["VIN", "Vin"]));
+      const year = cleanLabel(getField(row, ["YEAR", "Year", "MODEL YEAR", "Model Year"]));
+      const model = cleanLabel(getField(row, ["MODEL", "Model", "PRODUCT", "Product"]));
+      const msrp = cleanLabel(getField(row, ["MSRP", "Msrp", "PRICE", "Price"]));
+      const dealer = cleanLabel(getField(row, ["DEALER NAME", "Dealer Name", "DEALER", "Dealer"]));
 
-      const msrp = getField(row, [
-        "MSRP",
-        "msrp",
-        "Total MSRP",
-        "TOTAL MSRP",
-        "Base MSRP",
-        "Retail Price",
-        "Vehicle MSRP"
-      ]);
+      const colorData = getColorData(exteriorRaw) || {};
+      const interiorData = getInteriorData(interiorRaw) || {};
 
-      const dealer = getField(row, [
-        "DEALER NAME",
-        "Dealer Name",
-        "Dealer",
-        "Selling Dealer",
-        "Dealer Name "
-      ]);
+      const exteriorCode = extractCode(exteriorRaw) || extractCode(colorData.name || "");
+      const interiorCode = extractCode(interiorRaw) || extractCode(interiorData.description || "");
 
-      const details = getField(row, ["DETAILS", "Details"]);
-      const vspec = getField(row, ["V-SPEC", "VSPEC", "VSpec"]);
-      const sticker = getField(row, ["STICKER", "Monroney", "Window Sticker"]);
-      const invoice = getField(row, ["INVOICE", "Invoice"]);
-      const model = getField(row, ["MODEL", "Model"]) || "M2";
+      const exteriorName = cleanLabel(
+        exteriorRaw || colorData.name || "-"
+      );
 
-      const packageCodesRaw = getField(row, ["Package Codes", "PACKAGE CODES", "PACKAGES", "Packages"]);
-      const packageCodes = parsePackageCodes(packageCodesRaw);
-      const packageDetails = packageCodes.map(code => getPackageDetail(code));
+      const interiorName = cleanLabel(
+        interiorRaw || interiorData.description || "-"
+      );
 
-      const exteriorData = getColorData(exteriorRaw);
-      const interiorData = getInteriorData(interiorRaw);
+      const packageCodes = parsePackageCodes(packageRaw);
+      const packageText = packageCodes.length
+        ? packageCodes.map(code => getPackageDetail(code)).join(", ")
+        : "-";
+
+      const image = colorData.image || "";
+      const rgb = colorData.rgb || "209, 213, 219";
+      const interiorImage = interiorData.image || "";
 
       return {
         model,
-        exteriorCode: extractCode(exteriorRaw),
-        exteriorName: cleanLabel(exteriorRaw || (exteriorData ? exteriorData.name : "-")),
-        exteriorImage: exteriorData ? exteriorData.image : "",
-        exteriorRgb: exteriorData ? exteriorData.rgb : "220,220,220",
-        interiorCode: extractCode(interiorRaw),
-        interiorName: cleanLabel(interiorRaw || (interiorData ? interiorData.description : "-")),
-        interiorImage: interiorData ? interiorData.image : "",
         year,
         vin,
+        exteriorCode,
+        exteriorName,
+        interiorCode,
+        interiorName,
         packageCodes,
-        packageDetails,
-        packageText: packageDetails.length ? packageDetails.join(" | ") : (packageCodesRaw || "-"),
-        msrp: msrp || "-",
-        dealer: dealer || "-",
-        details,
-        vspec,
-        sticker,
-        invoice
+        packageText,
+        msrp,
+        dealer,
+        image,
+        rgb,
+        interiorImage
       };
     }
 
-    function renderTable(data) {
-      const table = document.getElementById("table-rows");
-
-      if (!data.length) {
-        table.innerHTML = `
-          <div style="padding: 40px; text-align: center; color: #6b7280;">
-            <h3>No vehicles found</h3>
-          </div>
-        `;
-        return;
+    function getExteriorChartColor(code) {
+      const data = getColorData(code);
+      if (data && data.rgb) {
+        return `rgb(${data.rgb})`;
       }
-
-      table.innerHTML = "";
-
-      data.forEach((vehicle, index) => {
-        const row = document.createElement("div");
-        row.className = "table-row";
-        row.dataset.vin = vehicle.vin || "";
-
-        const packageDetailsHtml = vehicle.packageDetails
-          .map(detail => `<div>${escapeHtml(detail)}</div>`)
-          .join("");
-
-        row.innerHTML = `
-          <div class="cell cell-checkbox">
-            <input type="checkbox" ${selectedVehicles.has(vehicle.vin) ? "checked" : ""} />
-          </div>
-
-          <div class="cell cell-status">
-            <div class="status-circle">M</div>
-          </div>
-
-          <div class="cell cell-image">
-            ${
-              vehicle.exteriorImage
-                ? `<img class="exterior-thumbnail" src="${escapeHtml(vehicle.exteriorImage)}" alt="${escapeHtml(vehicle.exteriorName)}" />`
-                : `<div class="exterior-thumbnail"></div>`
-            }
-          </div>
-
-          <div class="cell cell-model">
-            <span class="model-code">${escapeHtml(vehicle.model)}</span>
-          </div>
-
-          <div class="cell cell-exterior">
-            <div class="tooltip">
-              <div class="color-display">
-                <span class="color-circle" style="background-color: rgb(${escapeHtml(vehicle.exteriorRgb)});"></span>
-                <span>${escapeHtml(vehicle.exteriorName)}</span>
-              </div>
-              <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.exteriorName)}</div>
-            </div>
-          </div>
-
-          <div class="cell cell-interior">
-            <div class="tooltip">
-              <div class="interior-display">
-                ${
-                  vehicle.interiorImage
-                    ? `<span class="interior-square" style="background-image: url('${escapeHtml(vehicle.interiorImage)}')"></span>`
-                    : `<span class="interior-square"></span>`
-                }
-                <span>${escapeHtml(vehicle.interiorName)}</span>
-              </div>
-              <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.interiorName)}</div>
-            </div>
-          </div>
-
-          <div class="cell cell-year">${escapeHtml(vehicle.year || "-")}</div>
-
-          <div class="cell cell-vin">
-            <div class="tooltip">
-              <span class="vin-text" id="vin-${index}">${escapeHtml(vehicle.vin || "-")}</span>
-              <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.vin || "-")}</div>
-            </div>
-            ${
-              vehicle.vin
-                ? `<button class="copy-btn" data-copy-target="vin-${index}" title="Copy VIN">⧉</button>`
-                : ""
-            }
-          </div>
-
-          <div class="cell cell-packages">
-            <div class="tooltip">
-              <span class="packages-short">${escapeHtml(vehicle.packageText)}</span>
-              ${
-                vehicle.packageDetails.length
-                  ? `<div class="tooltiptext tooltip-packages"><strong>Package Details:</strong><br>${packageDetailsHtml}</div>`
-                  : ""
-              }
-            </div>
-          </div>
-
-          <div class="cell cell-msrp">${escapeHtml(vehicle.msrp || "-")}</div>
-
-          <div class="cell cell-dealer">
-            <div class="tooltip">
-              <span>${escapeHtml(vehicle.dealer || "-")}</span>
-              ${vehicle.dealer ? `<div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.dealer)}</div>` : ""}
-            </div>
-          </div>
-        `;
-
-        table.appendChild(row);
-
-        const checkbox = row.querySelector('input[type="checkbox"]');
-        checkbox.addEventListener("change", function () {
-          handleCheckboxChange(this, vehicle);
-        });
-      });
-
-      initCopyButtons();
-    }
-
-    function initCopyButtons() {
-      document.querySelectorAll(".copy-btn").forEach((btn) => {
-        btn.addEventListener("click", async function () {
-          const targetId = this.dataset.copyTarget;
-          const target = document.getElementById(targetId);
-          const value = target ? target.textContent.trim() : "";
-
-          if (!value) return;
-
-          try {
-            await navigator.clipboard.writeText(value);
-            const original = this.textContent;
-            this.textContent = "✓";
-            this.classList.add("copied");
-
-            setTimeout(() => {
-              this.textContent = original;
-              this.classList.remove("copied");
-            }, 1000);
-          } catch (err) {
-            console.error("Copy failed:", err);
-          }
-        });
-      });
+      return "rgb(180,180,180)";
     }
 
     function getActiveFilters() {
       const filters = {};
       document.querySelectorAll(".filter-input").forEach(input => {
-        const field = input.dataset.field;
-        const value = (input.value || "").trim();
-        if (value) filters[field] = value;
+        const value = input.value.trim();
+        if (value) filters[input.dataset.field] = value;
       });
       return filters;
     }
 
     function removeFilter(field) {
       const input = document.querySelector(`.filter-input[data-field="${field}"]`);
-      if (input) {
-        input.value = "";
-        applyFilters();
-      }
+      if (input) input.value = "";
+      applyFilters();
     }
 
     function clearAllFilters() {
@@ -1350,39 +1200,25 @@
 
     function renderActiveFilterChips(filters) {
       const activeFiltersContainer = document.getElementById("active-filters");
-      if (!activeFiltersContainer) return;
-
       activeFiltersContainer.innerHTML = "";
 
-      const fieldLabels = {
-        model: "Model",
-        exterior: "Exterior",
-        interior: "Interior",
-        year: "Year",
-        vin: "VIN",
-        packages: "Packages",
-        msrp: "MSRP",
-        dealer: "Dealer"
-      };
+      const entries = Object.entries(filters);
+      if (!entries.length) return;
 
-      const filterKeys = Object.keys(filters);
-      if (!filterKeys.length) return;
-
-      filterKeys.forEach(field => {
-        const chip = document.createElement("div");
+      entries.forEach(([field, value]) => {
+        const chip = document.createElement("span");
         chip.className = "filter-chip";
         chip.innerHTML = `
-          ${fieldLabels[field] || field}: ${escapeHtml(filters[field])}
-          <span class="filter-chip-remove" data-field="${field}">✕</span>
+          <span>${escapeHtml(field)}: ${escapeHtml(value)}</span>
+          <span class="filter-chip-remove" data-field="${escapeHtml(field)}">×</span>
         `;
         activeFiltersContainer.appendChild(chip);
       });
 
       const clearBtn = document.createElement("button");
       clearBtn.className = "clear-filters-btn";
-      clearBtn.type = "button";
-      clearBtn.textContent = "Clear All";
-      clearBtn.onclick = clearAllFilters;
+      clearBtn.textContent = "Clear";
+      clearBtn.addEventListener("click", clearAllFilters);
       activeFiltersContainer.appendChild(clearBtn);
 
       activeFiltersContainer.querySelectorAll(".filter-chip-remove").forEach(btn => {
@@ -1417,11 +1253,11 @@
     function getVehicleFieldText(vehicle, field) {
       switch (field) {
         case "model": return vehicle.model;
-        case "exterior": return vehicle.exteriorName + " " + vehicle.exteriorCode;
-        case "interior": return vehicle.interiorName + " " + vehicle.interiorCode;
+        case "exterior": return `${vehicle.exteriorName} ${vehicle.exteriorCode}`;
+        case "interior": return `${vehicle.interiorName} ${vehicle.interiorCode}`;
         case "year": return vehicle.year;
         case "vin": return vehicle.vin;
-        case "packages": return vehicle.packageText + " " + vehicle.packageCodes.join(" ");
+        case "packages": return `${vehicle.packageText} ${vehicle.packageCodes.join(" ")}`;
         case "msrp": return vehicle.msrp;
         case "dealer": return vehicle.dealer;
         default: return "";
@@ -1522,12 +1358,15 @@
               }
             },
             datalabels: {
-              color: "#ffffff",
+              color(context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return label === "300" ? "#111827" : "#ffffff";
+              },
               font: {
                 weight: "700",
                 size: 11
               },
-              formatter: function(value, context) {
+              formatter(value, context) {
                 const label = context.chart.data.labels[context.dataIndex];
                 return value > 0 ? label : "";
               }
@@ -1542,7 +1381,10 @@
         data: {
           labels: transmissionLabels,
           datasets: [{
-            data: transmissionData
+            data: transmissionData,
+            backgroundColor: ["#4aa3df", "#f76587"],
+            borderColor: "#ffffff",
+            borderWidth: 2
           }]
         },
         options: {
@@ -1550,7 +1392,31 @@
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: "bottom"
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
+
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
+
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
+                }
+              }
             },
             datalabels: {
               color: "#ffffff",
@@ -1558,7 +1424,7 @@
                 weight: "700",
                 size: 10
               },
-              formatter: function(value, context) {
+              formatter(value, context) {
                 const label = context.chart.data.labels[context.dataIndex];
                 return value > 0 ? label : "";
               }
@@ -1576,6 +1442,224 @@
       });
     }
 
+    function formatMsrp(value) {
+      const raw = String(value || "").trim();
+      if (!raw || raw === "-" || normalize(raw) === "no information") return "-";
+      if (raw.includes("$")) return raw;
+      const numeric = Number(raw.replace(/[^0-9.]/g, ""));
+      if (!Number.isNaN(numeric) && numeric > 0) {
+        return `$${numeric.toLocaleString()}`;
+      }
+      return raw;
+    }
+
+    function renderPackagesCell(vehicle) {
+      if (!vehicle.packageCodes.length) return "-";
+
+      const shortText = vehicle.packageCodes.join(", ");
+      const tooltipLines = vehicle.packageCodes.map(code => `<div>${escapeHtml(code)} - ${escapeHtml(getPackageDetail(code))}</div>`).join("");
+
+      return `
+        <span class="tooltip">
+          <span class="packages-short">${escapeHtml(shortText)}</span>
+          <span class="tooltiptext tooltip-packages">${tooltipLines}</span>
+        </span>
+      `;
+    }
+
+    function updateSelectionUI() {
+      const count = selectedVehicles.size;
+      const selectionCount = document.getElementById("selection-count");
+      const selectionCountText = document.getElementById("selection-count-text");
+
+      if (count > 0) {
+        selectionCount.classList.add("visible");
+        selectionCountText.textContent = `${count} Selected`;
+      } else {
+        selectionCount.classList.remove("visible");
+        closeSidePanel();
+      }
+
+      if (count === 1) {
+        const selectedVin = [...selectedVehicles][0];
+        const vehicle = vehicles.find(v => v.vin === selectedVin);
+        if (vehicle) openSidePanel(vehicle);
+      } else if (count !== 1) {
+        closeSidePanel();
+      }
+    }
+
+    function toggleVehicleSelection(vin, isChecked) {
+      if (isChecked) {
+        selectedVehicles.add(vin);
+      } else {
+        selectedVehicles.delete(vin);
+      }
+
+      document.querySelectorAll(`.vehicle-checkbox[data-vin="${CSS.escape(vin)}"]`).forEach(cb => {
+        cb.checked = isChecked;
+      });
+
+      document.querySelectorAll(`.table-row[data-vin="${CSS.escape(vin)}"]`).forEach(row => {
+        row.classList.toggle("selected", isChecked);
+      });
+
+      updateSelectionUI();
+    }
+
+    function copyVin(vin, button) {
+      navigator.clipboard.writeText(vin).then(() => {
+        const original = button.textContent;
+        button.textContent = "✓";
+        button.classList.add("copied");
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove("copied");
+        }, 1200);
+      }).catch(() => {});
+    }
+
+    function renderTable(rowsToRender) {
+      const tableRows = document.getElementById("table-rows");
+
+      if (!rowsToRender.length) {
+        tableRows.innerHTML = `
+          <div class="loading">
+            <div>No matching vehicles found.</div>
+          </div>
+        `;
+        return;
+      }
+
+      tableRows.innerHTML = rowsToRender.map(vehicle => {
+        const selected = selectedVehicles.has(vehicle.vin);
+        const rgb = vehicle.rgb || "209, 213, 219";
+        const msrpDisplay = formatMsrp(vehicle.msrp);
+
+        return `
+          <div class="table-row ${selected ? "selected" : ""}" data-vin="${escapeHtml(vehicle.vin)}">
+            <div class="cell cell-checkbox">
+              <input
+                type="checkbox"
+                class="vehicle-checkbox"
+                data-vin="${escapeHtml(vehicle.vin)}"
+                ${selected ? "checked" : ""}
+              />
+            </div>
+
+            <div class="cell cell-status">
+              <div class="status-circle">M</div>
+            </div>
+
+            <div class="cell cell-image">
+              ${vehicle.image
+                ? `<img class="exterior-thumbnail" src="${escapeHtml(vehicle.image)}" alt="${escapeHtml(vehicle.exteriorName)}" />`
+                : `<div class="exterior-thumbnail"></div>`
+              }
+            </div>
+
+            <div class="cell cell-model">
+              <span class="model-code">${escapeHtml(vehicle.model)}</span>
+            </div>
+
+            <div class="cell cell-exterior">
+              <div class="color-display">
+                <span class="color-circle" style="background-color: rgb(${escapeHtml(rgb)});"></span>
+                <span>${escapeHtml(vehicle.exteriorName)}</span>
+              </div>
+            </div>
+
+            <div class="cell cell-interior">
+              <div class="interior-display">
+                <span class="interior-square" style="${vehicle.interiorImage ? `background-image:url('${escapeHtml(vehicle.interiorImage)}');` : ""}"></span>
+                <span>${escapeHtml(vehicle.interiorName)}</span>
+              </div>
+            </div>
+
+            <div class="cell cell-year">
+              ${escapeHtml(vehicle.year)}
+            </div>
+
+            <div class="cell cell-vin">
+              <span class="vin-text">${escapeHtml(vehicle.vin)}</span>
+              <button class="copy-btn" type="button" data-copy-vin="${escapeHtml(vehicle.vin)}">⧉</button>
+            </div>
+
+            <div class="cell cell-packages">
+              ${renderPackagesCell(vehicle)}
+            </div>
+
+            <div class="cell cell-msrp">
+              ${escapeHtml(msrpDisplay)}
+            </div>
+
+            <div class="cell cell-dealer">
+              ${escapeHtml(vehicle.dealer)}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      tableRows.querySelectorAll(".vehicle-checkbox").forEach(cb => {
+        cb.addEventListener("change", e => {
+          toggleVehicleSelection(e.target.dataset.vin, e.target.checked);
+        });
+      });
+
+      tableRows.querySelectorAll(".copy-btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+          copyVin(e.currentTarget.dataset.copyVin, e.currentTarget);
+        });
+      });
+    }
+
+    function openSidePanel(vehicle) {
+      const panel = document.getElementById("side-panel");
+      const title = document.getElementById("side-panel-title");
+      const name = document.getElementById("panel-vehicle-name");
+      const info = document.getElementById("panel-vehicle-info");
+
+      title.textContent = "1 Selected";
+      name.textContent = `${vehicle.year} ${vehicle.model} ${vehicle.exteriorCode || ""}`.trim();
+      info.textContent = `${vehicle.vin} • ${vehicle.exteriorName} • ${vehicle.interiorName}`;
+      panel.classList.add("open");
+    }
+
+    function closeSidePanel() {
+      const panel = document.getElementById("side-panel");
+      panel.classList.remove("open");
+    }
+
+    function getSingleSelectedVehicle() {
+      if (selectedVehicles.size !== 1) return null;
+      const vin = [...selectedVehicles][0];
+      return vehicles.find(v => v.vin === vin) || null;
+    }
+
+    function handleDetailsClick() {
+      const vehicle = getSingleSelectedVehicle();
+      if (!vehicle) return;
+      alert(`Details\n\nVIN: ${vehicle.vin}\nExterior: ${vehicle.exteriorName}\nInterior: ${vehicle.interiorName}\nPackages: ${vehicle.packageCodes.join(", ") || "-"}`);
+    }
+
+    function handleVSpecClick() {
+      const vehicle = getSingleSelectedVehicle();
+      if (!vehicle) return;
+      alert(`V-Spec\n\n${vehicle.vin}`);
+    }
+
+    function handleStickerClick() {
+      const vehicle = getSingleSelectedVehicle();
+      if (!vehicle) return;
+      alert(`Sticker link not set for ${vehicle.vin}`);
+    }
+
+    function handleInvoiceClick() {
+      const vehicle = getSingleSelectedVehicle();
+      if (!vehicle) return;
+      alert(`Invoice link not set for ${vehicle.vin}`);
+    }
+
     async function loadCSV() {
       try {
         currentCsvFile = getCsvFileFromUrl();
@@ -1591,18 +1675,18 @@
 
         vehicles = [];
         let reachedEnd = false;
-        
+
         rows.forEach(row => {
           const vehicle = buildVehicle(row);
           const vin = String(vehicle.vin || "").trim();
-        
+
           if (vin === "END_VEHICLES") {
             reachedEnd = true;
             return;
           }
-        
+
           if (reachedEnd) return;
-        
+
           if (vin !== "" && vin !== "-" && vin.length >= 11) {
             vehicles.push(vehicle);
           }
@@ -1613,148 +1697,23 @@
         document.getElementById("total-count").textContent = vehicles.length;
         document.getElementById("count").textContent = vehicles.length;
 
-        renderTable(vehicles);
+        renderTable(filteredVehicles);
         updateCharts();
-      } catch (err) {
-        console.error("Error loading CSV:", err);
+      } catch (error) {
         document.getElementById("table-rows").innerHTML = `
-          <div style="padding: 40px; text-align: center; color: #dc3545;">
-            <h3>⚠️ Error Loading Data</h3>
-            <p>${escapeHtml(err.message)}</p>
-            <p>Please ensure the selected CSV file is in the same directory as this HTML file.</p>
+          <div class="loading">
+            <div>Failed to load vehicle data.</div>
+            <div style="margin-top:8px;">${escapeHtml(error.message)}</div>
           </div>
         `;
       }
     }
 
-    function updateSelectionCount() {
-      const count = selectedVehicles.size;
-      const counter = document.getElementById("selection-count");
-      const text = document.getElementById("selection-count-text");
-
-      if (count > 0) {
-        text.textContent = `${count} Selected`;
-        counter.classList.add("visible");
-      } else {
-        counter.classList.remove("visible");
-        closeSidePanel();
-      }
-    }
-
-    function handleCheckboxChange(checkbox, vehicleInfo) {
-      const row = checkbox.closest(".table-row");
-
-      if (checkbox.checked) {
-        selectedVehicles.add(vehicleInfo.vin);
-        row.classList.add("selected");
-        openSidePanel(vehicleInfo);
-      } else {
-        selectedVehicles.delete(vehicleInfo.vin);
-        row.classList.remove("selected");
-      }
-
-      updateSelectionCount();
-    }
-
-    function openSidePanel(vehicleInfo) {
-      const panel = document.getElementById("side-panel");
-      const vehicleName = document.getElementById("panel-vehicle-name");
-      const vehicleInfoEl = document.getElementById("panel-vehicle-info");
-
-      vehicleName.textContent = "F87 M2";
-      vehicleInfoEl.textContent = vehicleInfo.vin || "Unknown VIN";
-
-      panel.dataset.currentVin = vehicleInfo.vin || "";
-      panel.dataset.currentDetails = vehicleInfo.details || "";
-      panel.dataset.currentVspec = vehicleInfo.vspec || "";
-      panel.dataset.currentSticker = vehicleInfo.sticker || "";
-      panel.dataset.currentInvoice = vehicleInfo.invoice || "";
-
-      panel.classList.add("open");
-    }
-
-    function closeSidePanel() {
-      document.getElementById("side-panel").classList.remove("open");
-    }
-
-    function toRawGithub(url) {
-      let u = (url || "").trim();
-      if (u.includes("github.com") && !u.includes("/raw/")) u = u.replace("/blob/", "/raw/");
-      return u;
-    }
-
-    function handleDetailsClick() {
-      const panel = document.getElementById("side-panel");
-      const url = toRawGithub(panel.dataset.currentDetails);
-      const vin = panel.dataset.currentVin;
-      if (!vin) return alert("No vehicle selected");
-      if (!url) return alert(`Details PDF not available for VIN: ${vin}`);
-      window.open(url, "_blank");
-    }
-
-    function handleVSpecClick() {
-      const panel = document.getElementById("side-panel");
-      const url = toRawGithub(panel.dataset.currentVspec);
-      const vin = panel.dataset.currentVin;
-      if (!vin) return alert("No vehicle selected");
-      if (!url) return alert(`V-Spec PDF not available for VIN: ${vin}`);
-      window.open(url, "_blank");
-    }
-
-    function handleStickerClick() {
-      const panel = document.getElementById("side-panel");
-      const url = toRawGithub(panel.dataset.currentSticker);
-      const vin = panel.dataset.currentVin;
-      if (!vin) return alert("No vehicle selected");
-      if (!url) return alert(`Window Sticker PDF not available for VIN: ${vin}`);
-      window.open(url, "_blank");
-    }
-
-    function handleInvoiceClick() {
-      const panel = document.getElementById("side-panel");
-      const url = toRawGithub(panel.dataset.currentInvoice);
-      const vin = panel.dataset.currentVin;
-      if (!vin) return alert("No vehicle selected");
-      if (!url) return alert(`Invoice PDF not available for VIN: ${vin}`);
-      window.open(url, "_blank");
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
       updateAuthUser();
       setupFilterInputs();
-
-      let attempts = 0;
-      const maxAttempts = 10;
-
-      const waitForAuthThenLoad = () => {
-        attempts++;
-
-        if (typeof login !== "undefined") {
-          loadCSV();
-          return;
-        }
-
-        if (attempts < maxAttempts) {
-          setTimeout(waitForAuthThenLoad, 300);
-        } else {
-          loadCSV();
-        }
-      };
-
-      waitForAuthThenLoad();
+      loadCSV();
     });
-
-    (() => {
-      const favicon = document.getElementById("favicon");
-      if (!favicon) return;
-      const originalHref = favicon.href;
-      let flip = false;
-
-      setInterval(() => {
-        favicon.href = flip ? originalHref : originalHref;
-        flip = !flip;
-      }, 1500);
-    })();
   </script>
 </body>
 </html>
