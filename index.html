@@ -481,7 +481,7 @@
 
       .series-header,
       .series-row {
-        grid-template-columns: 1.2fr 1fr 1fr 1.2fr 0.8fr;
+        grid-template-columns: 1.2fr 1fr 1fr 1.2fr 0.8fr 1fr;
       }
 
       .filter-box {
@@ -684,14 +684,14 @@
       <div class="divider"></div>
 
       <div class="subheading">Series Launcher</div>
-     <div class="series-header">
-      <div>Series</div>
-      <div>Generation</div>
-      <div>Body Style</div>
-      <div>Notes</div>
-      <div>Open</div>
-      <div></div>
-    </div>
+      <div class="series-header">
+        <div>Series</div>
+        <div>Generation</div>
+        <div>Body Style</div>
+        <div>Notes</div>
+        <div>Open</div>
+        <div></div>
+      </div>
 
       <div class="series-row">
         <div class="series-main">F87 M2</div>
@@ -1106,60 +1106,26 @@
       }
     }
 
-    function playF87OpenAudio(event, url) {
+    function playF87OpenAudio(event) {
       event.preventDefault();
 
       const audio = document.getElementById("f87OpenAudio");
-
-      if (!audio) {
-        window.location.href = url;
-        return;
-      }
+      if (!audio) return;
 
       audio.pause();
       audio.currentTime = 0;
-
-      const goToPage = () => {
-        window.location.href = url;
-      };
-
-      audio.play()
-        .then(() => {
-          const durationMs = (audio.duration && isFinite(audio.duration) && audio.duration > 0)
-            ? audio.duration * 1000
-            : 8000;
-
-          setTimeout(goToPage, durationMs);
-        })
-        .catch(() => {
-          goToPage();
-        });
+      audio.play().catch(() => {});
     }
 
-    function playE90OpenAudio(event, url) {
+    function playE90OpenAudio(event) {
       event.preventDefault();
 
       const audio = document.getElementById("e90OpenAudio");
-
-      if (!audio) {
-        window.location.href = url;
-        return;
-      }
+      if (!audio) return;
 
       audio.pause();
       audio.currentTime = 0;
-
-      const goToPage = () => {
-        window.location.href = url;
-      };
-
-      audio.play()
-        .then(() => {
-          setTimeout(goToPage, 4000);
-        })
-        .catch(() => {
-          goToPage();
-        });
+      audio.play().catch(() => {});
     }
 
     searchBtn.addEventListener("click", runSearch);
@@ -1198,11 +1164,10 @@
       }
     });
 
-    updateAuthUser();
-    setTimeout(updateAuthUser, 500);
-    setTimeout(updateAuthUser, 1500);
-
-    loadCSVs();
+    document.addEventListener("DOMContentLoaded", function () {
+      updateAuthUser();
+      loadCSVs();
+    });
   </script>
 </body>
 </html>
