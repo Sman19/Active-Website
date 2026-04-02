@@ -415,25 +415,26 @@
     }
 
     .play-audio-btn {
-      width: 92px;
-      height: 92px;
+      min-width: 170px;
+      height: 54px;
       border: none;
-      border-radius: 50%;
+      border-radius: 999px;
       cursor: pointer;
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       background: transparent;
-      padding: 0;
+      padding: 0 18px;
     }
 
     .play-audio-btn::before {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 50%;
-      background: conic-gradient(
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
         #ff003c,
         #ff8a00,
         #ffd400,
@@ -444,15 +445,16 @@
         #ff00c8,
         #ff003c
       );
-      animation: rainbowSpin 3s linear infinite;
+      background-size: 300% 300%;
+      animation: rainbowFlow 4s linear infinite;
       box-shadow: 0 0 18px rgba(31,115,255,0.22);
     }
 
     .play-audio-btn::after {
       content: "";
       position: absolute;
-      inset: 7px;
-      border-radius: 50%;
+      inset: 4px;
+      border-radius: 999px;
       background: #ffffff;
     }
 
@@ -462,11 +464,11 @@
       font-size: 15px;
       font-weight: 800;
       color: #1f73ff;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.05em;
     }
 
     .play-audio-btn.playing {
-      animation: pulseBeat 0.12s ease-out infinite alternate;
+      animation: pillPulse 0.75s ease-in-out infinite;
     }
 
     .play-audio-btn.playing .play-audio-label {
@@ -532,14 +534,15 @@
       background: #165fd3;
     }
 
-    @keyframes rainbowSpin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes rainbowFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
     }
 
-    @keyframes pulseBeat {
+    @keyframes pillPulse {
       0% { transform: scale(1); }
-      100% { transform: scale(1.08); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
     }
 
     @media (max-width: 1200px) {
@@ -804,12 +807,12 @@
     </div>
   </div>
 
-  <audio id="f87OpenAudio" preload="auto">
+  <audio id="f87OpenAudio" preload="auto" crossorigin="anonymous">
     <source src="https://raw.githubusercontent.com/Sman19/Active-Website/db6085b3f05258e7c93e8591bf30affcc48553e7/M2%20rev%20clip.m4a" type="audio/mp4">
     Your browser does not support the audio element.
   </audio>
 
-  <audio id="e90OpenAudio" preload="auto">
+  <audio id="e90OpenAudio" preload="auto" crossorigin="anonymous">
     <source src="https://raw.githubusercontent.com/Sman19/Active-Website/94c7980b355c8ddbf90fd3862060c80797266cd4/E90%20M3%20Exhaust.m4a" type="audio/mp4">
     Your browser does not support the audio element.
   </audio>
@@ -844,12 +847,8 @@
     const monroneyModalText = document.getElementById("monroneyModalText");
     const closeMonroneyModal = document.getElementById("closeMonroneyModal");
 
-    let activeAudioContext = null;
-    let activeSource = null;
-    let activeAnalyser = null;
-    let activeAnimationFrame = null;
-    let activeButton = null;
     let activeAudio = null;
+    let activeButton = null;
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -1208,14 +1207,8 @@
     }
 
     function stopActiveAudioVisual() {
-      if (activeAnimationFrame) {
-        cancelAnimationFrame(activeAnimationFrame);
-        activeAnimationFrame = null;
-      }
-
       if (activeButton) {
         activeButton.classList.remove("playing");
-        activeButton.style.transform = "";
       }
 
       if (activeAudio) {
@@ -1224,88 +1217,49 @@
         activeAudio.onended = null;
       }
 
-      if (activeSource) {
-        try {
-          activeSource.disconnect();
-        } catch (e) {}
-        activeSource = null;
-      }
-
-      activeAnalyser = null;
-      activeButton = null;
       activeAudio = null;
+      activeButton = null;
     }
 
-    function attachAudioPulse(audio, button) {
-      stopActiveAudioVisual();
+    function playAudioClip(audioId, button) {
+      const audio = document.getElementById(audioId);
+      if (!audio || !button) return;
 
-      activeButton = button;
+      if (activeAudio && activeAudio !== audio) {
+        stopActiveAudioVisual();
+      }
+
+      if (activeAudio === audio && !audio.paused) {
+        stopActiveAudioVisual();
+        return;
+      }
+
       activeAudio = audio;
+      activeButton = button;
 
-      if (!activeAudioContext) {
-        activeAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
+      button.classList.add("playing");
 
-      if (activeAudioContext.state === "suspended") {
-        activeAudioContext.resume();
-      }
-
-      activeSource = activeAudioContext.createMediaElementSource(audio);
-      activeAnalyser = activeAudioContext.createAnalyser();
-
-      activeAnalyser.fftSize = 256;
-      activeSource.connect(activeAnalyser);
-      activeAnalyser.connect(activeAudioContext.destination);
-
-      const dataArray = new Uint8Array(activeAnalyser.frequencyBinCount);
-
-      function animatePulse() {
-        if (!activeAnalyser || !activeButton || !activeAudio || activeAudio.paused) return;
-
-        activeAnalyser.getByteFrequencyData(dataArray);
-
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
-        }
-
-        const average = sum / dataArray.length;
-        const scale = 1 + Math.min(average / 512, 0.18);
-
-        activeButton.classList.add("playing");
-        activeButton.style.transform = `scale(${scale})`;
-
-        activeAnimationFrame = requestAnimationFrame(animatePulse);
-      }
+      audio.pause();
+      audio.currentTime = 0;
 
       audio.onended = () => {
         stopActiveAudioVisual();
       };
 
-      audio.pause();
-      audio.currentTime = 0;
-
-      audio.play()
-        .then(() => {
-          animatePulse();
-        })
-        .catch(() => {
-          stopActiveAudioVisual();
-        });
+      audio.play().catch((err) => {
+        console.error("Audio play failed:", err);
+        stopActiveAudioVisual();
+      });
     }
 
     function playF87OpenAudio(event, button) {
       event.preventDefault();
-      const audio = document.getElementById("f87OpenAudio");
-      if (!audio || !button) return;
-      attachAudioPulse(audio, button);
+      playAudioClip("f87OpenAudio", button);
     }
 
     function playE90OpenAudio(event, button) {
       event.preventDefault();
-      const audio = document.getElementById("e90OpenAudio");
-      if (!audio || !button) return;
-      attachAudioPulse(audio, button);
+      playAudioClip("e90OpenAudio", button);
     }
 
     searchBtn.addEventListener("click", runSearch);
