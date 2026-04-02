@@ -1088,7 +1088,7 @@
 
         loadingStatus.classList.add("hidden");
         emptyState.classList.remove("hidden");
-        emptyState.textContent = `Loaded ${allRows.length} records. Search above to filter the dataset.`;
+        emptyState.textContent = `Loaded ${allRows.length} VINs.`;
       } catch (error) {
         loadingStatus.classList.remove("hidden");
         loadingStatus.textContent = "Error loading CSV files. Check the exact file names and make sure GitHub Pages is serving them.";
