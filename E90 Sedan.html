@@ -14,6 +14,8 @@
   />
 
   <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -159,20 +161,22 @@
     }
 
     .left-sidebar {
-      width: 240px;
-      min-width: 240px;
+      width: 320px;
+      min-width: 320px;
       background: #f3f4f6;
       border-right: 1px solid #d1d5db;
       padding: 18px 14px;
       position: relative;
       transition: width 0.25s ease, min-width 0.25s ease, padding 0.25s ease;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .left-sidebar.collapsed {
       width: 44px;
       min-width: 44px;
       padding: 18px 6px;
+      overflow: hidden;
     }
 
     .left-sidebar.collapsed .sidebar-content {
@@ -195,6 +199,7 @@
       justify-content: center;
       font-size: 14px;
       font-weight: 700;
+      z-index: 5;
     }
 
     .sidebar-toggle:hover {
@@ -236,6 +241,19 @@
 
     .sidebar-select:focus {
       border-color: #2563eb;
+    }
+
+    .sidebar-chart-card {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .sidebar-chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 290px;
     }
 
     .main-content {
@@ -316,7 +334,7 @@
     }
 
     .grid-wrapper { width: 100%; overflow-x: auto; }
-    .grid-inner { min-width: 1800px; }
+    .grid-inner { min-width: 2140px; }
 
     .column-labels {
       display: flex;
@@ -343,24 +361,24 @@
     .header-image { width: 100px; }
     .header-model { width: 60px; }
     .header-exterior { width: 220px; }
-    .header-interior { width: 220px; }
+    .header-interior { width: 240px; }
     .header-year { width: 70px; }
     .header-vin { width: 200px; }
     .header-packages { width: 400px; }
     .header-msrp { width: 120px; }
-    .header-dealer { width: 240px; }
+    .header-dealer { width: 280px; }
 
     .cell-status { width: 40px; }
     .cell-checkbox { width: 40px; }
     .cell-image { width: 100px; }
     .cell-model { width: 60px; }
     .cell-exterior { width: 220px; }
-    .cell-interior { width: 220px; }
+    .cell-interior { width: 240px; }
     .cell-year { width: 70px; }
     .cell-vin { width: 200px; }
     .cell-packages { width: 400px; }
     .cell-msrp { width: 120px; }
-    .cell-dealer { width: 240px; }
+    .cell-dealer { width: 280px; }
 
     .side-panel {
       position: fixed;
@@ -581,6 +599,7 @@
       background-position: center;
       border: 1px solid #999;
       flex-shrink: 0;
+      background-color: #d1d5db;
     }
 
     .cell-vin {
@@ -671,6 +690,32 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1000px) {
+      .left-sidebar {
+        width: 280px;
+        min-width: 280px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .top-nav {
+        padding: 0 16px;
+      }
+
+      .owner-row {
+        padding: 16px 16px 8px;
+      }
+
+      .summary-row {
+        padding: 8px 16px;
+      }
+
+      .left-sidebar {
+        width: 260px;
+        min-width: 260px;
+      }
+    }
   </style>
 </head>
 
@@ -720,6 +765,24 @@
               <option value="2011 E92 M3 Coupe.csv">2011 E92 M3 Coupe</option>
               <option value="2011 E93 M3 Convertible.csv">2011 E93 M3 Convertible</option>
             </select>
+          </div>
+
+          <div class="sidebar-section">
+            <label class="sidebar-label">Exterior Breakdown</label>
+            <div class="sidebar-chart-card">
+              <div class="sidebar-chart-wrap">
+                <canvas id="exteriorPieChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <label class="sidebar-label">Interior Breakdown</label>
+            <div class="sidebar-chart-card">
+              <div class="sidebar-chart-wrap">
+                <canvas id="interiorPieChart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </aside>
@@ -838,12 +901,17 @@
     const interiorLookup = {};
     const packageLookup = {};
     let currentCsvFile = "2011 E90 M3 Sedan.csv";
+    let vehicles = [];
+    let filteredVehicles = [];
+    let selectedVehicles = new Set();
+    let exteriorPieChart = null;
+    let interiorPieChart = null;
 
     const defaultColors = {
-      "300": { rgb: "255, 255, 255", name: "Alpine White", image: "https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true" },
+      "300": { rgb: "244, 244, 236", name: "Alpine White", image: "https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true" },
       "668": { rgb: "0, 0, 0", name: "Jet Black", image: "https://github.com/Sman19/E90-ext.380x260px/blob/184a291efe57013d3e0607390ab5a2eb6bde6a2b/jet%20black%20-%20E90.png?raw=true" },
       "A29": { rgb: "205, 223, 244", name: "Silverstone Metallic II", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Silverstone%20-%20E90.png?raw=true" },
-      "A30": { rgb: "30, 53, 138", name: "Interlogos Blue Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Interlogos%20Blue%20Metallic%20-%20E90.png?raw=true" },
+      "A30": { rgb: "30, 53, 138", name: "Interlagos Blue Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Interlogos%20Blue%20Metallic%20-%20E90.png?raw=true" },
       "A52": { rgb: "102, 109, 127", name: "Space Gray Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/9fd94093c78555c094f7399c638ce1736e2e8a88/Space%20Gray%20Metallic%20-%20E90.png?raw=true" },
       "A73": { rgb: "39, 41, 56", name: "Jerez Black Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Jerez%20black%20Metallic%20-%20E90.png?raw=true" },
       "A75": { rgb: "240, 0, 0", name: "Melbourne Red Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Melborune%20Red%20Metallic%20-%20E90.png?raw=true" },
@@ -864,29 +932,36 @@
       "NCH4": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%3APadllaium%20Two-TOne.png", description: "Palladium/Black Novillo Leather (Two-Tone)" },
       "NCH5": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png", description: "Fox Red/Black Novillo Leather (Two-Tone)" },
       "NDH5": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png", description: "Fox Red/Black Extended Novillo Leather (Two-Tone)" },
-      "FOX RED": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png", description: "Fox Red Extended Novillo Leather" },
+      "FOX RED": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png", description: "Fox Red Novillo Leather" },
+      "BLACK": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png", description: "Black Novillo Leather" },
+      "PALLADIUM": { image: "https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png", description: "Palladium/Silver Novillo Leather" },
+      "BAMBOO": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png", description: "Bamboo Beige Novillo Leather" },
       "Z1XX1": { image: "https://github.com/Sman19/E9x-Interiors/raw/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Z1XX.1%20Amarone%20.png", description: "Amarone Ext. Novillo Leather" },
       "Z1XX2": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png", description: "Fox Red/Black Novillo Leather (IND)" },
       "ZAP2": { image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Rust%20Brown%20Ind%20Interior.png", description: "Rust Brown Extended Leather" }
     };
 
     const defaultPackages = {
-      "IND": "BMW Individual (Paint) - $5,000.00"
-    };
-
-    const fieldSelectors = {
-      model: ".cell-model",
-      exterior: ".cell-exterior",
-      interior: ".cell-interior",
-      year: ".cell-year",
-      vin: ".cell-vin",
-      packages: ".cell-packages",
-      msrp: ".cell-msrp",
-      dealer: ".cell-dealer"
+      "ZCP": "Competition Package",
+      "ZCW": "Cold Weather Package",
+      "ZCV": "Convenience Package",
+      "ZTP": "Technology Package",
+      "ZPP": "Premium Package",
+      "ZLP": "Lighting Package",
+      "IND": "BMW Individual"
     };
 
     function normalize(text) {
       return (text || "").toLowerCase().trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     function debounce(func, wait) {
@@ -957,144 +1032,6 @@
       }
     });
 
-    function applyFilters() {
-      const rows = document.querySelectorAll("#table-rows .table-row");
-      const inputs = document.querySelectorAll(".filter-input");
-      const activeFiltersContainer = document.getElementById("active-filters");
-
-      const filters = {};
-      if (activeFiltersContainer) activeFiltersContainer.innerHTML = "";
-
-      inputs.forEach((input) => {
-        const field = input.dataset.field;
-        const value = (input.value || "").trim();
-        if (value) filters[field] = value;
-      });
-
-      const fieldLabels = {
-        model: "Model",
-        exterior: "Exterior",
-        interior: "Interior",
-        year: "Year",
-        vin: "VIN",
-        packages: "Packages",
-        msrp: "MSRP",
-        dealer: "Dealer"
-      };
-
-      const filterKeys = Object.keys(filters);
-
-      if (activeFiltersContainer && filterKeys.length > 0) {
-        filterKeys.forEach((field) => {
-          const value = filters[field];
-          const chip = document.createElement("div");
-          chip.className = "filter-chip";
-          chip.innerHTML = `
-            ${fieldLabels[field] || field}: ${value}
-            <span class="filter-chip-remove" data-field="${field}">✕</span>
-          `;
-          activeFiltersContainer.appendChild(chip);
-        });
-
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "clear-filters-btn";
-        clearBtn.type = "button";
-        clearBtn.textContent = "Clear All";
-        clearBtn.onclick = clearAllFilters;
-        activeFiltersContainer.appendChild(clearBtn);
-      }
-
-      let visibleCount = 0;
-
-      rows.forEach((row) => {
-        let visible = true;
-
-        for (const field in filters) {
-          const selector = fieldSelectors[field];
-          if (!selector) continue;
-
-          const cell = row.querySelector(selector);
-          const cellText = normalize(cell ? cell.innerText : "");
-          const rawFilter = filters[field];
-
-          const parts = rawFilter
-            .split(",")
-            .map((p) => p.trim())
-            .filter(Boolean);
-
-          for (const part of parts) {
-            if (/^-\s*/.test(part)) {
-              const excludeTerm = normalize(part.replace(/^-\s*/, ""));
-              if (excludeTerm && cellText.includes(excludeTerm)) {
-                visible = false;
-                break;
-              }
-            } else {
-              const includeTerm = normalize(part);
-              if (includeTerm && !cellText.includes(includeTerm)) {
-                visible = false;
-                break;
-              }
-            }
-          }
-
-          if (!visible) break;
-        }
-
-        row.style.display = visible ? "flex" : "none";
-        if (visible) visibleCount++;
-      });
-
-      document.getElementById("count").textContent = visibleCount;
-    }
-
-    function clearAllFilters() {
-      document.querySelectorAll(".filter-input").forEach((input) => {
-        input.value = "";
-      });
-      applyFilters();
-    }
-
-    document.addEventListener("click", function (e) {
-      if (e.target.matches(".filter-chip-remove")) {
-        const field = e.target.dataset.field;
-        const input = document.querySelector(`.filter-input[data-field="${field}"]`);
-        if (input) {
-          input.value = "";
-          applyFilters();
-        }
-      }
-    });
-
-    function setupFilterInputs() {
-      const debouncedFilter = debounce(applyFilters, 300);
-      document.querySelectorAll(".filter-input").forEach((input) => {
-        input.addEventListener("input", debouncedFilter);
-      });
-    }
-
-    function initCopyButtons() {
-      document.querySelectorAll(".copy-btn").forEach((btn) => {
-        btn.onclick = () => {
-          const id = btn.dataset.copyTarget;
-          const el = document.getElementById(id);
-          if (!el) return;
-          const text = el.textContent.trim();
-
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
-              btn.classList.add("copied");
-              btn.textContent = "✓";
-              setTimeout(() => {
-                btn.classList.remove("copied");
-                btn.textContent = "⧉";
-              }, 700);
-            });
-          }
-        };
-      });
-    }
-
     function parseCSVLine(line) {
       const result = [];
       let current = "";
@@ -1102,10 +1039,10 @@
 
       for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        const nextChar = line[i + 1];
+        const next = line[i + 1];
 
         if (char === '"') {
-          if (inQuotes && nextChar === '"') {
+          if (inQuotes && next === '"') {
             current += '"';
             i++;
           } else {
@@ -1123,314 +1060,440 @@
       return result;
     }
 
-    function extractPaintCode(exteriorStr) {
-      if (!exteriorStr) return "";
-      exteriorStr = exteriorStr.trim();
+    function parseCSV(text) {
+      const lines = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .filter(line => line.trim() !== "");
 
-      const codeMatch = exteriorStr.match(/^([A-Z0-9]+)\s*-/i);
-      if (codeMatch) return codeMatch[1].trim().toUpperCase();
+      if (!lines.length) return [];
 
-      if (exteriorStr.toLowerCase().includes("space gray")) return "A52";
-      if (exteriorStr.toLowerCase().includes("silverstone")) return "A29";
+      const headers = parseCSVLine(lines[0]).map(h => h.trim());
+
+      return lines.slice(1).map(line => {
+        const values = parseCSVLine(line);
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] || "";
+        });
+        return row;
+      });
+    }
+
+    function getField(row, possibleNames) {
+      const keys = Object.keys(row);
+
+      for (const name of possibleNames) {
+        const foundKey = keys.find(key => key.toLowerCase().trim() === name.toLowerCase().trim());
+        if (foundKey && row[foundKey]) return row[foundKey];
+      }
 
       return "";
     }
 
-    function extractInteriorCode(interiorStr) {
-      if (!interiorStr) return "";
+    function extractCode(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      return raw.split(" - ")[0].trim();
+    }
 
-      const raw = interiorStr.replace(/\s+/g, " ").trim();
-      const upper = raw.toUpperCase();
+    function cleanLabel(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "-";
+      return raw;
+    }
 
-      if (/^[A-Z0-9]{3,6}$/.test(upper)) return upper;
+    function getColorData(codeOrName) {
+      const raw = String(codeOrName || "").trim();
+      const code = extractCode(raw);
 
-      const dashMatch = raw.match(/^([A-Z0-9]+)\s*-\s*/i);
-      if (dashMatch) return dashMatch[1].trim().toUpperCase();
+      if (defaultColors[code]) return defaultColors[code];
 
-      const knownCodes = Object.keys({ ...defaultInteriors, ...interiorLookup }).sort((a, b) => b.length - a.length);
-      for (const code of knownCodes) {
-        if (upper.includes(code)) return code;
+      const byName = Object.values(defaultColors).find(c => normalize(c.name) === normalize(raw));
+      if (byName) return byName;
+
+      const byCombinedName = Object.values(defaultColors).find(c => normalize(raw).includes(normalize(c.name)));
+      if (byCombinedName) return byCombinedName;
+
+      return null;
+    }
+
+    function getInteriorData(codeOrName) {
+      const raw = String(codeOrName || "").trim();
+      const code = extractCode(raw);
+
+      if (defaultInteriors[code]) return defaultInteriors[code];
+
+      const byDescription = Object.values(defaultInteriors).find(i => normalize(i.description) === normalize(raw));
+      if (byDescription) return byDescription;
+
+      const byCombinedDescription = Object.values(defaultInteriors).find(i => normalize(raw).includes(normalize(i.description)));
+      if (byCombinedDescription) return byCombinedDescription;
+
+      return null;
+    }
+
+    function getPackageDetail(code) {
+      return packageLookup[code] || defaultPackages[code] || code;
+    }
+
+    function parsePackageCodes(value) {
+      return String(value || "")
+        .split(/[,\s]+/)
+        .map(v => v.trim())
+        .filter(Boolean);
+    }
+
+    function getExteriorChartColor(code) {
+      const colorData = defaultColors[code];
+      if (!colorData || !colorData.rgb) return "rgb(180,180,180)";
+      return `rgb(${colorData.rgb})`;
+    }
+
+    function buildVehicle(row) {
+      const exteriorRaw = getField(row, ["EXTERIOR", "Exterior", "Color", "Paint Code", "PAINT"]);
+      const interiorRaw = getField(row, ["INTERIOR", "Interior", "Trim", "Upholstery"]);
+      const year = getField(row, ["YEAR", "Year", "Model Year", "MY"]);
+      const vin = getField(row, ["VIN", "Vin", "Full VIN", "Full VIN Number"]).trim();
+
+      const msrp = getField(row, [
+        "MSRP",
+        "msrp",
+        "Total MSRP",
+        "TOTAL MSRP",
+        "Base MSRP",
+        "Retail Price",
+        "Vehicle MSRP"
+      ]);
+
+      const dealer = getField(row, [
+        "DEALER NAME",
+        "Dealer Name",
+        "Dealer",
+        "Selling Dealer",
+        "Dealer Name "
+      ]);
+
+      const details = getField(row, ["DETAILS", "Details"]);
+      const vspec = getField(row, ["V-SPEC", "VSPEC", "VSpec"]);
+      const sticker = getField(row, ["STICKER", "Monroney", "Window Sticker"]);
+      const invoice = getField(row, ["INVOICE", "Invoice"]);
+      const model = getField(row, ["MODEL", "Model"]) || "M3";
+
+      const packageCodesRaw = getField(row, ["Package Codes", "PACKAGE CODES", "PACKAGES", "Packages"]);
+      const packageCodes = parsePackageCodes(packageCodesRaw);
+      const packageDetails = packageCodes.map(code => getPackageDetail(code));
+
+      const exteriorData = getColorData(exteriorRaw);
+      const interiorData = getInteriorData(interiorRaw);
+
+      return {
+        model: cleanLabel(model),
+        year: cleanLabel(year),
+        vin: cleanLabel(vin),
+        exterior: cleanLabel(exteriorRaw),
+        interior: cleanLabel(interiorRaw),
+        msrp: cleanLabel(msrp),
+        dealer: cleanLabel(dealer),
+        details,
+        vspec,
+        sticker,
+        invoice,
+        packageCodes,
+        packageDetails,
+        exteriorCode: extractCode(exteriorRaw),
+        interiorCode: extractCode(interiorRaw),
+        exteriorData: exteriorData || {},
+        interiorData: interiorData || {}
+      };
+    }
+
+    function getVehicleFieldText(vehicle, field) {
+      switch (field) {
+        case "model": return vehicle.model || "";
+        case "exterior": return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""}`;
+        case "interior": return `${vehicle.interior || ""} ${vehicle.interiorCode || ""} ${vehicle.interiorData.description || ""}`;
+        case "year": return vehicle.year || "";
+        case "vin": return vehicle.vin || "";
+        case "packages": return `${vehicle.packageCodes.join(" ")} ${vehicle.packageDetails.join(" ")}`;
+        case "msrp": return vehicle.msrp || "";
+        case "dealer": return vehicle.dealer || "";
+        default: return "";
+      }
+    }
+
+    function matchesFilter(text, rawFilter) {
+      const cellText = normalize(text);
+      const parts = String(rawFilter || "")
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
+
+      for (const part of parts) {
+        if (/^-\s*/.test(part)) {
+          const excludeTerm = normalize(part.replace(/^-\s*/, ""));
+          if (excludeTerm && cellText.includes(excludeTerm)) return false;
+        } else {
+          const includeTerm = normalize(part);
+          if (includeTerm && !cellText.includes(includeTerm)) return false;
+        }
       }
 
-      if (upper.includes("FOX RED")) return "FOX RED";
-
-      return upper;
+      return true;
     }
 
-    function looksLikeSectionHeader(value, expected) {
-      return (value || "").toString().trim().toUpperCase() === expected.toUpperCase();
+    function getActiveFilters() {
+      const filters = {};
+      document.querySelectorAll(".filter-input").forEach(input => {
+        const value = input.value.trim();
+        if (value) filters[input.dataset.field] = value;
+      });
+      return filters;
     }
 
-    async function loadReferenceData() {
-      Object.keys(colorLookup).forEach((k) => delete colorLookup[k]);
-      Object.keys(interiorLookup).forEach((k) => delete interiorLookup[k]);
-      Object.keys(packageLookup).forEach((k) => delete packageLookup[k]);
+    function removeFilter(field) {
+      const input = document.querySelector(`.filter-input[data-field="${field}"]`);
+      if (input) input.value = "";
+      applyFilters();
+    }
 
-      try {
-        const response = await fetch(currentCsvFile);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    function clearAllFilters() {
+      document.querySelectorAll(".filter-input").forEach(input => {
+        input.value = "";
+      });
+      applyFilters();
+    }
 
-        const csvText = await response.text();
-        const lines = csvText.trim().split(/\r?\n/);
+    function renderActiveFilterChips(filters) {
+      const activeFiltersContainer = document.getElementById("active-filters");
+      activeFiltersContainer.innerHTML = "";
 
-        let currentSection = "";
+      const entries = Object.entries(filters);
+      if (!entries.length) return;
 
-        for (let i = 0; i < lines.length; i++) {
-          const cols = parseCSVLine(lines[i]);
+      entries.forEach(([field, value]) => {
+        const chip = document.createElement("span");
+        chip.className = "filter-chip";
+        chip.innerHTML = `
+          <span>${escapeHtml(field)}: ${escapeHtml(value)}</span>
+          <span class="filter-chip-remove" data-field="${escapeHtml(field)}">×</span>
+        `;
+        activeFiltersContainer.appendChild(chip);
+      });
 
-          if (cols[2] && cols[3] && looksLikeSectionHeader(cols[2], "Paint Code") && looksLikeSectionHeader(cols[3], "Paint Name")) {
-            currentSection = "exterior";
-            continue;
-          }
+      const clearBtn = document.createElement("button");
+      clearBtn.className = "clear-filters-btn";
+      clearBtn.textContent = "Clear";
+      clearBtn.addEventListener("click", clearAllFilters);
+      activeFiltersContainer.appendChild(clearBtn);
 
-          if (cols[2] && looksLikeSectionHeader(cols[2], "INTERIOR Code")) {
-            currentSection = "interior";
-            continue;
-          }
+      activeFiltersContainer.querySelectorAll(".filter-chip-remove").forEach(btn => {
+        btn.addEventListener("click", () => removeFilter(btn.dataset.field));
+      });
+    }
 
-          if (cols[2] && (looksLikeSectionHeader(cols[2], "Packages") || looksLikeSectionHeader(cols[2], "PACKAGES"))) {
-            currentSection = "packages";
-            continue;
-          }
+    function applyFilters() {
+      const filters = getActiveFilters();
+      renderActiveFilterChips(filters);
 
-          if (cols.every((c) => !c || !c.trim())) continue;
-
-          if (currentSection === "exterior" && cols[2] && cols[2].trim()) {
-            const paintCode = cols[2].trim().toUpperCase();
-            if (paintCode && paintCode !== "PAINT CODE") {
-              colorLookup[paintCode] = {
-                rgb: cols[4] ? cols[4].trim() : "128,128,128",
-                name: cols[3] ? cols[3].trim() : "",
-                image: cols[5] ? cols[5].trim() : ""
-              };
-            }
-          }
-
-          if (currentSection === "interior" && cols[2] && cols[2].trim()) {
-            const interiorCode = cols[2].trim().toUpperCase();
-            if (interiorCode && interiorCode !== "INTERIOR CODE") {
-              interiorLookup[interiorCode] = {
-                image: cols[5] ? cols[5].trim() : "",
-                description: cols[4] ? cols[4].trim() : ""
-              };
-            }
-          }
-
-          if (currentSection === "packages" && cols[2] && cols[2].trim()) {
-            const packageCode = cols[2].trim().toUpperCase();
-            if (packageCode && packageCode !== "PACKAGES" && cols[3]) {
-              let cleanDesc = cols[3].trim();
-              cleanDesc = cleanDesc.replace(/^["'\s]+|["'\s]+$/g, "");
-              cleanDesc = cleanDesc.replace(/\s+/g, " ");
-              if (cleanDesc) packageLookup[packageCode] = cleanDesc;
-            }
-          }
+      filteredVehicles = vehicles.filter(vehicle => {
+        for (const field in filters) {
+          const value = getVehicleFieldText(vehicle, field);
+          if (!matchesFilter(value, filters[field])) return false;
         }
-      } catch (err) {
-        console.error(`Error loading reference data from ${currentCsvFile}:`, err);
-      }
+        return true;
+      });
 
-      if (Object.keys(colorLookup).length === 0) Object.assign(colorLookup, defaultColors);
-      if (Object.keys(interiorLookup).length === 0) Object.assign(interiorLookup, defaultInteriors);
-      Object.assign(packageLookup, defaultPackages, packageLookup);
+      document.getElementById("count").textContent = filteredVehicles.length;
+      renderTable(filteredVehicles);
+      updateCharts();
     }
 
-    async function loadCSV() {
-      currentCsvFile = getCsvFileFromUrl();
-      syncDatasetDropdown();
-      await loadReferenceData();
+    function updateCharts() {
+      const exteriorCounts = {};
+      const interiorCounts = {};
 
-      try {
-        const response = await fetch(currentCsvFile);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      filteredVehicles.forEach(vehicle => {
+        const exteriorCode = vehicle.exteriorCode || "Unknown";
+        const interiorCode = vehicle.interiorCode || "Unknown";
 
-        const csvText = await response.text();
-        const lines = csvText.trim().split(/\r?\n/);
-        if (!lines.length) throw new Error("CSV file is empty");
+        exteriorCounts[exteriorCode] = (exteriorCounts[exteriorCode] || 0) + 1;
+        interiorCounts[interiorCode] = (interiorCounts[interiorCode] || 0) + 1;
+      });
 
-        const vehicles = [];
+      const exteriorLabels = Object.keys(exteriorCounts);
+      const exteriorData = Object.values(exteriorCounts);
 
-        for (let i = 1; i < lines.length; i++) {
-          if (!lines[i].trim()) continue;
+      const interiorLabels = Object.keys(interiorCounts);
+      const interiorData = Object.values(interiorCounts);
 
-          const cols = parseCSVLine(lines[i]);
-          const vin = cols[4] ? cols[4].trim() : "";
+      const exteriorCanvas = document.getElementById("exteriorPieChart");
+      const interiorCanvas = document.getElementById("interiorPieChart");
 
-          if (vin && vin.endsWith("9194")) {
-            if (vin.length > 5) {
-              vehicles.push({
-                exterior: cols[0] || "",
-                interior: cols[2] || "",
-                year: cols[3] || "",
-                vin,
-                model: cols[5] || "",
-                packages: cols[7] || "",
-                msrp: cols[9] || "",
-                dealer: cols[13] || "",
-                details: cols[17] || "",
-                vspec: cols[18] || "",
-                sticker: cols[19] || "",
-                invoice: cols[20] || ""
-              });
-            }
-            break;
-          }
+      if (exteriorPieChart) exteriorPieChart.destroy();
+      if (interiorPieChart) interiorPieChart.destroy();
 
-          if (vin && vin.length > 5) {
-            vehicles.push({
-              exterior: cols[0] || "",
-              interior: cols[2] || "",
-              year: cols[3] || "",
-              vin,
-              model: cols[5] || "",
-              packages: cols[7] || "",
-              msrp: cols[9] || "",
-              dealer: cols[13] || "",
-              details: cols[17] || "",
-              vspec: cols[18] || "",
-              sticker: cols[19] || "",
-              invoice: cols[20] || ""
-            });
-          }
-        }
+      const exteriorColors = exteriorLabels.length
+        ? exteriorLabels.map(code => getExteriorChartColor(code))
+        : ["rgb(180,180,180)"];
 
-        document.getElementById("count").textContent = vehicles.length;
-        document.getElementById("total-count").textContent = vehicles.length;
+      const interiorColors = interiorLabels.map((label, i) => {
+        const palette = [
+          "#4aa3df", "#f76587", "#7c879f", "#b38b59",
+          "#5d7a5d", "#8f6bb3", "#d08770", "#6b7280",
+          "#c2410c", "#0f766e", "#b91c1c", "#2563eb"
+        ];
+        return palette[i % palette.length];
+      });
 
-        const table = document.getElementById("table-rows");
-        table.innerHTML = "";
+      exteriorPieChart = new Chart(exteriorCanvas, {
+        type: "pie",
+        data: {
+          labels: exteriorLabels.length ? exteriorLabels : ["No Results"],
+          datasets: [{
+            data: exteriorData.length ? exteriorData : [1],
+            backgroundColor: exteriorColors,
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
 
-        vehicles.forEach((vehicle, index) => {
-          const row = document.createElement("div");
-          row.className = "table-row";
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
 
-          const paintCode = extractPaintCode(vehicle.exterior);
-          const interiorCode = extractInteriorCode(vehicle.interior);
-
-          const colorData = colorLookup[paintCode] || { rgb: "128,128,128", name: "Unknown" };
-          const interiorData = interiorLookup[interiorCode] || { image: "", description: "Unknown" };
-          const exteriorImage = colorData.image || "";
-
-          const modelCode =
-            vehicle.model && vehicle.model.startsWith("C5") ? "E90" :
-            vehicle.model && vehicle.model.startsWith("C6") ? "E92" :
-            vehicle.model && vehicle.model.startsWith("C7") ? "E93" : "E90";
-
-          const packageCodes = vehicle.packages
-            ? vehicle.packages.split(/[,\s]+/).map((p) => p.trim()).filter((p) => p.length > 0)
-            : [];
-
-          const packageDisplay = packageCodes.length > 0 ? packageCodes.join(", ") : "-";
-
-          const packageDetails = packageCodes
-            .map((code) => {
-              const codeUpper = code.trim().toUpperCase();
-              const pkg = packageLookup[codeUpper];
-              return pkg
-                ? `<div><strong>${codeUpper}:</strong> ${pkg}</div>`
-                : `<div><strong>${codeUpper}</strong> (not found in lookup)</div>`;
-            })
-            .join("");
-
-          row.innerHTML = `
-            <div class="cell cell-checkbox">
-              <input type="checkbox" />
-            </div>
-
-            <div class="cell cell-status">
-              <div class="status-circle">✓</div>
-            </div>
-
-            <div class="cell cell-image">
-              ${
-                exteriorImage
-                  ? `<img class="exterior-thumbnail" src="${exteriorImage}" alt="${colorData.name || "Exterior"}" />`
-                  : ""
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
+                }
               }
-            </div>
+            },
+            datalabels: {
+              color(context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return label === "300" ? "#111827" : "#ffffff";
+              },
+              font: {
+                weight: "700",
+                size: 11
+              },
+              formatter(value, context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return value > 0 ? label : "";
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
 
-            <div class="cell cell-model">
-              <span class="model-code">${modelCode}</span>
-            </div>
+      interiorPieChart = new Chart(interiorCanvas, {
+        type: "pie",
+        data: {
+          labels: interiorLabels.length ? interiorLabels : ["No Results"],
+          datasets: [{
+            data: interiorData.length ? interiorData : [1],
+            backgroundColor: interiorColors.length ? interiorColors : ["rgb(180,180,180)"],
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
 
-            <div class="cell cell-exterior">
-              <div class="color-display">
-                <div class="color-circle" style="background: rgb(${colorData.rgb || "128,128,128"});"></div>
-                <div class="tooltip">
-                  <span>${colorData.name || vehicle.exterior || "-"}</span>
-                  <div class="tooltiptext tooltip-red-content">${vehicle.exterior || colorData.name || "-"}</div>
-                </div>
-              </div>
-            </div>
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
 
-            <div class="cell cell-interior">
-              <div class="interior-display">
-                ${
-                  interiorData.image
-                    ? `<div class="interior-square" style="background-image: url('${interiorData.image}');"></div>`
-                    : `<div class="interior-square"></div>`
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
                 }
-                <div class="tooltip">
-                  <span>${interiorData.description || vehicle.interior || "-"}</span>
-                  <div class="tooltiptext tooltip-red-content">${vehicle.interior || interiorData.description || "-"}</div>
-                </div>
-              </div>
-            </div>
+              }
+            },
+            datalabels: {
+              color: "#ffffff",
+              font: {
+                weight: "700",
+                size: 10
+              },
+              formatter(value, context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return value > 0 ? label : "";
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }
 
-            <div class="cell cell-year">${vehicle.year || "-"}</div>
+    function setupFilterInputs() {
+      const debouncedApply = debounce(applyFilters, 120);
+      document.querySelectorAll(".filter-input").forEach(input => {
+        input.addEventListener("input", debouncedApply);
+      });
+    }
 
-            <div class="cell cell-vin">
-              <div class="tooltip">
-                <span class="vin-text" id="vin-${index}">${vehicle.vin}</span>
-                <div class="tooltiptext tooltip-red-content">${vehicle.vin}</div>
-              </div>
-              <button class="copy-btn" data-copy-target="vin-${index}" title="Copy VIN">⧉</button>
-            </div>
+    function initCopyButtons() {
+      document.querySelectorAll(".copy-btn").forEach(button => {
+        button.addEventListener("click", function () {
+          const targetId = this.getAttribute("data-copy-target");
+          const target = document.getElementById(targetId);
+          if (!target) return;
 
-            <div class="cell cell-packages">
-              <div class="tooltip">
-                <span class="packages-short">${packageDisplay}</span>
-                ${
-                  packageDetails
-                    ? `<div class="tooltiptext tooltip-packages"><strong>Package Details:</strong><br>${packageDetails}</div>`
-                    : ""
-                }
-              </div>
-            </div>
+          navigator.clipboard.writeText(target.textContent || "").then(() => {
+            const oldText = this.textContent;
+            this.textContent = "✓";
+            this.classList.add("copied");
 
-            <div class="cell cell-msrp">${vehicle.msrp || "-"}</div>
-
-            <div class="cell cell-dealer">
-              <div class="tooltip">
-                <span>${vehicle.dealer || "-"}</span>
-                ${vehicle.dealer ? `<div class="tooltiptext tooltip-red-content">${vehicle.dealer}</div>` : ""}
-              </div>
-            </div>
-          `;
-
-          table.appendChild(row);
-
-          const checkbox = row.querySelector('input[type="checkbox"]');
-          checkbox.addEventListener("change", function () {
-            handleCheckboxChange(this, vehicle);
+            setTimeout(() => {
+              this.textContent = oldText;
+              this.classList.remove("copied");
+            }, 1000);
           });
         });
-
-        initCopyButtons();
-        applyFilters();
-      } catch (err) {
-        console.error("Error loading CSV:", err);
-        document.getElementById("table-rows").innerHTML = `
-          <div style="padding: 40px; text-align: center; color: #dc3545;">
-            <h3>⚠️ Error Loading Data</h3>
-            <p>${err.message}</p>
-            <p>Please ensure the selected CSV file is in the same directory as this HTML file.</p>
-          </div>
-        `;
-      }
+      });
     }
-
-    let selectedVehicles = new Set();
 
     function updateSelectionCount() {
       const count = selectedVehicles.size;
@@ -1479,287 +1542,198 @@
     }
 
     function closeSidePanel() {
-      const panel = document.getElementById("side-panel");
-      if (panel) panel.classList.remove("open");
-    }
-
-    function getSelectedVehicle() {
-      if (selectedVehicles.size !== 1) return null;
-      const selectedVin = Array.from(selectedVehicles)[0];
-      return selectedVin;
-    }
-
-    function openSelectedLink(type) {
-      if (selectedVehicles.size !== 1) return;
-
-      const selectedVin = Array.from(selectedVehicles)[0];
-      const rows = document.querySelectorAll("#table-rows .table-row");
-      let selectedVehicle = null;
-
-      rows.forEach((row) => {
-        const vinEl = row.querySelector(".vin-text");
-        if (vinEl && vinEl.textContent.trim() === selectedVin) {
-          selectedVehicle = row.__vehicleData;
-        }
-      });
-
-      if (!selectedVehicle) return;
-
-      const url = selectedVehicle[type];
-      if (url) window.open(url, "_blank");
+      document.getElementById("side-panel").classList.remove("open");
     }
 
     function handleDetailsClick() {
-      openSelectedLink("details");
+      const selectedVin = [...selectedVehicles][0];
+      const vehicle = vehicles.find(v => v.vin === selectedVin);
+      if (vehicle && vehicle.details) window.open(vehicle.details, "_blank");
     }
 
     function handleVSpecClick() {
-      openSelectedLink("vspec");
+      const selectedVin = [...selectedVehicles][0];
+      const vehicle = vehicles.find(v => v.vin === selectedVin);
+      if (vehicle && vehicle.vspec) window.open(vehicle.vspec, "_blank");
     }
 
     function handleStickerClick() {
-      openSelectedLink("sticker");
+      const selectedVin = [...selectedVehicles][0];
+      const vehicle = vehicles.find(v => v.vin === selectedVin);
+      if (vehicle && vehicle.sticker) window.open(vehicle.sticker, "_blank");
     }
 
     function handleInvoiceClick() {
-      openSelectedLink("invoice");
+      const selectedVin = [...selectedVehicles][0];
+      const vehicle = vehicles.find(v => v.vin === selectedVin);
+      if (vehicle && vehicle.invoice) window.open(vehicle.invoice, "_blank");
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      setupFilterInputs();
-      updateAuthUser();
-      loadCSV().then(() => {
-        document.querySelectorAll("#table-rows .table-row").forEach((row, index) => {
-          const vin = row.querySelector(".vin-text")?.textContent?.trim();
-          if (!vin) return;
-        });
-      });
-    });
-
-    const originalAppendChild = Element.prototype.appendChild;
-    Element.prototype.appendChild = function(child) {
-      if (this.id === "table-rows" && child.classList && child.classList.contains("table-row")) {
-        const vinEl = child.querySelector(".vin-text");
-        if (vinEl) {
-          const vin = vinEl.textContent.trim();
-          const rows = document.querySelectorAll("#table-rows .table-row");
-          rows.forEach((row) => {
-            const rowVin = row.querySelector(".vin-text")?.textContent?.trim();
-            if (rowVin === vin && row.__vehicleData) {
-              child.__vehicleData = row.__vehicleData;
-            }
-          });
-        }
-      }
-      return originalAppendChild.call(this, child);
-    };
-
-    const originalForEach = Array.prototype.forEach;
-    function attachVehicleDataToRows(vehicles) {
+    function renderTable(rowsToRender) {
       const table = document.getElementById("table-rows");
-      if (!table) return;
-      const rows = table.querySelectorAll(".table-row");
-      rows.forEach((row, index) => {
-        if (vehicles[index]) row.__vehicleData = vehicles[index];
-      });
-    }
+      table.innerHTML = "";
 
-    const originalLoadCSV = loadCSV;
-    loadCSV = async function() {
-      currentCsvFile = getCsvFileFromUrl();
-      syncDatasetDropdown();
-      await loadReferenceData();
+      rowsToRender.forEach((vehicle, index) => {
+        const row = document.createElement("div");
+        row.className = "table-row";
 
-      try {
-        const response = await fetch(currentCsvFile);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const colorData = vehicle.exteriorData || {};
+        const interiorData = vehicle.interiorData || {};
+        const packageDisplay = vehicle.packageCodes.length ? vehicle.packageCodes.join(", ") : "-";
+        const packageDetails = vehicle.packageDetails.length
+          ? vehicle.packageDetails.map(item => escapeHtml(item)).join("<br>")
+          : "";
 
-        const csvText = await response.text();
-        const lines = csvText.trim().split(/\r?\n/);
-        if (!lines.length) throw new Error("CSV file is empty");
-
-        const vehicles = [];
-
-        for (let i = 1; i < lines.length; i++) {
-          if (!lines[i].trim()) continue;
-
-          const cols = parseCSVLine(lines[i]);
-          const vin = cols[4] ? cols[4].trim() : "";
-
-          if (vin && vin.endsWith("9194")) {
-            if (vin.length > 5) {
-              vehicles.push({
-                exterior: cols[0] || "",
-                interior: cols[2] || "",
-                year: cols[3] || "",
-                vin,
-                model: cols[5] || "",
-                packages: cols[7] || "",
-                msrp: cols[9] || "",
-                dealer: cols[13] || "",
-                details: cols[17] || "",
-                vspec: cols[18] || "",
-                sticker: cols[19] || "",
-                invoice: cols[20] || ""
-              });
-            }
-            break;
-          }
-
-          if (vin && vin.length > 5) {
-            vehicles.push({
-              exterior: cols[0] || "",
-              interior: cols[2] || "",
-              year: cols[3] || "",
-              vin,
-              model: cols[5] || "",
-              packages: cols[7] || "",
-              msrp: cols[9] || "",
-              dealer: cols[13] || "",
-              details: cols[17] || "",
-              vspec: cols[18] || "",
-              sticker: cols[19] || "",
-              invoice: cols[20] || ""
-            });
-          }
+        let modelCode = "E90";
+        if (vehicle.model) {
+          if (vehicle.model.startsWith("C5")) modelCode = "E90";
+          else if (vehicle.model.startsWith("C6")) modelCode = "E92";
+          else if (vehicle.model.startsWith("C7")) modelCode = "E93";
         }
 
-        document.getElementById("count").textContent = vehicles.length;
-        document.getElementById("total-count").textContent = vehicles.length;
+        row.innerHTML = `
+          <div class="cell cell-checkbox">
+            <input type="checkbox" />
+          </div>
 
-        const table = document.getElementById("table-rows");
-        table.innerHTML = "";
+          <div class="cell cell-status">
+            <div class="status-circle">M</div>
+          </div>
 
-        vehicles.forEach((vehicle, index) => {
-          const row = document.createElement("div");
-          row.className = "table-row";
-          row.__vehicleData = vehicle;
+          <div class="cell cell-image">
+            ${
+              colorData.image
+                ? `<img class="exterior-thumbnail" src="${colorData.image}" alt="${escapeHtml(colorData.name || vehicle.exterior || "-")}" />`
+                : `<div class="exterior-thumbnail"></div>`
+            }
+          </div>
 
-          const paintCode = extractPaintCode(vehicle.exterior);
-          const interiorCode = extractInteriorCode(vehicle.interior);
+          <div class="cell cell-model">
+            <span class="model-code">${modelCode}</span>
+          </div>
 
-          const colorData = colorLookup[paintCode] || { rgb: "128,128,128", name: "Unknown" };
-          const interiorData = interiorLookup[interiorCode] || { image: "", description: "Unknown" };
-          const exteriorImage = colorData.image || "";
-
-          const modelCode =
-            vehicle.model && vehicle.model.startsWith("C5") ? "E90" :
-            vehicle.model && vehicle.model.startsWith("C6") ? "E92" :
-            vehicle.model && vehicle.model.startsWith("C7") ? "E93" : "E90";
-
-          const packageCodes = vehicle.packages
-            ? vehicle.packages.split(/[,\s]+/).map((p) => p.trim()).filter((p) => p.length > 0)
-            : [];
-
-          const packageDisplay = packageCodes.length > 0 ? packageCodes.join(", ") : "-";
-
-          const packageDetails = packageCodes
-            .map((code) => {
-              const codeUpper = code.trim().toUpperCase();
-              const pkg = packageLookup[codeUpper];
-              return pkg
-                ? `<div><strong>${codeUpper}:</strong> ${pkg}</div>`
-                : `<div><strong>${codeUpper}</strong> (not found in lookup)</div>`;
-            })
-            .join("");
-
-          row.innerHTML = `
-            <div class="cell cell-checkbox">
-              <input type="checkbox" />
+          <div class="cell cell-exterior">
+            <div class="color-display">
+              <div class="color-circle" style="background: rgb(${colorData.rgb || "128,128,128"});"></div>
+              <div class="tooltip">
+                <span>${escapeHtml(colorData.name || vehicle.exterior || "-")}</span>
+                <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.exterior || colorData.name || "-")}</div>
+              </div>
             </div>
+          </div>
 
-            <div class="cell cell-status">
-              <div class="status-circle">✓</div>
-            </div>
-
-            <div class="cell cell-image">
+          <div class="cell cell-interior">
+            <div class="interior-display">
               ${
-                exteriorImage
-                  ? `<img class="exterior-thumbnail" src="${exteriorImage}" alt="${colorData.name || "Exterior"}" />`
+                interiorData.image
+                  ? `<div class="interior-square" style="background-image: url('${interiorData.image}');"></div>`
+                  : `<div class="interior-square"></div>`
+              }
+              <div class="tooltip">
+                <span>${escapeHtml(interiorData.description || vehicle.interior || "-")}</span>
+                <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.interior || interiorData.description || "-")}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cell cell-year">${escapeHtml(vehicle.year || "-")}</div>
+
+          <div class="cell cell-vin">
+            <div class="tooltip">
+              <span class="vin-text" id="vin-${index}">${escapeHtml(vehicle.vin)}</span>
+              <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.vin)}</div>
+            </div>
+            <button class="copy-btn" data-copy-target="vin-${index}" title="Copy VIN">⧉</button>
+          </div>
+
+          <div class="cell cell-packages">
+            <div class="tooltip">
+              <span class="packages-short">${escapeHtml(packageDisplay)}</span>
+              ${
+                packageDetails
+                  ? `<div class="tooltiptext tooltip-packages"><strong>Package Details:</strong><br>${packageDetails}</div>`
                   : ""
               }
             </div>
+          </div>
 
-            <div class="cell cell-model">
-              <span class="model-code">${modelCode}</span>
+          <div class="cell cell-msrp">${escapeHtml(vehicle.msrp || "-")}</div>
+
+          <div class="cell cell-dealer">
+            <div class="tooltip">
+              <span>${escapeHtml(vehicle.dealer || "-")}</span>
+              ${vehicle.dealer ? `<div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.dealer)}</div>` : ""}
             </div>
+          </div>
+        `;
 
-            <div class="cell cell-exterior">
-              <div class="color-display">
-                <div class="color-circle" style="background: rgb(${colorData.rgb || "128,128,128"});"></div>
-                <div class="tooltip">
-                  <span>${colorData.name || vehicle.exterior || "-"}</span>
-                  <div class="tooltiptext tooltip-red-content">${vehicle.exterior || colorData.name || "-"}</div>
-                </div>
-              </div>
-            </div>
+        table.appendChild(row);
 
-            <div class="cell cell-interior">
-              <div class="interior-display">
-                ${
-                  interiorData.image
-                    ? `<div class="interior-square" style="background-image: url('${interiorData.image}');"></div>`
-                    : `<div class="interior-square"></div>`
-                }
-                <div class="tooltip">
-                  <span>${interiorData.description || vehicle.interior || "-"}</span>
-                  <div class="tooltiptext tooltip-red-content">${vehicle.interior || interiorData.description || "-"}</div>
-                </div>
-              </div>
-            </div>
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener("change", function () {
+          handleCheckboxChange(this, vehicle);
+        });
+      });
 
-            <div class="cell cell-year">${vehicle.year || "-"}</div>
+      initCopyButtons();
+    }
 
-            <div class="cell cell-vin">
-              <div class="tooltip">
-                <span class="vin-text" id="vin-${index}">${vehicle.vin}</span>
-                <div class="tooltiptext tooltip-red-content">${vehicle.vin}</div>
-              </div>
-              <button class="copy-btn" data-copy-target="vin-${index}" title="Copy VIN">⧉</button>
-            </div>
+    async function loadCSV() {
+      try {
+        currentCsvFile = getCsvFileFromUrl();
+        syncDatasetDropdown();
 
-            <div class="cell cell-packages">
-              <div class="tooltip">
-                <span class="packages-short">${packageDisplay}</span>
-                ${
-                  packageDetails
-                    ? `<div class="tooltiptext tooltip-packages"><strong>Package Details:</strong><br>${packageDetails}</div>`
-                    : ""
-                }
-              </div>
-            </div>
+        const response = await fetch(encodeURI(currentCsvFile));
+        if (!response.ok) {
+          throw new Error(`Could not load ${currentCsvFile}`);
+        }
 
-            <div class="cell cell-msrp">${vehicle.msrp || "-"}</div>
+        const text = await response.text();
+        const rows = parseCSV(text);
 
-            <div class="cell cell-dealer">
-              <div class="tooltip">
-                <span>${vehicle.dealer || "-"}</span>
-                ${vehicle.dealer ? `<div class="tooltiptext tooltip-red-content">${vehicle.dealer}</div>` : ""}
-              </div>
-            </div>
-          `;
+        vehicles = [];
+        let reachedEnd = false;
 
-          table.appendChild(row);
+        rows.forEach(row => {
+          const vehicle = buildVehicle(row);
+          const vin = String(vehicle.vin || "").trim();
 
-          const checkbox = row.querySelector('input[type="checkbox"]');
-          checkbox.addEventListener("change", function () {
-            handleCheckboxChange(this, vehicle);
-          });
+          if (vin === "END_VEHICLES") {
+            reachedEnd = true;
+            return;
+          }
+
+          if (reachedEnd) return;
+
+          if (vin !== "" && vin !== "-" && vin.length >= 11) {
+            vehicles.push(vehicle);
+          }
         });
 
-        initCopyButtons();
-        applyFilters();
+        filteredVehicles = [...vehicles];
+
+        document.getElementById("total-count").textContent = vehicles.length;
+        document.getElementById("count").textContent = vehicles.length;
+
+        renderTable(filteredVehicles);
+        updateCharts();
       } catch (err) {
         console.error("Error loading CSV:", err);
         document.getElementById("table-rows").innerHTML = `
           <div style="padding: 40px; text-align: center; color: #dc3545;">
             <h3>⚠️ Error Loading Data</h3>
-            <p>${err.message}</p>
+            <p>${escapeHtml(err.message)}</p>
             <p>Please ensure the selected CSV file is in the same directory as this HTML file.</p>
           </div>
         `;
       }
-    };
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      updateAuthUser();
+      setupFilterInputs();
+      loadCSV();
+    });
   </script>
 </body>
 </html>
