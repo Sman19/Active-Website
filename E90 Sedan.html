@@ -1253,11 +1253,16 @@
 
     function getVehicleFieldText(vehicle, field) {
       switch (field) {
-        case "model": return vehicle.model || "";
-        case "exterior": return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""}`;
-        case "interior": return `${vehicle.interior || ""} ${vehicle.interiorCode || ""} ${vehicle.interiorData.description || ""}`;
-        case "year": return vehicle.year || "";
-        case "vin": return vehicle.vin || "";
+        case "model":
+          return vehicle.model || "";
+        case "exterior":
+          return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""}`;
+        case "interior":
+          return `${vehicle.interior || ""} ${vehicle.interiorCode || ""} ${vehicle.interiorData.description || ""}`;
+        case "year":
+          return vehicle.year || "";
+        case "vin":
+          return vehicle.vin || "";
         case "packages":
           return `
             ${vehicle.packageCodes.join(" ")}
@@ -1265,9 +1270,12 @@
             ${vehicle.details || ""}
             ${vehicle.vspec || ""}
           `;
-        case "msrp": return vehicle.msrp || "";
-        case "dealer": return vehicle.dealer || "";
-        default: return "";
+        case "msrp":
+          return vehicle.msrp || "";
+        case "dealer":
+          return vehicle.dealer || "";
+        default:
+          return "";
       }
     }
 
@@ -1285,6 +1293,41 @@
         } else {
           const includeTerm = normalize(part);
           if (includeTerm && !cellText.includes(includeTerm)) return false;
+        }
+      }
+
+      return true;
+    }
+
+    function getNormalizedPackageTokens(vehicle) {
+      return (vehicle.packageCodes || [])
+        .map(code => normalize(code))
+        .filter(Boolean);
+    }
+
+    function matchesPackageFilter(vehicle, rawFilter) {
+      const packageTokens = getNormalizedPackageTokens(vehicle);
+      const detailsText = normalize(`${vehicle.details || ""} ${vehicle.vspec || ""}`);
+      const parts = String(rawFilter || "")
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
+
+      for (const part of parts) {
+        if (/^-\s*/.test(part)) {
+          const excludeTerm = normalize(part.replace(/^-\s*/, ""));
+          if (!excludeTerm) continue;
+
+          const hasExcludedPackage = packageTokens.includes(excludeTerm);
+          const hasExcludedDetailText = detailsText.includes(excludeTerm);
+          if (hasExcludedPackage || hasExcludedDetailText) return false;
+        } else {
+          const includeTerm = normalize(part);
+          if (!includeTerm) continue;
+
+          const hasIncludedPackage = packageTokens.includes(includeTerm);
+          const hasIncludedDetailText = detailsText.includes(includeTerm);
+          if (!hasIncludedPackage && !hasIncludedDetailText) return false;
         }
       }
 
@@ -1347,6 +1390,11 @@
 
       filteredVehicles = vehicles.filter(vehicle => {
         for (const field in filters) {
+          if (field === "packages") {
+            if (!matchesPackageFilter(vehicle, filters[field])) return false;
+            continue;
+          }
+
           const value = getVehicleFieldText(vehicle, field);
           if (!matchesFilter(value, filters[field])) return false;
         }
