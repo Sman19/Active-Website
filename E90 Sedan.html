@@ -1205,8 +1205,9 @@
     }
 
     function getExteriorChartColor(code) {
-      const colorData = defaultColors[code];
-      if (!colorData || !colorData.rgb) return "rgb(180,180,180)";
+      const cleanCode = String(code || "").trim().toUpperCase();
+      const colorData = defaultColors[cleanCode];
+      if (!colorData || !colorData.rgb) return "rgb(180, 180, 180)";
       return `rgb(${colorData.rgb})`;
     }
 
@@ -1432,7 +1433,7 @@
       };
 
       filteredVehicles.forEach(vehicle => {
-        const exteriorCode = vehicle.exteriorCode || "Unknown";
+        const exteriorCode = String(vehicle.exteriorCode || "Unknown").trim().toUpperCase();
         const interiorCode = vehicle.interiorCode || "Unknown";
 
         exteriorCounts[exteriorCode] = (exteriorCounts[exteriorCode] || 0) + 1;
