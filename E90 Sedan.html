@@ -784,6 +784,15 @@
               </div>
             </div>
           </div>
+
+          <div class="sidebar-section">
+            <label class="sidebar-label">Transmission Breakdown</label>
+            <div class="sidebar-chart-card">
+              <div class="sidebar-chart-wrap">
+                <canvas id="transmissionPieChart"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
 
@@ -906,6 +915,7 @@
     let selectedVehicles = new Set();
     let exteriorPieChart = null;
     let interiorPieChart = null;
+    let transmissionPieChart = null;
 
     const defaultColors = {
       "300": { rgb: "244, 244, 236", name: "Alpine White", image: "https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true" },
@@ -1413,6 +1423,10 @@
     function updateCharts() {
       const exteriorCounts = {};
       const interiorCounts = {};
+      const transmissionCounts = {
+        "2MK (DCT)": 0,
+        "6 Speed Manual": 0
+      };
 
       filteredVehicles.forEach(vehicle => {
         const exteriorCode = vehicle.exteriorCode || "Unknown";
@@ -1420,6 +1434,13 @@
 
         exteriorCounts[exteriorCode] = (exteriorCounts[exteriorCode] || 0) + 1;
         interiorCounts[interiorCode] = (interiorCounts[interiorCode] || 0) + 1;
+
+        const hasDct = (vehicle.packageCodes || []).some(code => String(code).trim().toUpperCase() === "2MK");
+        if (hasDct) {
+          transmissionCounts["2MK (DCT)"] += 1;
+        } else {
+          transmissionCounts["6 Speed Manual"] += 1;
+        }
       });
 
       const exteriorLabels = Object.keys(exteriorCounts);
@@ -1428,24 +1449,33 @@
       const interiorLabels = Object.keys(interiorCounts);
       const interiorData = Object.values(interiorCounts);
 
+      const transmissionLabels = Object.keys(transmissionCounts);
+      const transmissionData = Object.values(transmissionCounts);
+
       const exteriorCanvas = document.getElementById("exteriorPieChart");
       const interiorCanvas = document.getElementById("interiorPieChart");
+      const transmissionCanvas = document.getElementById("transmissionPieChart");
 
       if (exteriorPieChart) exteriorPieChart.destroy();
       if (interiorPieChart) interiorPieChart.destroy();
+      if (transmissionPieChart) transmissionPieChart.destroy();
 
       const exteriorColors = exteriorLabels.length
         ? exteriorLabels.map(code => getExteriorChartColor(code))
         : ["rgb(180,180,180)"];
 
-      const interiorColors = interiorLabels.map((label, i) => {
-        const palette = [
-          "#4aa3df", "#f76587", "#7c879f", "#b38b59",
-          "#5d7a5d", "#8f6bb3", "#d08770", "#6b7280",
-          "#c2410c", "#0f766e", "#b91c1c", "#2563eb"
-        ];
-        return palette[i % palette.length];
-      });
+      const interiorColors = interiorLabels.length
+        ? interiorLabels.map((label, i) => {
+            const palette = [
+              "#4aa3df", "#f76587", "#7c879f", "#b38b59",
+              "#5d7a5d", "#8f6bb3", "#d08770", "#6b7280",
+              "#c2410c", "#0f766e", "#b91c1c", "#2563eb"
+            ];
+            return palette[i % palette.length];
+          })
+        : ["rgb(180,180,180)"];
+
+      const transmissionColors = ["#2563eb", "#6b7280"];
 
       exteriorPieChart = new Chart(exteriorCanvas, {
         type: "pie",
@@ -1514,7 +1544,65 @@
           labels: interiorLabels.length ? interiorLabels : ["No Results"],
           datasets: [{
             data: interiorData.length ? interiorData : [1],
-            backgroundColor: interiorColors.length ? interiorColors : ["rgb(180,180,180)"],
+            backgroundColor: interiorColors,
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
+
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
+
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            datalabels: {
+              color: "#ffffff",
+              font: {
+                weight: "700",
+                size: 10
+              },
+              formatter(value, context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return value > 0 ? label : "";
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+
+      transmissionPieChart = new Chart(transmissionCanvas, {
+        type: "pie",
+        data: {
+          labels: transmissionLabels,
+          datasets: [{
+            data: transmissionData,
+            backgroundColor: transmissionColors,
             borderColor: "#ffffff",
             borderWidth: 2
           }]
