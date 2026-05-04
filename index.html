@@ -227,9 +227,32 @@
       outline: none;
       border-radius: 8px;
       background: #dcdde1;
-      padding: 0 64px 0 22px;
+      padding: 0 96px 0 22px;
       font-size: 22px;
       color: #222;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 54px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.15);
+      color: #333;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clear-btn:hover {
+      background: rgba(0,0,0,0.25);
     }
 
     .search-btn {
@@ -708,6 +731,7 @@
           type="text"
           placeholder="Search for VIN, last 7, color, interior, or year"
         />
+        <button id="clearBtn" class="clear-btn" type="button" aria-label="Clear search">×</button>
         <button id="searchBtn" class="search-btn" type="button">⌕</button>
       </div>
     </div>
@@ -830,6 +854,7 @@
 
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
+    const clearBtn = document.getElementById("clearBtn");
     const recentSearches = document.getElementById("recentSearches");
 
     const loadingStatus = document.getElementById("loadingStatus");
@@ -1264,6 +1289,17 @@
     }
 
     searchBtn.addEventListener("click", runSearch);
+
+    searchInput.addEventListener("input", () => {
+      clearBtn.style.display = searchInput.value ? "flex" : "none";
+    });
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearBtn.style.display = "none";
+      searchInput.focus();
+      renderResults([], "");
+    });
 
     searchInput.addEventListener("keydown", event => {
       if (event.key === "Enter") runSearch();
