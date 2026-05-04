@@ -186,9 +186,7 @@
     .hero {
       position: relative;
       height: 455px;
-      background-image:
-        linear-gradient(rgba(0,0,0,0.18), rgba(0,0,0,0.18)),
-        url("https://images.mecum.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1600,h_899/v1697809136/auctions/FL24/1103018/704535.jpg?");
+      background-image: url("https://images.mecum.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1600,h_899/v1697809136/auctions/FL24/1103018/704535.jpg?");
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
@@ -199,20 +197,35 @@
       overflow: hidden;
     }
 
-   .search-input {
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      filter: blur(6px) brightness(0.55);
+      transform: scale(1.05);
+      z-index: 0;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .search-panel {
       width: 100%;
-      height: 66px;
-      border-radius: 10px;
-      padding: 0 96px 0 22px;
-      font-size: 22px;
+      max-width: 1100px;
+      background: #f4f4f4;
+      border-radius: 18px;
+      padding: 28px 30px 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16);
     }
 
     .search-title {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 700;
       color: #d94831;
       margin-bottom: 22px;
-      text-align: center;
     }
 
     .search-row {
@@ -630,21 +643,12 @@
         background-size: cover;
       }
 
-     .search-panel {
-      width: 100%;
-      max-width: 1100px; /* original width */
-      background: #f4f4f4;
-      border-radius: 18px;
-      padding: 28px 30px 20px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.16);
-    }
+      .search-panel {
+        padding: 22px 18px 16px;
+      }
 
       .search-title {
-        font-size: 30px;
-        font-weight: 700;
-        color: #d94831;
-        margin-bottom: 22px;
-        text-align: left; /* ← key change */
+        font-size: 25px;
       }
 
       .search-input {
