@@ -1,14 +1,14 @@
 EXTERIOR,,INTERIOR,YEAR,VIN,,,Package Codes,PACKAGES,MSRP,PROD.,,,DEALER NAME,Port,Carrier,VPC,Details,V-Spec,Sticker,Invoice
 ,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,
-A75 - Melbourne Red Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C51BE202424,C51,202424,,,#VALUE!,,,"Vehicle exported from Savannah, GA",Otto's BMW,,,,,,,
-A30 - Interologos Blue Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C53BE202425,C53,202425,,,#VALUE!,,,,Otto's BMW,,,,,,,
-A30 - Interologos Blue Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C55BE202426,C55,202426,,,#VALUE!,,,,,,,,,,,
-A30 - Interologos Blue Met.,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C57BE202427,C57,202427,,,#VALUE!,,,,BMW of Las Vegas,,,,,,,
-300 - Alpine White,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C59BE202428,C59,202428,,,#VALUE!,,,TOTAL LOSS, New Century BMW ,,,,,,,
-A52 - Space Gray Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C50BE202429,C50,202429,,,#VALUE!,,,,Weber BMW,,,,,,,
-A52 - Space Gray Met.,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C57BE202430,C57,202430,,,#VALUE!,,,Vehicle exported and imported to British Columbia,"Dreyer & Reinbold, Inc.",,,,,,,
-668 - Jet Black,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C59BE202431,C59,202431,,,#VALUE!,,,TOTAL LOSS,South Motors BMW,,,,,,,
+A75 - Melbourne Red Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C51BE202424,C51,202424,"MSRP.1,ZCP,ZTP,2MK,655,6FL,771",,"$67,525.00",,550,"Vehicle exported from Savannah, GA",Otto's BMW,,,,,,,
+A30 - Interologos Blue Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C53BE202425,C53,202425,"MSRP.1,ZCP,ZTP,2MK,653,655,6FL",,"$67,525.00",04-01-2010,550,,Otto's BMW,,,,,,,
+A30 - Interologos Blue Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C55BE202426,C55,202426,"MSRP,ZCP,ZTP,655,6FL,771",,"$65,125.00",,550,,,,,,,,,
+A30 - Interologos Blue Met.,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C57BE202427,C57,202427,"MSRP,ZCP,ZPP.3,ZTP,2MK,655,6FL",,"$70,025.00",,550,INDIVIDUAL,BMW of Las Vegas,,,,,,,
+300 - Alpine White,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C59BE202428,C59,202428,"MSRP.1,ZPP.3,ZTP,2MK,2MT,403,6FL,752",,"$70,325.00",,,TOTAL LOSS, New Century BMW ,,,,,,,
+A52 - Space Gray Met.,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C50BE202429,C50,202429,"MSRP.1,2MT,6FL,771",,"$59,775.00",,550,,Weber BMW,,,,,,,
+A52 - Space Gray Met.,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C57BE202430,C57,202430,"MSRP.1,ZPP.3,ZTP,2MK,494,6FL",,"$67,175.00",05-10-2010,550,Vehicle exported and imported to British Columbia,"Dreyer & Reinbold, Inc.",,,,,,,
+668 - Jet Black,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C59BE202431,C59,202431,"MSRP.1,ZCP,ZPP.3,ZTP,2MK,302,655,6FL,6NF,752",,"$71,525.00",,,TOTAL LOSS,South Motors BMW,,,,,,,
 668 - Jet Black,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C50BE202432,C50,202432,,,#VALUE!,,,,BMW of San Antonio,,,,,,,
 A52 - Space Gray Met.,,NDH2 - EXT. FOX RED NOVILLO,2011,WBSPM9C52BE202433,C52,202433,,,#VALUE!,,,,Patrick BMW and MINI,,,,,,,
 668 - Jet Black,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C54BE202434,C54,202434,,,#VALUE!,,,,South Bay BMW MINI,,,,,,,
@@ -41,7 +41,7 @@ A29 - SIlverstone II,,GEAT - ANTHRACITE CLOTH,2011,WBSPM9C59BE202459,C59,202459,
 300 - Alpine White,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C57BE202461,C57,202461,,,#VALUE!,,,,The BMW Store,,,,,,,
 668 - Jet Black,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C59BE202462,C59,202462,,,#VALUE!,,,,,,,,,,,
 668 - Jet Black,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C50BE202463,C50,202463,,,#VALUE!,,,FLOOD DAMAGE,Sonnen BMW,,,,,,,
-A52 - Space Gray Met.,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C52BE202464,C52,202464,"MSRP.1,ZCP,ZCW,ZPP,ZTP,,302,403,5AC,6FL,655,752",,"$65,525.00",,,https://bringatrailer.com/listing/2011-bmw-m3-sedan-competition-package-6-speed/,Orange County BMW,,,,,,,
+A52 - Space Gray Met.,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C52BE202464,C52,202464,"MSRP.1,ZCP,ZCW,ZPP,ZTP,,302,403,5AC,6FL,655,752",,"$68,775.00",,,https://bringatrailer.com/listing/2011-bmw-m3-sedan-competition-package-6-speed/,Orange County BMW,,,,,,,
 A73 - Jerez Black Met.,,NCH3 - BAMBOO BEIGE NOVILLO LEATHER,2011,WBSPM9C54BE202465,C54,202465,,,#VALUE!,,,,Stevens Creek BMW ,,,,,,,
 A73 - Jerez Black Met.,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C56BE202466,C56,202466,,,#VALUE!,,,,Shelly BMW,,,,,,,
 381 - Le Mans Blue Met.,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C58BE202467,C58,202467,,,#VALUE!,,,,,,,,,,,
@@ -404,7 +404,7 @@ A52 - Space Gray Met.,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C52BE202819,C52,2
 A75 - Melbourne Red Met.,,NCH3 - BAMBOO BEIGE NOVILLO LEATHER,2011,WBSPM9C50BE202821,C50,202821,,,#VALUE!,,,,Ferman BMW MINI,,,,,,,
 A73 - Jerez Black Met.,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C52BE202822,C52,202822,,,#VALUE!,,,CANADA,"Calgary BMW , Calgary, CAN",,,,,,,
 A52 - Space Gray Met.,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C54BE202823,C54,202823,,,#VALUE!,,,,Chapman BMW On Camelback,,,,,,,
-668 - Jet Black,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C56BE202824,C56,202824,"MSRP.1,ZCP,ZPP.3,403,494,6FL,655",,"$62,375.00",,,https://bringatrailer.com/listing/2011-bmw-m3-sedan-3/,HAROLD ZIEGLER BMW,,,,,,,
+668 - Jet Black,,NCH2 - FOX RED NOVILLO,2011,WBSPM9C56BE202824,C56,202824,"MSRP.1,ZCP,ZPP.3,403,494,6FL,655",,"$64,375.00",,,https://bringatrailer.com/listing/2011-bmw-m3-sedan-3/,HAROLD ZIEGLER BMW,,,,,,,
 300 - Alpine White,,NDH2 - EXT. FOX RED NOVILLO,2011,WBSPM9C58BE202825,C58,202825,,,#VALUE!,,,,BMW of Asheville,,,,,,,
 300 - Alpine White,,NCSW - BLACK NOVILLO LEATHER,2011,WBSPM9C5XBE202826,C5X,202826,,,#VALUE!,,,,Century West BMW,,,,,,,
 381 - Le Mans Blue Met.,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C51BE202827,C51,202827,,,#VALUE!,,,,,,,,,,,
@@ -2259,6 +2259,14 @@ Silverstone Metallic ,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C56BE699194,C56,69919
 ,,ZCW,"Cold Weather Package                                                                                                                      - Split fold-down-rear seat
 - Heated front seats
 - Retractable headlight washers",,"$1,000.00",,,,,,,,,,,,,,,
+,,ZPP.1,"Premium Package                                                                                                                    - Power-folding auto mirrors
+- Universal garage-door opener
+- Power front seats
+- Carbon Leather interior trim
+- Interior mirror with compass
+- BMW Assist w/enhanced BT & USB",,"$2,000.00",,,,,,,,,,,,,,,
+,,ZPP.2,,,"$2,000.00",,,,,,,,,,,,,,,
+,,ZPP.3,,,"$2,000.00",,,,,,,,,,,,,,,
 ,,ZP2,,,"$2,500.00",,,,,,,,,,,,,,,
 ,,ZP2.1,,,"$2,500.00",,,,,,,,,,,,,,,
 ,,ZP2.2,,,"$2,500.00",,,,,,,,,,,,,,,
@@ -2281,6 +2289,12 @@ Silverstone Metallic ,,NCH1 - PALLADIUM NOVILLO,2011,WBSPM9C56BE699194,C56,69919
 - Interior mirror with compass
 - BMW Assist w/enhanced BT & USB",,"$2,500.00",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,
+,,ZTP,"Technology Package                                                                                               
+- M Drive
+- Comfort Access keyless entry
+- Navigation system
+
+        ",,"$3,250.00",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,
 ,,223,Dynamic Damper Control,,"$1,000.00",,,,,,,,,,,,,,,
 ,,2MK,M Double-Clutch Transmission,,"$2,900.00",,,,,,,,,,,,,,,
@@ -2307,7 +2321,7 @@ Manual side/rear power shades
 ,,752,Enhanced Premium Sound ,,"$1,900.00",,,,,,,,,,,,,,,
 ,,771,TITANIUM SHADOW TRIM,,$0.00,,,,,,,,,,,,,,,
 ,,XE2,"Ind.fine Wood Trim Maple Wood,anthr",,"$1,080.00",,,,,,,,,,,,,,,
-,,XE8,,,,,,,,,,,,,,,,,,
+,,XE8,Ind.Black Piano Trim,,"$1,080.00",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,
 ,,,M Performance Parts,,,,,,,,,,,,,,,,,
 ,,Z04 ,Aluminum Pedals ,,$210.00,,,,,,,,,,,,,,,
