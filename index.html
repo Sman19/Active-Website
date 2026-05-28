@@ -1,1350 +1,3731 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M Database</title>
-
-  <link
-    id="favicon"
-    rel="icon"
-    type="image/gif"
-    href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
-  />
-
-  <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f3f3f3;
-      color: #202124;
-    }
-
-    .topbar {
-      background: #3f444d;
-      color: #ffffff;
-      height: 88px;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 0 22px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .topbar-home {
-      justify-self: start;
-      position: relative;
-    }
-
-    .topbar-home a {
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 600;
-      padding: 12px 16px;
-      border-radius: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 120px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
-    }
-
-    .topbar-home a:hover {
-      background: rgba(255,255,255,0.04);
-    }
-
-    .home-btn {
-      color: #ffffff;
-      background: transparent;
-      border: none;
-      font-size: 18px;
-      font-weight: 600;
-      padding: 12px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      min-width: 140px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .home-btn:hover {
-      background: rgba(255,255,255,0.04);
-    }
-
-    .home-dropdown {
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 0;
-      background: #ffffff;
-      color: #202124;
-      border: 1px solid #d8d8d8;
-      border-radius: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
-      min-width: 320px;
-      padding: 8px;
-      z-index: 1000;
-    }
-
-    .home-dropdown a {
-      display: block;
-      padding: 12px 16px;
-      text-decoration: none;
-      color: #202124;
-      font-weight: 600;
-      border-radius: 8px;
-      min-width: unset;
-      box-shadow: none;
-    }
-
-    .home-dropdown a:hover {
-      background: #f3f4f6;
-    }
-
-    .topbar-title {
-      justify-self: center;
-      text-align: center;
-      font-size: 22px;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .topbar-user {
-      justify-self: end;
-      position: relative;
-    }
-
-    .user-menu-btn {
-      border: 2px solid #4da3ff;
-      background: transparent;
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      border-radius: 10px;
-      min-width: 120px;
-      justify-content: center;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
-    }
-
-    .user-menu-btn:hover {
-      background: rgba(255,255,255,0.04);
-    }
-
-    .user-icon {
-      font-size: 20px;
-      line-height: 1;
-      opacity: 0.9;
-    }
-
-    .user-dropdown {
-      position: absolute;
-      top: calc(100% + 12px);
-      right: 0;
-      min-width: 180px;
-      background: #ffffff;
-      color: #202124;
-      border: 1px solid #d8d8d8;
-      border-radius: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
-      padding: 8px;
-      z-index: 1000;
-    }
-
-    .logout-btn {
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: #d71920;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 14px 16px;
-      cursor: pointer;
-      text-align: left;
-      text-decoration: none;
-      display: block;
-    }
-
-    .logout-btn:hover {
-      background: #f3f4f6;
-    }
-
-    .hero {
-      position: relative;
-      height: 455px;
-      background-image: url("https://images.mecum.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1600,h_899/v1697809136/auctions/FL24/1103018/704535.jpg?");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      display: none;
-    }
-
-    .hero > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .search-panel {
-      width: 100%;
-      max-width: 600px;
-      background: #f4f4f4;
-      border-radius: 18px;
-      padding: 28px 30px 20px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.16);
-    }
-
-    .search-title {
-      font-size: 30px;
-      font-weight: 700;
-      color: #d94831;
-      margin-bottom: 22px;
-    }
-
-    .search-row {
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      height: 68px;
-      border: none;
-      outline: none;
-      border-radius: 8px;
-      background: #dcdde1;
-      padding: 0 96px 0 22px;
-      font-size: 22px;
-      color: #222;
-    }
-
-    .clear-btn {
-      position: absolute;
-      right: 54px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(0,0,0,0.15);
-      color: #333;
-      font-size: 20px;
-      line-height: 1;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .clear-btn:hover {
-      background: rgba(0,0,0,0.25);
-    }
-
-    .search-btn {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      border: none;
-      background: transparent;
-      font-size: 26px;
-      cursor: pointer;
-      color: #4a4a4a;
-    }
-
-    .hero-recent {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 18px;
-      font-weight: 700;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.45);
-      text-align: center;
-      padding: 0 12px;
-    }
-
-    .page {
-      max-width: 1760px;
-      margin: 0 auto;
-      padding: 24px 36px 60px;
-    }
-
-    .panel {
-      background: #fff;
-      border: 1px solid #d8d8d8;
-      border-radius: 18px;
-      padding: 22px 24px 18px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .section-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      padding-left: 4px;
-    }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 22px;
-    }
-
-    .left-controls {
-      display: flex;
-      border: 1px solid #cfcfcf;
-      border-radius: 8px;
-      overflow: hidden;
-      min-width: 340px;
-    }
-
-    .control-btn {
-      border: none;
-      background: #fff;
-      color: #1f1f1f;
-      font-size: 18px;
-      font-weight: 700;
-      padding: 16px 34px;
-      cursor: pointer;
-      min-width: 150px;
-    }
-
-    .control-btn.active {
-      background: #1f73ff;
-      color: #fff;
-    }
-
-    .right-controls {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .filter-box {
-      min-width: 200px;
-      background: #efefef;
-      color: #222;
-      font-size: 18px;
-      font-weight: 700;
-      border-radius: 6px;
-      padding: 16px 20px;
-      text-align: center;
-    }
-
-    .divider {
-      border-top: 1px solid #e2e2e2;
-      margin: 10px 0 18px;
-    }
-
-    .subheading {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 4px 0 12px;
-      color: #202124;
-    }
-
-    .status {
-      padding: 14px 4px 18px;
-      font-size: 16px;
-      color: #555;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .results-header,
-    .result-row {
-      display: grid;
-      grid-template-columns: 1.15fr 1.35fr 0.9fr 0.8fr 1.2fr 1.1fr 0.8fr;
-      gap: 14px;
-      align-items: center;
-      padding: 14px 12px;
-      border-bottom: 1px solid #ececec;
-    }
-
-    .series-header,
-    .series-row {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 1.4fr 0.8fr 1fr;
-      gap: 14px;
-      align-items: center;
-      padding: 14px 12px;
-      border-bottom: 1px solid #ececec;
-    }
-
-    .results-header,
-    .series-header {
-      font-size: 14px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #5a5a5a;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    .result-row,
-    .series-row {
-      font-size: 16px;
-      color: #202124;
-    }
-
-    .result-row:hover,
-    .series-row:hover {
-      background: #f7f9fc;
-    }
-
-    .result-main,
-    .series-main {
-      font-weight: 700;
-      color: #1f1f1f;
-      word-break: break-word;
-    }
-
-    .result-cell,
-    .series-cell {
-      color: #333;
-      word-break: break-word;
-    }
-
-    .open-link {
-      color: #1f73ff;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .open-link:hover {
-      text-decoration: underline;
-    }
-
-    .play-audio-btn {
-      min-width: 170px;
-      height: 54px;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      padding: 0 18px;
-    }
-
-    .play-audio-btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 999px;
-      background: linear-gradient(
-        90deg,
-        #ff003c,
-        #ff8a00,
-        #ffd400,
-        #48ff00,
-        #00ffd5,
-        #0066ff,
-        #7a00ff,
-        #ff00c8,
-        #ff003c
-      );
-      background-size: 300% 300%;
-      animation: rainbowFlow 4s linear infinite;
-      box-shadow: 0 0 18px rgba(31,115,255,0.22);
-    }
-
-    .play-audio-btn::after {
-      content: "";
-      position: absolute;
-      inset: 4px;
-      border-radius: 999px;
-      background: #ffffff;
-    }
-
-    .play-audio-label {
-      position: relative;
-      z-index: 2;
-      font-size: 15px;
-      font-weight: 800;
-      color: #1f73ff;
-      letter-spacing: 0.05em;
-    }
-
-    .play-audio-btn.playing {
-      animation: pillPulse 0.75s ease-in-out infinite;
-    }
-
-    .play-audio-btn.playing .play-audio-label {
-      color: #111827;
-    }
-
-    .muted {
-      color: #777;
-    }
-
-    .panel-spacer {
-      height: 18px;
-    }
-
-    .monroney-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      z-index: 5000;
-    }
-
-    .monroney-modal {
-      width: min(900px, 96vw);
-      background: #ffffff;
-      border-radius: 18px;
-      box-shadow: 0 18px 50px rgba(0,0,0,0.24);
-      padding: 34px 28px 24px;
-      text-align: center;
-    }
-
-    .monroney-modal-title {
-      font-size: 34px;
-      font-weight: 800;
-      color: #d94831;
-      margin-bottom: 16px;
-    }
-
-    .monroney-modal-text {
-      font-size: 22px;
-      line-height: 1.45;
-      color: #202124;
-      margin-bottom: 24px;
-      word-break: break-word;
-    }
-
-    .monroney-modal-btn {
-      border: none;
-      background: #1f73ff;
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 700;
-      padding: 14px 28px;
-      border-radius: 10px;
-      cursor: pointer;
-      min-width: 140px;
-    }
-
-    .monroney-modal-btn:hover {
-      background: #165fd3;
-    }
-
-    @keyframes rainbowFlow {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
-    }
-
-    @keyframes pillPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-      100% { transform: scale(1); }
-    }
-
-    @media (max-width: 1200px) {
-      .results-header,
-      .result-row {
-        grid-template-columns: 1.1fr 1.2fr 0.9fr 0.8fr 1.1fr 1fr 0.8fr;
-      }
-
-      .series-header,
-      .series-row {
-        grid-template-columns: 1.2fr 1fr 1fr 1.2fr 0.8fr 1fr;
-      }
-
-      .filter-box {
-        min-width: 160px;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .topbar {
-        grid-template-columns: 1fr;
-        height: auto;
-        gap: 10px;
-        padding: 16px;
-      }
-
-      .topbar-home,
-      .topbar-title,
-      .topbar-user {
-        justify-self: center;
-      }
-
-      .topbar-title {
-        white-space: normal;
-        font-size: 20px;
-      }
-
-      .page {
-        padding: 18px 14px 40px;
-      }
-
-      .toolbar {
-        align-items: stretch;
-      }
-
-      .left-controls {
-        min-width: unset;
-        width: 100%;
-      }
-
-      .right-controls {
-        width: 100%;
-      }
-
-      .filter-box {
-        flex: 1 1 140px;
-        min-width: 140px;
-      }
-
-      .hero {
-        height: 400px;
-        background-position: center 28%;
-        background-size: cover;
-      }
-
-      .search-panel {
-        padding: 22px 18px 16px;
-      }
-
-      .search-title {
-        font-size: 25px;
-      }
-
-      .search-input {
-        height: 58px;
-        font-size: 18px;
-      }
-
-      .hero-recent {
-        font-size: 16px;
-      }
-
-      .monroney-modal-title {
-        font-size: 28px;
-      }
-
-      .monroney-modal-text {
-        font-size: 18px;
-      }
-    }
-
-    @media (max-width: 760px) {
-      .results-header,
-      .series-header {
-        display: none;
-      }
-
-      .result-row,
-      .series-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      .result-cell::before,
-      .series-cell::before {
-        content: attr(data-label) ": ";
-        font-weight: 700;
-        color: #555;
-      }
-
-      .hero {
-        height: 340px;
-        background-position: center 30%;
-        background-size: cover;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2011 BMW E90 M3 Sedan Configurator - BMW Spec Sheet PDF v11</title>
+
+<style>
+:root {
+  --bg: #05080d;
+  --panel: #0b111b;
+  --panel2: #101826;
+  --text: #f5f7fb;
+  --muted: #aeb7c5;
+  --line: rgba(255,255,255,.12);
+  --blue: #1677ff;
+  --blue2: #0f5fd0;
+  --paint: #f2f1ea;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(37, 111, 255, .13), transparent 30%),
+    radial-gradient(circle at 88% 7%, rgba(95, 130, 190, .10), transparent 25%),
+    linear-gradient(180deg, #05080d 0%, #070b12 55%, #05070b 100%);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+button, input { font: inherit; }
+
+.page {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -.045em;
+  text-transform: uppercase;
+  font-weight: 950;
+}
+
+.title p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.actions-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.vin-box {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+#vinSearch {
+  width: 280px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #101826;
+  color: white;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+#vinSearch::placeholder { color: rgba(255,255,255,.55); }
+
+#vinSearch:focus {
+  outline: none;
+  border-color: #2384ff;
+  box-shadow: 0 0 0 2px rgba(22,119,255,.28);
+}
+
+#vinSearchBtn {
+  height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg,#2384ff,#155ed0);
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+#vinSearchBtn:hover { filter: brightness(1.08); }
+
+#vinSearchNote {
+  color: #9fb6d5;
+  font-size: 12px;
+  min-height: 16px;
+  text-align: right;
+  max-width: 560px;
+}
+
+.btn {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  color: var(--text);
+  border-radius: 6px;
+  padding: 13px 23px;
+  font-weight: 900;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+
+.btn.primary {
+  border-color: rgba(22,119,255,.8);
+  background: linear-gradient(180deg, #2384ff, #155ed0);
+}
+
+.sticker-btn {
+  border-color: rgba(22,119,255,.8);
+  background: linear-gradient(180deg, #2384ff, #155ed0);
+  color: #fff;
+  min-width: 220px;
+  font-weight: 950;
+}
+
+.btn:hover { filter: brightness(1.1); }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 405px;
+  gap: 16px;
+  align-items: start;
+}
+
+.left { display: grid; gap: 10px; }
+
+.panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(16,24,37,.98), rgba(8,13,21,.98));
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: 0 18px 45px rgba(0,0,0,.32);
+}
+
+.hero {
+  height: 438px;
+  background: linear-gradient(180deg, #d9d9d9, #c9c9c9);
+  color: #10151e;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  position: relative;
+}
+
+.viewbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 14px 16px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.view-tabs {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(0,0,0,.08);
+}
+
+.view-tab {
+  border: 0;
+  border-right: 1px solid rgba(0,0,0,.11);
+  background: rgba(255,255,255,.35);
+  padding: 12px 22px;
+  color: #1b2028;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.view-tab.active {
+  background: #0c1725;
+  color: #e9f4ff;
+}
+
+.theme-toggle {
+  display: flex;
+  overflow: hidden;
+  border-radius: 7px;
+  background: rgba(0,0,0,.28);
+}
+
+.theme-toggle button {
+  border: 0;
+  background: rgba(0,0,0,.25);
+  color: #fff;
+  padding: 11px 18px;
+  font-size: 18px;
+}
+
+.car-stage {
+  height: 360px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.car-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.car-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 20px rgba(0,0,0,.25));
+}
+
+.car-svg.is-hidden { display: none; }
+
+.car-photo {
+  display:none;
+  position:absolute;
+  width:68%;
+  height:auto;
+  max-width:none;
+  max-height:none;
+  transform:scale(1.32) translateY(-6px);
+  object-fit:contain;
+  object-position:center center;
+  filter:drop-shadow(0 24px 20px rgba(0,0,0,.25));
+}
+
+.car-photo.show { display:block; }
+
+.interior-photo {
+  width: 100%;
+  height: 100%;
+  transform: none;
+  object-fit: cover;
+  object-position: center center;
+  filter: none;
+}
+
+.interior-photo.show { display:block; }
+
+.paint-layer {
+  fill: var(--paint);
+  transition: fill .22s ease;
+}
+
+.paint-dark { fill: color-mix(in srgb, var(--paint) 72%, black); }
+.glass { fill: #182331; }
+.trim { fill: #090d12; }
+.tire { fill: #050505; }
+
+.wheel-main {
+  fill: #d1d5db;
+  stroke: #565f6b;
+  stroke-width: 4;
+}
+
+.rotor { fill: #b8bec7; }
+.caliper { fill: #d62020; }
+
+.caption {
+  text-align: center;
+  color: #1f2630;
+  font-size: 14px;
+  padding: 0 20px 12px;
+}
+
+.section {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(13,22,35,.98), rgba(7,12,20,.98));
+  padding: 14px;
+  box-shadow: 0 14px 35px rgba(0,0,0,.25);
+}
+
+.section h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+
+.exterior-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ind-label {
+  color: #58a4ff;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.swatch-row {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 10px;
+}
+
+.swatch-card {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.swatch-box {
+  width: 100%;
+  aspect-ratio: 1.14;
+  border-radius: 7px;
+  background: var(--swatch);
+  border: 1px solid rgba(255,255,255,.48);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.23);
+}
+
+.swatch-card.active .swatch-box {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.swatch-code {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.swatch-name {
+  display: block;
+  color: #c8d0dc;
+  font-size: 12px;
+  line-height: 1.15;
+  min-height: 31px;
+}
+
+.lower-grid {
+  display: grid;
+  grid-template-columns: 1fr .64fr 1.1fr;
+  gap: 8px;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.choice-grid.two { grid-template-columns: repeat(2, 1fr); }
+
+.choice-card {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255,255,255,.045);
+  color: var(--text);
+  padding: 9px;
+  min-height: 112px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.choice-card.active,
+.wheel-card.active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(22,119,255,.36);
+}
+
+.material {
+  height: 75px;
+  border-radius: 6px;
+  background: var(--mat);
+  border: 1px solid rgba(255,255,255,.18);
+  margin-bottom: 7px;
+}
+
+.gear-art {
+  height: 75px;
+  border-radius: 6px;
+  background: #0b0d10;
+  margin-bottom: 7px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gear-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.choice-code {
+  display: block;
+  color: #58a4ff;
+  font-weight: 950;
+  font-size: 14px;
+}
+
+.choice-name {
+  display: block;
+  color: #d7dde7;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.choice-price {
+  display: block;
+  color: #f2f6ff;
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+.wheel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.wheel-card {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255,255,255,.045);
+  color: var(--text);
+  padding: 9px;
+  min-height: 171px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.wheel-card img {
+  width: 100%;
+  height: 82px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #222;
+  margin-bottom: 7px;
+}
+
+.note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.msrp-select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #101826;
+  color: var(--text);
+  border-radius: 7px;
+  padding: 12px 14px;
+  font-weight: 800;
+  outline: none;
+}
+
+.msrp-select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(22,119,255,.28);
+}
+
+.full-btn {
+  margin-top: 13px;
+  width: 100%;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.055);
+  color: var(--text);
+  padding: 11px;
+  border-radius: 6px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.side {
+  display: grid;
+  gap: 12px;
+  position: sticky;
+  top: 12px;
+}
+
+.summary { padding: 18px; }
+
+.summary h2 {
+  margin: 2px 0 16px;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.summary-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 14px;
+}
+
+.summary-line small {
+  display: block;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.25;
+}
+
+.summary-line strong { font-weight: 500; }
+
+.total-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 12px;
+  padding: 16px 0 8px;
+  font-weight: 950;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.total-price {
+  font-size: 30px;
+  letter-spacing: -.04em;
+}
+
+.summary-btn {
+  width: 100%;
+  border: 0;
+  background: linear-gradient(180deg, #2384ff, #155ed0);
+  color: white;
+  border-radius: 6px;
+  padding: 14px;
+  font-weight: 950;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.check-list { display: grid; }
+
+.check-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: 10px;
+  align-items: start;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 14px;
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
+
+.check-row.locked {
+  opacity: .52;
+  cursor: not-allowed;
+}
+
+.check-row.locked input { cursor: not-allowed; }
+
+.lock-note {
+  color: #8fbfff;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  margin-top: 5px;
+}
+
+.check-title { font-weight: 800; }
+
+.check-desc {
+  color: var(--muted);
+  white-space: pre-line;
+  font-size: 12px;
+  line-height: 1.35;
+  margin-top: 5px;
+}
+
+.price { color: #d9e0ea; }
+
+.drawer {
+  display: none;
+  margin-top: 12px;
+}
+
+.drawer.show { display: block; }
+
+.compat {
+  display: none;
+  margin-top: 10px;
+  color: #ffd4d4;
+  background: rgba(255,123,123,.12);
+  border: 1px solid rgba(255,123,123,.35);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.compat.show { display: block; }
+
+textarea {
+  width: 100%;
+  min-height: 185px;
+  resize: vertical;
+  background: #05080d;
+  color: #d9e7ff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.footer-note {
+  text-align: center;
+  color: #aab3c0;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+@media(max-width:1180px) {
+  .layout { grid-template-columns: 1fr; }
+  .side { position: relative; top: auto; }
+}
+
+@media(max-width:760px) {
+  .topbar { flex-direction: column; }
+  .actions-column { align-items: stretch; width: 100%; }
+  .actions { justify-content: stretch; }
+  .actions .btn { flex: 1; }
+  .vin-box { flex-direction: column; }
+  #vinSearch, #vinSearchBtn { width: 100%; }
+  #vinSearchNote { text-align: left; }
+  .view-tabs { display: none; }
+  .swatch-row { grid-template-columns: repeat(3, 1fr); }
+  .lower-grid { grid-template-columns: 1fr; }
+  .wheel-grid { grid-template-columns: 1fr; }
+}
+</style>
 </head>
+
 <body>
+<div class="page">
   <header class="topbar">
-    <div class="topbar-home dropdown">
-      <button class="home-btn" id="homeDropdownBtn" type="button">
-        Home ▼
-      </button>
-
-      <div class="home-dropdown hidden" id="homeDropdown">
-        <a href="https://sman19.github.io/DEALER-MAP/dealer.html" target="_blank" rel="noopener noreferrer">
-          North America BMW Dealers
-        </a>
-        <a href="https://sman19.github.io/CRT---MAP/M3%20CRT%20MAP.html" target="_blank" rel="noopener noreferrer">
-          M3 CRT Worldwide Locations
-        </a>
-        <a href="https://sman19.github.io/Active-Website/owned.html" target="_blank" rel="noopener noreferrer">
-          Owned Vehicles
-        </a>
-      </div>
+    <div class="title">
+      <h1>2011 BMW E90 M3 Sedan Configurator</h1>
+      <p>Build your ultimate driving machine.</p>
     </div>
-
-    <div class="topbar-title">
-      BMW M Archiv
-    </div>
-
-    <div class="topbar-user">
-      <button id="userMenuBtn" class="user-menu-btn" type="button">
-        <span id="auth-username">Member</span>
-        <span class="user-icon">👤</span>
-      </button>
-
-      <div id="userDropdown" class="user-dropdown hidden">
-        <a class="logout-btn" href="https://www.authpro.com/auth/sman201/?action=logout">Logout</a>
+    <div class="actions-column">
+      <div class="actions">
+        <button class="btn" id="resetBtn">Reset Build</button>
+        <button class="btn" id="copyBuildBtn">▣ BMW-Spec Sheet PDF</button>
+        <button class="btn sticker-btn" id="windowStickerBtn">🏷 Window Sticker</button>
+        <button class="btn primary" id="copySummaryBtn">View Summary</button>
       </div>
+
+      <div class="vin-box">
+        <input id="vinSearch" placeholder="Enter VIN or Last 7..." autocomplete="off">
+        <button id="vinSearchBtn">Load VIN</button>
+      </div>
+
+      <div id="vinSearchNote"></div>
     </div>
   </header>
 
-  <section class="hero">
-    <div class="search-panel">
-      <div class="search-title">Vehicle Inquiry</div>
-
-      <div class="search-row">
-        <input
-          id="searchInput"
-          class="search-input"
-          type="text"
-          placeholder="Search for VIN, or last 7"
-        />
-        <button id="clearBtn" class="clear-btn" type="button" aria-label="Clear search">×</button>
-        <button id="searchBtn" class="search-btn" type="button">⌕</button>
-      </div>
-    </div>
-
-    <div class="hero-recent" id="recentSearches">Recent searches: None</div>
-  </section>
-
-  <main class="page">
-    <section class="panel">
-      <div class="section-title">My BMW Series</div>
-
-      <div class="toolbar">
-        <div class="left-controls">
-          <button class="control-btn active" type="button">Grouped</button>
-          <button class="control-btn" type="button">A-Z ▼</button>
+  <main class="layout">
+    <section class="left">
+      <div class="hero panel">
+        <div class="viewbar">
+          <div class="view-tabs">
+            <button class="view-tab active" data-view="side">🚙 Side View</button>
+            <button class="view-tab" data-view="front">🚘 Front View</button>
+            <button class="view-tab" data-view="rear">🚘 Rear View</button>
+            <button class="view-tab" data-view="interior">🛋️ Interior View</button>
+          </div>
+          <div class="theme-toggle">
+            <button>☼</button>
+            <button>☾</button>
+          </div>
         </div>
 
-        <div class="right-controls">
-          <div class="filter-box">BMW M SERIES</div>
+        <div class="car-stage">
+          <div class="car-wrap">
+            <img id="carPreview" class="car-photo" src="" alt="2011 BMW E90 M3 side profile preview">
+            <img id="interiorPreview" class="car-photo interior-photo" src="" alt="2011 BMW E90 M3 interior preview">
+            <svg id="carVectorPreview" class="car-svg" viewBox="0 0 900 330" role="img" aria-label="2011 BMW E90 M3 side profile">
+              <path class="paint-layer" d="M112 205 C135 159 181 132 250 122 L355 82 C392 67 457 63 526 75 L643 116 C720 123 775 150 807 196 L831 201 C852 205 865 220 864 239 L862 250 L803 250 C798 207 766 178 723 178 C679 178 647 207 642 250 L279 250 C274 207 242 178 198 178 C154 178 122 207 117 250 L78 250 C61 250 49 239 50 223 L52 215 C62 211 82 207 112 205 Z"/>
+              <path class="paint-dark" d="M132 198 C152 166 191 144 255 136 L364 98 C401 83 457 80 516 89 L625 126 C699 133 748 157 779 196 C633 184 360 178 132 198 Z" opacity=".30"/>
+              <path class="glass" d="M285 130 L374 96 C392 90 423 86 451 87 L451 135 Z"/>
+              <path class="glass" d="M462 88 C486 88 515 92 536 99 L614 130 L474 135 Z"/>
+              <path class="glass" d="M628 135 L685 151 C716 160 741 178 755 196 L644 184 Z"/>
+              <path class="trim" d="M266 143 L632 143 L635 151 L254 151 Z" opacity=".7"/>
+              <path class="trim" d="M76 223 C227 211 642 211 861 226 L861 250 L803 250 C798 207 766 178 723 178 C679 178 647 207 642 250 L279 250 C274 207 242 178 198 178 C154 178 122 207 117 250 L78 250 C61 250 49 239 50 223 Z" opacity=".22"/>
+              <rect class="trim" x="128" y="206" width="84" height="12" rx="6" opacity=".55"/>
+              <rect class="trim" x="374" y="162" width="36" height="8" rx="4" opacity=".8"/>
+              <rect class="trim" x="559" y="163" width="36" height="8" rx="4" opacity=".8"/>
+              <path class="trim" d="M790 199 L847 208 C857 211 862 220 861 229 L792 220 Z" opacity=".7"/>
+              <g transform="translate(198 250)">
+                <circle class="tire" r="63"/>
+                <circle class="wheel-main" r="43"/>
+                <circle class="rotor" r="25"/>
+                <circle class="trim" r="8"/>
+                <path class="caliper" d="M25 -13 C43 -2 43 17 25 26 L18 14 C26 7 27 -2 18 -9 Z"/>
+              </g>
+              <g transform="translate(723 250)">
+                <circle class="tire" r="63"/>
+                <circle class="wheel-main" r="43"/>
+                <circle class="rotor" r="25"/>
+                <circle class="trim" r="8"/>
+                <path class="caliper" d="M25 -13 C43 -2 43 17 25 26 L18 14 C26 7 27 -2 18 -9 Z"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="caption" id="previewCaption">Shown with 18 inch Style 260M Wheels (Standard)</div>
+      </div>
+
+      <div class="section">
+        <div class="exterior-head">
+          <h2>1. Exterior Color</h2>
+          <div class="ind-label" id="indLabel"></div>
+        </div>
+        <div class="swatch-row" id="exteriorGrid"></div>
+      </div>
+
+      <div class="section">
+        <h2>Base MSRP</h2>
+        <select id="msrpSelect" class="msrp-select" aria-label="Base MSRP">
+          <option value="55400">$55,400 — 2010 Build</option>
+          <option value="55900">$55,900 — 2011 Build</option>
+        </select>
+        <p class="note">Base MSRP depends on build timing, not transmission.</p>
+      </div>
+
+      <div class="lower-grid">
+        <div class="section">
+          <h2>2. Interior</h2>
+          <div class="choice-grid" id="interiorGrid"></div>
+          <button class="full-btn" id="toggleInteriorsBtn">View All Interior Options (10)</button>
+        </div>
+
+        <div class="section">
+          <h2>3. Transmission</h2>
+          <div class="choice-grid two" id="transmissionGrid"></div>
+        </div>
+
+        <div class="section">
+          <h2>4. Wheel Option</h2>
+          <div class="wheel-grid" id="wheelGrid"></div>
+          <p class="note">Wheels shown are representative.</p>
         </div>
       </div>
 
-      <div class="divider"></div>
-
-      <div class="subheading">BMW Search Results</div>
-      <div id="loadingStatus" class="status">Loading CSV files...</div>
-
-      <div id="emptyState" class="status hidden">
-        Start typing above to search the linked BMW CSV files.
-      </div>
-
-      <div id="resultsSection" class="hidden">
-        <div class="results-header">
-          <div>Match</div>
-          <div>VIN</div>
-          <div>Last 7</div>
-          <div>Year</div>
-          <div>Details</div>
-          <div>Monroney</div>
-          <div>Source</div>
-        </div>
-        <div id="resultsList"></div>
-      </div>
-
-      <div class="panel-spacer"></div>
-      <div class="divider"></div>
-
-      <div class="subheading">Series Launcher</div>
-      <div class="series-header">
-        <div>Series</div>
-        <div>Generation</div>
-        <div>Body Style</div>
-        <div>Notes</div>
-        <div>Open</div>
-        <div></div>
-      </div>
-
-      <div class="series-row">
-        <div class="series-main">F87 M2</div>
-        <div class="series-cell" data-label="Generation">F87</div>
-        <div class="series-cell" data-label="Body Style">Coupe</div>
-        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
-        <div class="series-cell" data-label="Open">
-          <a class="open-link" href="F87%20M2.html">Open</a>
-        </div>
-        <div class="series-cell">
-          <button class="play-audio-btn" type="button" onclick="playF87OpenAudio(event, this)">
-            <span class="play-audio-label">PLAY ME</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="series-row">
-        <div class="series-main">E90 M3</div>
-        <div class="series-cell" data-label="Generation">E90</div>
-        <div class="series-cell" data-label="Body Style">Sedan</div>
-        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
-        <div class="series-cell" data-label="Open">
-          <a class="open-link" href="E90%20Sedan.html">Open</a>
-        </div>
-        <div class="series-cell">
-          <button class="play-audio-btn" type="button" onclick="playE90OpenAudio(event, this)">
-            <span class="play-audio-label">PLAY ME</span>
-          </button>
-        </div>
-      </div>
+      <div class="footer-note">Pricing and availability subject to change. See dealer for details.</div>
     </section>
-  </main>
 
-  <div id="monroneyOverlay" class="monroney-overlay hidden">
-    <div class="monroney-modal">
-      <div class="monroney-modal-title">Monroney Unavailable</div>
-      <div id="monroneyModalText" class="monroney-modal-text">
-        No Monroney PDF is available for this vehicle.
+    <aside class="side">
+      <div class="panel summary">
+        <h2>Build Summary</h2>
+        <div id="summaryLines"></div>
+        <div class="compat" id="compatBox"></div>
+        <div class="total-row">
+          <span>Total</span>
+          <span class="total-price" id="totalPrice">$0</span>
+        </div>
+        <button class="summary-btn" id="copySummaryBtn2">View Detailed Summary ›</button>
       </div>
-      <button id="closeMonroneyModal" class="monroney-modal-btn" type="button">Cancel</button>
+
+      <div class="panel summary">
+        <h2>Packages</h2>
+        <div class="check-list" id="packageList"></div>
+
+        <div class="drawer" id="premiumTrimBox">
+          <h2 style="margin-top:18px;">Premium Package Interior Trim</h2>
+          <p class="note" style="margin-bottom:10px;">Required when ZPP, ZP2, or ZP3 is selected. Choose one included trim.</p>
+          <div class="choice-grid" id="premiumTrimGrid"></div>
+        </div>
+
+        <button class="full-btn" id="toggleOptionsBtn">View All Options</button>
+        <div class="drawer" id="optionsDrawer">
+          <div class="check-list" id="optionList"></div>
+        </div>
+
+        <button class="full-btn" id="toggleMPerformanceBtn">View M Performance Parts</button>
+        <div class="drawer" id="mPerformanceDrawer">
+          <div class="check-list" id="mPerformanceList"></div>
+        </div>
+      </div>
+
+      <div class="panel summary">
+        <h2>Build Output</h2>
+        <textarea id="buildOutput" readonly></textarea>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+const WHEEL_IMAGES = {
+  STD18: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3c4b917036c8f991807d13f0618a73511f4f22d7/18%22%20Standard.png",
+  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3c4b917036c8f991807d13f0618a73511f4f22d7/2MT%2019%22%20Wheels.png",
+  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/e18bff0e746f3948a76c666eb9cd13fbbee991cc/19%22%20ZCP.png"
+};
+
+const TRANSMISSION_IMAGES = {
+  "6MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0d692ed53ac4001fa27e647f0e0ccec0f8c1db08/6-speed%20manual.jpg",
+  "2MK": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0d692ed53ac4001fa27e647f0e0ccec0f8c1db08/M%20DCT.jpg"
+};
+
+const EXTERIOR_PHOTOS = {
+  "300": {
+    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c47fd5f8841ec1921e53bbe70fd3f2a0d3ac8e38/Alpine%20White%2018%22.png",
+    "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c47fd5f8841ec1921e53bbe70fd3f2a0d3ac8e38/Alpine%20White%2019%22%202MT.png",
+    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c47fd5f8841ec1921e53bbe70fd3f2a0d3ac8e38/Alpine%20White%20ZCP.png"
+  },
+  "668": {
+    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/90fdc6c8bbf1b32a2a79ec63a378b2076416bd44/Jet%20Black.png",
+    "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/90fdc6c8bbf1b32a2a79ec63a378b2076416bd44/Jet%20Black%2019%22%202MT.png",
+    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/ae334032e6f4bd250cf231db63db191026287ca0/Jet%20Black%20ZCP.png"
+  },
+  "A73": {
+     STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/b95dd5d27d7e7429a8f87baddb25c3e77d0b24c5/Jerez%20Black%20Metallic.png",
+      "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/b95dd5d27d7e7429a8f87baddb25c3e77d0b24c5/Jerez%20Black%20met%202MT.png",
+      ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/b95dd5d27d7e7429a8f87baddb25c3e77d0b24c5/Jerez%20Black%20Metallic%20ZCP.png"
+  },
+  "A29": {
+    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/abda0d387bc8f71e612210d4f95b8489a4caa560/Silverstone.png",
+    "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/abda0d387bc8f71e612210d4f95b8489a4caa560/Silverstone%202MT.png",
+    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/abda0d387bc8f71e612210d4f95b8489a4caa560/Silverstone%20ZCP.png"
+  },
+  "IND": {
+  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3dca600b412d6e6f2b4b002b755520646e43e9e5/IND.png",
+  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3dca600b412d6e6f2b4b002b755520646e43e9e5/IND%202MT.png",
+  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3dca600b412d6e6f2b4b002b755520646e43e9e5/IND%20ZCP.png"
+  },
+  "381": {
+  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/645ee7dddd82dfc78b1c0b7c6203be7f4ac6e580/Le%20Mans%20Blue%20Met.png",
+  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/645ee7dddd82dfc78b1c0b7c6203be7f4ac6e580/Le%20Mans%20Blue%202MT.png",
+  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/645ee7dddd82dfc78b1c0b7c6203be7f4ac6e580/Le%20Mans%20ZCP.png"
+},
+
+"A30": {
+  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/a57430264b79721249182d61d6a0bf5fda3335de/Interlogo%20Blue%20Metallic.png",
+  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/645ee7dddd82dfc78b1c0b7c6203be7f4ac6e580/Interlogos%20Blue%202MT.png",
+  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/Interlogos%20ZCP.png"
+},
+
+"A52": {
+  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/SPACE%20GRAY%20METALLIC.png",
+  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/space%20gray%202MT.png",
+  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/space%20gray%20ZCP.png"
+},
+
+"A75": {
+  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/Melbourne%20Red.png",
+  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/Melbourne%20Red%202MT.png",
+  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/eac1819f48dd020739e21567266f44773ecff549/Melborune%20Red%20Metallic%20ZCP.png"
+}
+};
+
+const INTERIOR_PHOTOS = {
+  /*
+    Upload your generated interior images to your repo using this folder structure:
+    images/interior/
+
+    File naming:
+    black_nav_dct.jpg
+    black_nav_6mt.jpg
+    black_slick_dct.jpg
+    black_slick_6mt.jpg
+
+    silver_nav_dct.jpg
+    silver_nav_6mt.jpg
+    silver_slick_dct.jpg
+    silver_slick_6mt.jpg
+
+    foxred_nav_dct.jpg
+    foxred_nav_6mt.jpg
+    foxred_slick_dct.jpg
+    foxred_slick_6mt.jpg
+
+    bamboo_nav_dct.jpg
+    bamboo_nav_6mt.jpg
+    bamboo_slick_dct.jpg
+    bamboo_slick_6mt.jpg
+
+    palladiumblack_nav_dct.jpg
+    palladiumblack_nav_6mt.jpg
+    palladiumblack_slick_dct.jpg
+    palladiumblack_slick_6mt.jpg
+
+    foxredblack_nav_dct.jpg
+    foxredblack_nav_6mt.jpg
+    foxredblack_slick_dct.jpg
+    foxredblack_slick_6mt.jpg
+  */
+
+  NCSW: {
+    NAV_DCT: "images/interior/black_nav_dct.jpg",
+    NAV_6MT: "images/interior/black_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/black_slick_dct.jpg",
+    SLICK_6MT: "images/interior/black_slick_6mt.jpg"
+  },
+
+  NDSW: {
+    NAV_DCT: "images/interior/black_nav_dct.jpg",
+    NAV_6MT: "images/interior/black_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/black_slick_dct.jpg",
+    SLICK_6MT: "images/interior/black_slick_6mt.jpg"
+  },
+
+  NCH1: {
+    NAV_DCT: "images/interior/silver_nav_dct.jpg",
+    NAV_6MT: "images/interior/silver_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/silver_slick_dct.jpg",
+    SLICK_6MT: "images/interior/silver_slick_6mt.jpg"
+  },
+
+  NDH1: {
+    NAV_DCT: "images/interior/silver_nav_dct.jpg",
+    NAV_6MT: "images/interior/silver_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/silver_slick_dct.jpg",
+    SLICK_6MT: "images/interior/silver_slick_6mt.jpg"
+  },
+
+  NCH2: {
+    NAV_DCT: "images/interior/foxred_nav_dct.jpg",
+    NAV_6MT: "images/interior/foxred_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/foxred_slick_dct.jpg",
+    SLICK_6MT: "images/interior/foxred_slick_6mt.jpg"
+  },
+
+  NDH2: {
+    NAV_DCT: "images/interior/foxred_nav_dct.jpg",
+    NAV_6MT: "images/interior/foxred_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/foxred_slick_dct.jpg",
+    SLICK_6MT: "images/interior/foxred_slick_6mt.jpg"
+  },
+
+  NCH3: {
+    NAV_DCT: "images/interior/bamboo_nav_dct.jpg",
+    NAV_6MT: "images/interior/bamboo_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/bamboo_slick_dct.jpg",
+    SLICK_6MT: "images/interior/bamboo_slick_6mt.jpg"
+  },
+
+  NDH3: {
+    NAV_DCT: "images/interior/bamboo_nav_dct.jpg",
+    NAV_6MT: "images/interior/bamboo_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/bamboo_slick_dct.jpg",
+    SLICK_6MT: "images/interior/bamboo_slick_6mt.jpg"
+  },
+
+  NCH4: {
+    NAV_DCT: "images/interior/palladiumblack_nav_dct.jpg",
+    NAV_6MT: "images/interior/palladiumblack_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/palladiumblack_slick_dct.jpg",
+    SLICK_6MT: "images/interior/palladiumblack_slick_6mt.jpg"
+  },
+
+  NCH5: {
+    NAV_DCT: "images/interior/foxredblack_nav_dct.jpg",
+    NAV_6MT: "images/interior/foxredblack_nav_6mt.jpg",
+    SLICK_DCT: "images/interior/foxredblack_slick_dct.jpg",
+    SLICK_6MT: "images/interior/foxredblack_slick_6mt.jpg"
+  }
+};
+
+let activeView = "side";
+
+function hasNavigationSelected() {
+  return state.packages.has("ZCV") || state.packages.has("ZTP") || state.options.has("609");
+}
+
+function getInteriorPhoto(interiorCode, transmissionCode) {
+  const byInterior = INTERIOR_PHOTOS[interiorCode] || INTERIOR_PHOTOS.NCSW;
+  const navKey = hasNavigationSelected() ? "NAV" : "SLICK";
+  const transKey = transmissionCode === "2MK" ? "DCT" : "6MT";
+  return byInterior[`${navKey}_${transKey}`] || null;
+}
+
+const CSV_URL = "https://raw.githubusercontent.com/Sman19/Active-Website/102858247185b4edffc7e18f2ffcb7b9df19d50f/2011%20E90%20M3%20Sedan.csv";
+const DEALER_CSV_URL = "https://raw.githubusercontent.com/Sman19/DEALER-MAP/419b7c248513d9e7490713b2f7f760de186b76c6/bmw_dealers.csv";
+const M_PERFORMANCE_CSV_URL = "m-performance-parts.csv";
+let vinRows = [];
+let dealerRows = [];
+let dealerMapByName = {};
+let dealerMapByCode = {};
+
+const DATA = {
+  baseMSRPOptions: [
+    { label:"2010 Build", value:55400 },
+    { label:"2011 Build", value:55900 }
+  ],
+  gasGuzzler: 1300,
+  destination: 875,
+
+  exteriorColors: [
+    { code:"300", name:"Alpine White", price:0, hex:"#f2f1ea", type:"Non-metallic" },
+    { code:"668", name:"Jet Black", price:0, hex:"#050505", type:"Non-metallic" },
+    { code:"A73", name:"Jerez Black Metallic", price:550, hex:"#10131d", type:"Metallic" },
+    { code:"A29", name:"Silverstone Metallic II", price:550, hex:"#bfc8cf", type:"Metallic" },
+    { code:"381", name:"Le Mans Blue Metallic", price:550, hex:"#143f8f", type:"Metallic" },
+    { code:"A30", name:"Interlagos Blue Metallic", price:550, hex:"#263d87", type:"Metallic" },
+    { code:"A52", name:"Space Gray Metallic", price:550, hex:"#63686c", type:"Metallic" },
+    { code:"A75", name:"Melbourne Red Metallic", price:550, hex:"#a20d16", type:"Metallic" },
+    { code:"IND", name:"BMW Individual Paint", price:5000, hex:"linear-gradient(135deg,#6b2cff,#00c2ff,#f5d76e,#ff4d4d)", paintHex:"#8fa8ff", type:"Individual / Custom" }
+  ],
+
+  interiors: [
+    { code:"NCSW", name:"Black Novillo Leather", price:0, basePrice:950, premiumPrice:0, hex:"#111111" },
+    { code:"NDSW", name:"Black Extended Novillo Leather", price:0, basePrice:2000, premiumPrice:1100, hex:"#090909" },
+    { code:"NCH1", name:"Silver Novillo Leather", price:0, basePrice:950, premiumPrice:0, hex:"#c8c3ba" },
+    { code:"NDH1", name:"Silver Extended Novillo Leather", price:0, basePrice:2000, premiumPrice:1100, hex:"#d0ccc5" },
+    { code:"NCH2", name:"Fox Red Novillo Leather", price:0, basePrice:950, premiumPrice:0, hex:"#8f1f1f" },
+    { code:"NDH2", name:"Fox Red Extended Novillo Leather", price:0, basePrice:2000, premiumPrice:1100, hex:"#a72828" },
+    { code:"NCH3", name:"Bamboo Beige Novillo Leather", price:0, basePrice:950, premiumPrice:0, hex:"#c5aa7f" },
+    { code:"NDH3", name:"Bamboo Beige Extended Novillo Leather", price:0, basePrice:2000, premiumPrice:1100, hex:"#d0b88d" },
+    { code:"NCH4", name:"Palladium/Black/Black Novillo Leather", price:0, basePrice:1250, premiumPrice:300, gradient:"linear-gradient(135deg,#d4d0c9 0%,#d4d0c9 50%,#111111 50%,#111111 100%)" },
+    { code:"NCH5", name:"Fox Red/Black/Black Novillo Leather", price:0, basePrice:1250, premiumPrice:300, gradient:"linear-gradient(135deg,#9f2323 0%,#9f2323 50%,#111111 50%,#111111 100%)" }
+  ],
+
+  transmissions: [
+    { code:"6MT", name:"6-Speed Manual", price:0, image:TRANSMISSION_IMAGES["6MT"] },
+    { code:"2MK", name:"M DCT (Drivelogic)", price:2900, image:TRANSMISSION_IMAGES["2MK"] }
+  ],
+
+  wheels: [
+    { code:"STD", name:"18 inch Style 260M", price:0, desc:"Standard", image:WHEEL_IMAGES.STD18 },
+    { code:"2MT", name:"19 inch Style 220M", price:1250, desc:"Option Code 2MT", image:WHEEL_IMAGES["2MT"] },
+    { code:"ZCP", name:"19 inch Style 359M", price:0, desc:"Included with ZCP", image:WHEEL_IMAGES.ZCP }
+  ],
+
+  packages: [
+    { code:"ZCP", name:"Competition Package", price:2500, desc:"- Dynamic Damper Control\n- 19 inch Style 359M wheels" },
+    { code:"ZCV", name:"Convenience Package", price:2900, desc:"- Anti theft alarm system\n- Comfort Access keyless entry\n- Park Distance Control (rear)\n- Navigation System\n- Voice Command\n- iPod & USB adapter\n- Real Time Traffic Information" },
+    { code:"ZCW", name:"Cold Weather Package", price:1000, desc:"- Split fold down rear seat\n- Heated front seats\n- Retractable headlight washers" },
+    { code:"ZPP", name:"Premium Package", price:2000, desc:"- Power folding auto mirrors\n- Universal garage door opener\n- Power front seats\n- Digital compass mirror\n- BMW Assist with Bluetooth\n\nChoose one trim:\n- 4MX Blue Gray Aluminum Trim\n- 4MZ Sycamore Anthracite Wood Trim\n- 4MY Carbon Leather Interior Trim" },
+    { code:"ZP2", name:"Premium Package 2", price:2500, desc:"- Power folding auto mirrors\n- Universal garage door opener\n- Power front seats W. MEMORY\n- Interior mirror with compass\n- BMW Assist with enhanced Bluetooth & USB\n\nChoose one trim:\n- 4MX Blue Gray Aluminum Trim\n- 4MZ Sycamore Anthracite Wood Trim\n- 4MY Carbon Leather Interior Trim" },
+    { code:"ZP3", name:"Premium Package 3", price:2500, desc:"- Power folding auto mirrors\n- Universal garage door opener\n- Power front seats W. Memory\n- Interior mirror with compass\n- BMW Assist with enhanced Bluetooth & USB\n\nChoose one trim:\n- 4MX Blue Gray Aluminum Trim\n- 4MZ Sycamore Anthracite Wood Trim\n- 4MY Carbon Leather Interior Trim" },
+    { code:"ZTP", name:"Technology Package", price:3250, desc:"- M Drive\n- Comfort Access keyless entry\n- Navigation system" },
+  ],
+
+  mPerformanceParts: [
+    {
+        "code": "Z04",
+        "name": "Aluminum Pedals",
+        "price": 210,
+        "desc": "Aluminum Pedals",
+        "type": "MP"
+    },
+    {
+        "code": "Z06",
+        "name": "Black Kidney Grilles",
+        "price": 162,
+        "desc": "Black Kidney Grilles",
+        "type": "MP"
+    },
+    {
+        "code": "Z10",
+        "name": "M Performance Exhaust",
+        "price": 4067,
+        "desc": "M Performance Exhaust",
+        "type": "MP"
+    },
+    {
+        "code": "Z12",
+        "name": "Alcanata Performance Steering Wheel",
+        "price": 885,
+        "desc": "Alcanata Performance Steering Wheel",
+        "type": "MP"
+    },
+    {
+        "code": "Z17",
+        "name": "Carbon Fiber Front Splitters",
+        "price": 911,
+        "desc": "Carbon Fiber Front Splitters",
+        "type": "MP"
+    },
+    {
+        "code": "Z21",
+        "name": "Carbon Fiber Mirror Caps",
+        "price": 712,
+        "desc": "Carbon Fiber Mirror Caps",
+        "type": "MP"
+    },
+    {
+        "code": "Z22",
+        "name": "Carbon Fiber Spoiler",
+        "price": 622,
+        "desc": "Carbon Fiber Spoiler",
+        "type": "MP"
+    },
+    {
+        "code": "Z62",
+        "name": "Wheel Locks",
+        "price": 0,
+        "desc": "Wheel Locks",
+        "type": "MP"
+    }
+], 
+
+  standaloneOptions: [
+    { code:"223", name:"Dynamic Damper Control", price:1000, desc:"Adaptive damping control" },
+    { code:"4MX", name:"Blue Gray Aluminum Trim", price:500, desc:"" },
+    { code:"4MY", name:"Carbon Leather Interior Trim", price:500, desc:"" },
+    { code:"4MZ", name:"Sycamore Anthracite Wood Trim", price:500, desc:""},
+    { code:"403", name:"Moonroof", price:1050, desc:"Power moonroof" },
+    { code:"417", name:"Power Rear Sunshade", price:575, desc:"Power rear sunshade with manual side/rear shades" },
+    { code:"465", name:"Split Fold Down Rear Seat", price:475, desc:"Folding rear seat" },
+    { code:"494", name:"Heated Front Seats", price:500, desc:"Heated driver and passenger front seats" },
+    { code:"302", name:"Alarm System", price:500, desc:"Anti theft alarm system" },
+    { code:"507", name:"Rear Park Distance Control", price:380, desc:"Rear parking sensors" },
+    { code:"5AC", name:"Automatic High Beams", price:250, desc:"Automatic high beam assistant" },
+    { code:"609", name:"Navigation System", price:2100, desc:"Factory navigation" },
+    { code:"6FL", name:"iPod & USB Adapter", price:400, desc:"USB audio interface" },
+    { code:"639", name:"BMW Assist with Bluetooth", price:750, desc:"BMW Assist with Bluetooth" },
+    { code:"6NF", name:"Smartphone Integration", price:150, desc:"Smartphone integration" },
+    { code:"655", name:"Satellite Radio", price:350, desc:"Satellite radio prep/service hardware" },
+    { code:"6NR", name:"BMW Apps", price:250, desc:"BMW Apps integration" },
+    { code:"752", name:"Enhanced Premium Sound", price:1900, desc:"Enhanced premium audio system" },
+    { code:"771", name:"Titanium Shadow Trim", price:0, desc:"" },
+    { code:"XE2", name:"Individual Fine Wood Trim Maple Anthracite", price:1080, desc:"BMW Individual interior trim" },
+    { code:"XE8", name:"Individual Black Piano Trim", price:1080, desc:"BMW Individual interior trim" }
+  ]
+};
+
+const PREMIUM_TRIMS = [
+  { code:"4MX", name:"Blue Gray Aluminum Trim" },
+  { code:"4MY", name:"Carbon Leather Interior Trim" },
+  { code:"4MZ", name:"Sycamore Anthracite Wood Trim" }
+];
+
+const PREMIUM_PACKAGE_TRIM_CODE_MAP = {
+  "ZPP.1": "4MX",
+  "ZPP.2": "4MZ",
+  "ZPP.3": "4MY",
+  "ZP2.1": "4MX",
+  "ZP2.2": "4MZ",
+  "ZP2.3": "4MY",
+  "ZP3.1": "4MX",
+  "ZP3.2": "4MZ",
+  "ZP3.3": "4MY"
+};
+
+const INDIVIDUAL_EXTERIOR_COLOR_MAP = {
+  "490 moonstone": "Moonstone",
+  "490 - moonstone": "Moonstone",
+  "moonstone": "Moonstone",
+  "barbera red metallic": "Barbera Red Metallic",
+  "barbera red": "Barbera Red Metallic",
+  "blue water": "Blue Water Metallic",
+  "blue water metallic": "Blue Water Metallic",
+  "monte carlo blue": "Monte Carlo Blue Metallic",
+  "monte carlo blue metallic": "Monte Carlo Blue Metallic",
+  "atacama yellow": "Atacama Yellow",
+  "atcama yellow": "Atacama Yellow",
+  "fire orange ii": "Fire Orange II",
+  "fire orange 2": "Fire Orange II",
+  "fire orange": "Fire Orange II",
+  "black blue": "Black Blue",
+  "azurite black metallic": "Azurite Black Metallic",
+  "azurite black": "Azurite Black Metallic",
+  "frozen black": "Frozen Black",
+  "frozen grey": "Frozen Grey",
+  "frozen gray": "Frozen Grey"
+};
+
+
+const INDIVIDUAL_EXTERIOR_DETAILS_MAP = {
+  "a39": { code:"A39", name:"Barbera Red Metallic", hex:"#6b2026" },
+  "barbera red metallic": { code:"A39", name:"Barbera Red Metallic", hex:"#6b2026" },
+  "barbera red": { code:"A39", name:"Barbera Red Metallic", hex:"#6b2026" },
+
+  "u94": { code:"U94", name:"Fire Orange II", hex:"#f05a24" },
+  "fire orange ii": { code:"U94", name:"Fire Orange II", hex:"#f05a24" },
+  "fire orange 2": { code:"U94", name:"Fire Orange II", hex:"#f05a24" },
+  "fire orange": { code:"U94", name:"Fire Orange II", hex:"#f05a24" },
+
+  "u83": { code:"U83", name:"Frozen Grey", hex:"#969696" },
+  "frozen grey": { code:"U83", name:"Frozen Grey", hex:"#969696" },
+  "frozen gray": { code:"U83", name:"Frozen Grey", hex:"#969696" },
+
+  "490": { code:"490", name:"Moonstone", hex:"#c4c2ba" },
+  "490 moonstone": { code:"490", name:"Moonstone", hex:"#c4c2ba" },
+  "moonstone": { code:"490", name:"Moonstone", hex:"#c4c2ba" },
+
+  "blue water": { code:"490", name:"Blue Water Metallic", hex:"#7f9aaa" },
+  "blue water metallic": { code:"490", name:"Blue Water Metallic", hex:"#7f9aaa" },
+
+  "monte carlo blue": { code:"490", name:"Monte Carlo Blue Metallic", hex:"#004a98" },
+  "monte carlo blue metallic": { code:"490", name:"Monte Carlo Blue Metallic", hex:"#004a98" },
+
+  "atacama yellow": { code:"490", name:"Atacama Yellow", hex:"#d7a400" },
+  "atcama yellow": { code:"490", name:"Atacama Yellow", hex:"#d7a400" },
+
+  "black blue": { code:"490", name:"Black Blue", hex:"#0b1428" },
+
+  "azurite black metallic": { code:"490", name:"Azurite Black Metallic", hex:"#091528" },
+  "azurite black": { code:"490", name:"Azurite Black Metallic", hex:"#091528" },
+
+  "frozen black": { code:"490", name:"Frozen Black", hex:"#171717" }
+};
+
+function getIndividualExteriorDetails(value) {
+  const raw = normalizeText(value);
+  if (!raw) return null;
+
+  const codeMatch = raw.match(/\b([A-Z][0-9]{2}|[0-9]{3})\b/i);
+  const code = codeMatch ? codeMatch[1].toUpperCase() : "";
+  const nameOnly = raw
+    .replace(/\|.*$/g, "")
+    .replace(/^\s*([A-Z][0-9]{2}|[0-9]{3})\s*[-–—:]\s*/i, "")
+    .replace(/\$[0-9,]+(?:\.\d{2})?/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const keys = [
+    code,
+    raw.toLowerCase().trim(),
+    normalizeIndividualExteriorKey(raw),
+    normalizeIndividualExteriorKey(nameOnly)
+  ].filter(Boolean);
+
+  for (const key of keys) {
+    const hit = INDIVIDUAL_EXTERIOR_DETAILS_MAP[key.toLowerCase()] || INDIVIDUAL_EXTERIOR_DETAILS_MAP[key];
+    if (hit) return { ...hit };
+  }
+
+  for (const [key, detail] of Object.entries(INDIVIDUAL_EXTERIOR_DETAILS_MAP)) {
+    const normalizedKey = normalizeIndividualExteriorKey(key);
+    const normalizedRaw = normalizeIndividualExteriorKey(raw);
+    if (normalizedRaw.includes(normalizedKey) || normalizedKey.includes(normalizedRaw)) {
+      return { ...detail };
+    }
+  }
+
+  // Do not treat normal production colors like A52 Space Gray, A73 Jerez Black, A75 Melbourne Red, etc. as IND.
+  // Only fall back to generic Individual when the CSV explicitly identifies an Individual paint/access code
+  // or shows a $5,000 Individual paint charge.
+  const explicitIndividualPaint = /\$\s*5,000(?:\.00)?/i.test(raw) || /(IND|Z9B|490)/i.test(raw);
+  if (!explicitIndividualPaint) return null;
+
+  const fallbackName = getIndividualExteriorName(raw) || nameOnly;
+  if (fallbackName) return { code: code || "490", name: fallbackName, hex:"#8fa8ff" };
+  if (code) return { code, name:"BMW Individual Paint", hex:"#8fa8ff" };
+  return null;
+}
+
+function formatExteriorLabel(exterior) {
+  if (!exterior) return "";
+  if (String(exterior.code || "").toUpperCase() === "IND") {
+    const indCode = exterior.individualCode ? `${exterior.individualCode} ` : "";
+    return `IND - ${indCode}${exterior.name}`.replace(/\s+/g, " ").trim();
+  }
+  return `${exterior.code} ${exterior.name}`.trim();
+}
+
+const INDIVIDUAL_EXTERIOR_ACCESS_CODES = ["IND", "Z9B", "490"];
+
+function normalizeIndividualExteriorKey(value) {
+  return normalizeText(value)
+    .toLowerCase()
+    .replace(/[()]/g, " ")
+    .replace(/\bmetallic\b/g, "metallic")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getIndividualExteriorName(value) {
+  const raw = normalizeText(value);
+  if (!raw) return "";
+
+  const rawLower = raw.toLowerCase().trim();
+  if (INDIVIDUAL_EXTERIOR_COLOR_MAP[rawLower]) return INDIVIDUAL_EXTERIOR_COLOR_MAP[rawLower];
+
+  const normalized = normalizeIndividualExteriorKey(raw);
+  if (INDIVIDUAL_EXTERIOR_COLOR_MAP[normalized]) return INDIVIDUAL_EXTERIOR_COLOR_MAP[normalized];
+
+  for (const [key, name] of Object.entries(INDIVIDUAL_EXTERIOR_COLOR_MAP)) {
+    const normalizedKey = normalizeIndividualExteriorKey(key);
+    if (normalized.includes(normalizedKey) || normalizedKey.includes(normalized)) return name;
+  }
+
+  return "";
+}
+
+function hasIndividualExteriorAccessCode(value) {
+  const text = normalizeText(value).toUpperCase();
+  if (!text) return false;
+
+  return INDIVIDUAL_EXTERIOR_ACCESS_CODES.some(code => codeExistsInText(text, code));
+}
+
+function applyIndividualExteriorFromCsv(exteriorValue, packageText = "") {
+  const detailFromExterior = getIndividualExteriorDetails(exteriorValue);
+  const detailFromPackages = getIndividualExteriorDetails(packageText);
+  const detail = detailFromExterior || detailFromPackages;
+
+  if (detail) {
+    state.exterior = "IND";
+    state.individualExteriorCode = detail.code || "";
+    state.individualExteriorName = detail.name || "BMW Individual Paint";
+    state.individualExteriorHex = detail.hex || "#8fa8ff";
+    return true;
+  }
+
+  if (hasIndividualExteriorAccessCode(exteriorValue) || hasIndividualExteriorAccessCode(packageText)) {
+    state.exterior = "IND";
+    state.individualExteriorCode = "";
+    state.individualExteriorName = "BMW Individual Paint";
+    state.individualExteriorHex = "#8fa8ff";
+    return true;
+  }
+
+  state.individualExteriorCode = "";
+  state.individualExteriorName = "";
+  state.individualExteriorHex = "";
+  return false;
+}
+
+const state = {
+  exterior: "300",
+  interior: "NCSW",
+  transmission: "6MT",
+  wheel: "STD",
+  baseMSRP: 55400,
+  packages: new Set(),
+  options: new Set(),
+  mPerformanceParts: new Set(),
+  premiumTrim: "",
+  showAllInteriors: false,
+  vin: "",
+  individualExteriorName: "",
+  individualExteriorCode: "",
+  individualExteriorHex: "",
+  sellingDealer: "",
+  dealerAddress: "",
+  dealerPhone: "",
+  csvTotalMSRP: 0
+};
+
+const $ = id => document.getElementById(id);
+const money = n => Number(n || 0).toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 });
+const findByCode = (list, code) => list.find(item => item.code === code);
+
+const BMW_OPTION_ORDER = [
+  // Keep the main BMW packages at the top of the PDF/spec sheet.
+  "ZCP",
+  "ZCV",
+  "ZCW",
+  "ZP2",
+  "ZP3",
+  "ZPP",
+  "ZTP",
+
+  // Everything else follows by BMW option code order after the packages.
+  "223",
+  "2MK",
+  "2MT",
+  "302",
+  "322",
+  "403",
+  "417",
+  "430",
+  "431",
+  "459",
+  "465",
+  "488",
+  "494",
+  "507",
+  "5AC",
+  "521",
+  "540",
+  "609",
+  "620",
+  "639",
+  "655",
+  "6FL",
+  "6NF",
+  "6NR",
+  "752",
+  "760",
+  "771",
+  "NCSW",
+  "NDSW",
+  "NCH1",
+  "NDH1",
+  "NCH2",
+  "NDH2",
+  "NCH3",
+  "NDH3",
+  "NCH4",
+  "NCH5",
+  "Z04",
+  "Z06",
+  "Z10",
+  "Z12",
+  "Z17",
+  "Z21",
+  "Z22",
+  "Z62",
+  "XE2",
+  "XE8"
+];
+
+function getBMWOptionOrderIndex(code) {
+  const normalized = String(code || "").toUpperCase().trim();
+  const index = BMW_OPTION_ORDER.indexOf(normalized);
+  return index === -1 ? 9999 : index;
+}
+
+function sortBMWOptionItems(items) {
+  return [...items].sort((a, b) => {
+    const aIndex = getBMWOptionOrderIndex(a && a.code);
+    const bIndex = getBMWOptionOrderIndex(b && b.code);
+
+    if (aIndex !== bIndex) return aIndex - bIndex;
+
+    return String(a && a.code || "").localeCompare(String(b && b.code || ""));
+  });
+}
+
+function isDuplicateZCPWheelItem(item) {
+  if (!item) return false;
+  const code = String(item.code || "").toUpperCase().trim();
+  const name = String(item.name || "").toLowerCase();
+  return code === "ZCP" && name.includes("359m");
+}
+
+function hasPremiumPackage() {
+  return state.packages.has("ZPP") || state.packages.has("ZP2") || state.packages.has("ZP3");
+}
+
+function disabledOptionReason(code) {
+  if (code === "223" && state.packages.has("ZCP")) return "Included with ZCP";
+
+  if (["302","322","507","609","6FL"].includes(code) && state.packages.has("ZCV")) {
+    return "Included with ZCV";
+  }
+
+  if (["322","609"].includes(code) && state.packages.has("ZTP")) {
+    return "Included with ZTP";
+  }
+
+  if (hasPremiumPackage()) {
+    if (["4MX", "4MY", "4MZ"].includes(code)) return "Choose from Premium Package trim selection";
+    if (code === "639") return "Included with Premium Package";
+  }
+
+  return "";
+}
+
+function enforceLockouts() {
+  [...state.options].forEach(code => {
+    if (disabledOptionReason(code)) state.options.delete(code);
+  });
+
+  if (!hasPremiumPackage()) state.premiumTrim = "";
+}
+
+function selectedPremiumTrim() {
+  return state.premiumTrim ? PREMIUM_TRIMS.find(item => item.code === state.premiumTrim) || null : null;
+}
+
+function getInteriorPrice(item) {
+  if (!item) return 0;
+
+  // BMW Individual pricing rule for IND + ZP2/ZP3 cars:
+  // Standard Novillo interiors stay $950.
+  // Extended Novillo interiors stay $1,100.
+  if (
+    state.exterior === "IND" &&
+    (state.packages.has("ZP2") || state.packages.has("ZP3"))
+  ) {
+    const interiorCode = String(item.code || "").toUpperCase().trim();
+
+    if (["NCSW", "NCH1", "NCH2", "NCH3"].includes(interiorCode)) {
+      return 950;
+    }
+
+    if (["NDSW", "NDH1", "NDH2", "NDH3"].includes(interiorCode)) {
+      return 1100;
+    }
+  }
+
+  const price = hasPremiumPackage() ? item.premiumPrice : item.basePrice;
+  return Number.isFinite(Number(price)) ? Number(price) : Number(item.price || 0);
+}
+
+function pricedInterior(item) {
+  return { ...item, price: getInteriorPrice(item) };
+}
+
+/* UPDATED METALLIC PAINT PRICING RULE:
+   300 Alpine White = $0
+   668 Jet Black = $0
+   Any color marked type:"Metallic" = $550
+   IND BMW Individual Paint = $5,000
+*/
+function getExteriorPrice(item) {
+  if (!item) return 0;
+
+  const code = String(item.code || "").toUpperCase();
+  const type = String(item.type || "").toLowerCase();
+
+  if (code === "300" || code === "668") return 0;
+  if (code === "IND") return 5000;
+  if (type.includes("metallic")) return 550;
+
+  return Number(item.price || 0);
+}
+
+function pricedExterior(item) {
+  return {
+    ...item,
+    price: getExteriorPrice(item)
+  };
+}
+
+function selectedItems() {
+  const exteriorBase = pricedExterior(findByCode(DATA.exteriorColors, state.exterior));
+  const exterior = state.exterior === "IND" && state.individualExteriorName
+    ? {
+        ...exteriorBase,
+        code: "IND",
+        individualCode: state.individualExteriorCode,
+        name: state.individualExteriorName,
+        displayName: formatExteriorLabel({ code:"IND", individualCode: state.individualExteriorCode, name: state.individualExteriorName }),
+        paintHex: state.individualExteriorHex || exteriorBase.paintHex || "#8fa8ff",
+        hex: state.individualExteriorHex || exteriorBase.hex,
+        isIndividualCsvColor: true
+      }
+    : exteriorBase;
+
+  return {
+    exterior,
+    interior: pricedInterior(findByCode(DATA.interiors, state.interior)),
+    transmission: findByCode(DATA.transmissions, state.transmission),
+    wheel: findByCode(DATA.wheels, state.wheel),
+    packages: [...state.packages].map(code => findByCode(DATA.packages, code)).filter(Boolean),
+    options: [...state.options].map(code => findByCode(DATA.standaloneOptions, code)).filter(Boolean),
+    mPerformanceParts: [...state.mPerformanceParts].map(code => findByCode(DATA.mPerformanceParts, code)).filter(Boolean)
+  };
+}
+
+function calculate() {
+  const s = selectedItems();
+  const wheelPrice = s.wheel && s.wheel.code === "2MT" ? Number(s.wheel.price || 0) : 0;
+  const packageTotal = s.packages.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  const optionTotal = s.options.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  const mPerformanceTotal = s.mPerformanceParts.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  const calculatedTotal =
+    Number(state.baseMSRP || 0) +
+    Number(DATA.destination || 0) +
+    Number(DATA.gasGuzzler || 0) +
+    Number(s.exterior && s.exterior.price || 0) +
+    Number(s.interior && s.interior.price || 0) +
+    Number(s.transmission && s.transmission.price || 0) +
+    wheelPrice +
+    packageTotal +
+    optionTotal +
+    mPerformanceTotal;
+
+  // Use the configurator math as the source of truth.
+  // Some CSV rows have a shifted/dirty MSRP total column that can parse as "$2" or another bad value.
+  const total = calculatedTotal;
+
+  return { ...s, wheelPrice, packageTotal, optionTotal, mPerformanceTotal, calculatedTotal, total };
+}
+
+function getExteriorPhoto(exteriorCode, wheelCode) {
+  const byColor = EXTERIOR_PHOTOS[exteriorCode];
+  if (!byColor) return null;
+  return byColor[wheelCode] || byColor.STD || null;
+}
+
+function updateCarPreview(c) {
+  const img = $("carPreview");
+  const interiorImg = $("interiorPreview");
+  const svg = $("carVectorPreview");
+
+  if (activeView === "interior") {
+    const photo = getInteriorPhoto(c.interior.code, c.transmission.code);
+
+    img.removeAttribute("src");
+    img.classList.remove("show");
+
+    svg.classList.add("is-hidden");
+
+    if (photo) {
+      interiorImg.src = photo;
+      interiorImg.classList.add("show");
+    } else {
+      interiorImg.removeAttribute("src");
+      interiorImg.classList.remove("show");
+    }
+
+    return;
+  }
+
+  interiorImg.removeAttribute("src");
+  interiorImg.classList.remove("show");
+
+  const photo = getExteriorPhoto(c.exterior.code, c.wheel.code);
+
+  if (photo) {
+    img.src = photo;
+    img.classList.add("show");
+    svg.classList.add("is-hidden");
+  } else {
+    img.removeAttribute("src");
+    img.classList.remove("show");
+    svg.classList.remove("is-hidden");
+  }
+}
+
+function setWheel(code) {
+  state.wheel = code;
+  if (code === "ZCP") state.packages.add("ZCP");
+  if (code === "STD" || code === "2MT") state.packages.delete("ZCP");
+  enforceLockouts();
+  renderAll();
+}
+
+function renderExterior() {
+  const wrap = $("exteriorGrid");
+  wrap.innerHTML = "";
+  DATA.exteriorColors.forEach(item => {
+    const price = getExteriorPrice(item);
+    const btn = document.createElement("button");
+    btn.className = "swatch-card" + (state.exterior === item.code ? " active" : "");
+    btn.title = `${item.code} ${item.name} - ${money(price)}`;
+    btn.innerHTML = `
+      <div class="swatch-box" style="--swatch:${item.hex}"></div>
+      <span class="swatch-code">${item.code}</span>
+      <span class="swatch-name">${item.name}</span>
+    `;
+    btn.onclick = () => {
+      state.exterior = item.code;
+      state.individualExteriorName = "";
+      state.individualExteriorCode = "";
+      state.individualExteriorHex = "";
+      renderAll();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderInteriors() {
+  const wrap = $("interiorGrid");
+  const toggleBtn = $("toggleInteriorsBtn");
+  wrap.innerHTML = "";
+
+  const list = state.showAllInteriors ? DATA.interiors : DATA.interiors.slice(0,4);
+
+  list.forEach(item => {
+    const price = getInteriorPrice(item);
+    const btn = document.createElement("button");
+    btn.className = "choice-card" + (state.interior === item.code ? " active" : "");
+    btn.innerHTML = `
+      <div class="material" style="--mat:${item.gradient || item.hex}"></div>
+      <span class="choice-code">${item.code}</span>
+      <span class="choice-name">${item.name}</span>
+      <span class="choice-price">${money(price)}</span>
+    `;
+    btn.onclick = () => { state.interior = item.code; renderAll(); };
+    wrap.appendChild(btn);
+  });
+
+  if (toggleBtn) {
+    toggleBtn.textContent = state.showAllInteriors ? "Hide Interior Options" : "View All Interior Options (10)";
+  }
+}
+
+function renderTransmissions() {
+  const wrap = $("transmissionGrid");
+  wrap.innerHTML = "";
+
+  DATA.transmissions.forEach(item => {
+    const imagePosition = item.code === "6MT" ? "82% center" : "center center";
+
+    const btn = document.createElement("button");
+    btn.className = "choice-card" + (state.transmission === item.code ? " active" : "");
+    btn.innerHTML = `
+      <div class="gear-art">
+        <img
+          src="${item.image}"
+          alt="${item.name}"
+          style="object-position:${imagePosition};"
+        >
+      </div>
+      <span class="choice-code">${item.code}</span>
+      <span class="choice-name">${item.name}</span>
+      <span class="choice-price">${money(item.price)}</span>
+    `;
+    btn.onclick = () => { state.transmission = item.code; renderAll(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderWheels() {
+  const wrap = $("wheelGrid");
+  wrap.innerHTML = "";
+  DATA.wheels.forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "wheel-card" + (state.wheel === item.code ? " active" : "");
+    btn.innerHTML = `
+      <img src="${item.image}" alt="${item.name}">
+      <span class="choice-code">${item.code}</span>
+      <span class="choice-name">${item.name}</span>
+      <span class="choice-price">${item.code === "ZCP" ? "Included with ZCP" : money(item.price)}</span>
+    `;
+    btn.onclick = () => setWheel(item.code);
+    wrap.appendChild(btn);
+  });
+}
+
+function renderChecks(containerId, list, setName) {
+  const container = $(containerId);
+  container.innerHTML = "";
+
+  list.forEach(item => {
+    const disabledReason = setName === "options" ? disabledOptionReason(item.code) : "";
+    const disabled = Boolean(disabledReason);
+
+    if (disabled) state[setName].delete(item.code);
+
+    const checked = state[setName].has(item.code);
+    const row = document.createElement("label");
+    row.className = "check-row" + (disabled ? " locked" : "");
+    row.innerHTML = `
+      <input type="checkbox" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}>
+      <div>
+        <div class="check-title">${item.code} ${item.name}</div>
+        <div class="check-desc">${item.desc || ""}${disabled ? `<div class="lock-note">${disabledReason}</div>` : ""}</div>
+      </div>
+      <div class="price">${disabled ? "Included" : money(item.price)}</div>
+    `;
+
+    const input = row.querySelector("input");
+    input.onchange = e => {
+      if (disabled) return;
+
+      if (e.target.checked) state[setName].add(item.code);
+      else state[setName].delete(item.code);
+
+      if (item.code === "ZCP") state.wheel = e.target.checked ? "ZCP" : "STD";
+      if (["ZPP", "ZP2", "ZP3"].includes(item.code) && !e.target.checked && !hasPremiumPackage()) state.premiumTrim = "";
+      enforceLockouts();
+      renderAll();
+    };
+
+    container.appendChild(row);
+  });
+}
+
+function renderPremiumTrim() {
+  const box = $("premiumTrimBox");
+  const grid = $("premiumTrimGrid");
+  if (!box || !grid) return;
+
+  if (!hasPremiumPackage()) {
+    box.classList.remove("show");
+    grid.innerHTML = "";
+    state.premiumTrim = "";
+    return;
+  }
+
+  box.classList.add("show");
+  grid.innerHTML = "";
+
+  PREMIUM_TRIMS.forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "choice-card" + (state.premiumTrim === item.code ? " active" : "");
+    btn.innerHTML = `
+      <div class="material" style="--mat:${item.code === "4MY" ? "linear-gradient(135deg,#111,#32363c,#111)" : item.code === "4MZ" ? "linear-gradient(135deg,#2f2118,#6b4a32,#1d130e)" : "linear-gradient(135deg,#7d8794,#d6dbe0,#6f7782)"}"></div>
+      <span class="choice-code">${item.code}</span>
+      <span class="choice-name">${item.name}</span>
+      <span class="choice-price">Included</span>
+    `;
+    btn.onclick = () => {
+      state.premiumTrim = item.code;
+      ["4MX", "4MY", "4MZ"].forEach(code => state.options.delete(code));
+      renderAll();
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function compatibilityWarnings() {
+  const warnings = [];
+  if (state.packages.has("ZCV")) ["302","507","609","6FL"].forEach(code => { if (state.options.has(code)) warnings.push(`ZCV may already include ${code}, so check duplicate pricing.`); });
+  if (state.packages.has("ZTP")) ["322","609"].forEach(code => { if (state.options.has(code)) warnings.push(`ZTP may already include ${code}, so check duplicate pricing.`); });
+  if (state.packages.has("ZCW")) ["465","494"].forEach(code => { if (state.options.has(code)) warnings.push(`ZCW may already include ${code}, so check duplicate pricing.`); });
+  const trims = ["4MX","4MY","4MZ","771","XE2"].filter(code => state.options.has(code));
+  if (trims.length > 1) warnings.push(`Multiple trim options selected (${trims.join(", ")}). Usually only one interior trim should be selected.`);
+  if (hasPremiumPackage() && !state.premiumTrim) warnings.push("Select one Premium Package interior trim: 4MX, 4MY, or 4MZ.");
+  return warnings;
+}
+
+function buildOutput() {
+  const c = calculate();
+
+  const orderedItems = sortBMWOptionItems([
+    ...(c.transmission.price > 0 ? [{
+      ...c.transmission,
+      desc:"M Double Clutch Transmission with Drivelogic",
+      type:"FIO"
+    }] : []),
+    ...(c.wheelPrice > 0 ? [{
+      ...c.wheel,
+      price:c.wheelPrice,
+      desc:"19 inch forged M light alloy wheels",
+      type:"FIO"
+    }] : []),
+    ...c.options.map(item => ({...item, type:"FIO"})),
+    ...c.packages.filter(item => !isDuplicateZCPWheelItem(item)).map(item => ({...item, type:"FIO"})),
+    ...c.mPerformanceParts.map(item => ({...item, type:"MP"}))
+  ]);
+
+  return {
+    model: "2011 BMW M3 Sedan (E90)",
+    vin: state.vin,
+    sellingDealer: state.sellingDealer,
+    dealerAddress: state.dealerAddress,
+    dealerPhone: state.dealerPhone,
+    baseMSRP: state.baseMSRP,
+    destinationCharge: DATA.destination,
+    gasGuzzlerTax: DATA.gasGuzzler,
+    exterior: c.exterior,
+    interior: c.interior,
+    transmission: c.transmission,
+    wheel: c.wheel,
+    premiumTrim: selectedPremiumTrim(),
+    previewImage: activeView === "interior" ? getInteriorPhoto(c.interior.code, c.transmission.code) : getExteriorPhoto(c.exterior.code, c.wheel.code),
+    exteriorPreviewImage: getExteriorPhoto(c.exterior.code, c.wheel.code),
+    interiorPreviewImage: getInteriorPhoto(c.interior.code, c.transmission.code),
+    packages: c.packages.filter(item => !isDuplicateZCPWheelItem(item)),
+    standaloneOptions: c.options,
+    mPerformanceParts: c.mPerformanceParts,
+    orderedItems,
+    totalMSRP: c.total
+  };
+}
+
+function plainSummary() {
+  const c = buildOutput();
+  const vinLine = c.vin ? `\nVIN: ${c.vin}` : "";
+  const dealerLine = c.sellingDealer ? `\nSelling Dealer: ${c.sellingDealer}` : "";
+  const dealerAddressLine = c.dealerAddress ? `\nDealer Address: ${c.dealerAddress}` : "";
+  const dealerPhoneLine = c.dealerPhone ? `\nDealer Phone: ${c.dealerPhone}` : "";
+  return `${c.model}${vinLine}${dealerLine}${dealerAddressLine}${dealerPhoneLine}\nExterior: ${formatExteriorLabel(c.exterior)}\nInterior: ${c.interior.code} ${c.interior.name}\nTransmission: ${c.transmission.code} ${c.transmission.name}\nWheel: ${c.wheel.code} ${c.wheel.name}\nTotal MSRP: ${money(c.totalMSRP)}`;
+}
+
+function renderSummary() {
+  const c = calculate();
+  const paint = c.exterior.paintHex || (c.exterior.hex.startsWith("linear") ? "#8fa8ff" : c.exterior.hex);
+  document.documentElement.style.setProperty("--paint", paint);
+  updateCarPreview(c);
+
+  $("previewCaption").textContent = activeView === "interior" ? `${c.interior.code} ${c.interior.name} | ${hasNavigationSelected() ? "Navigation" : "Slicktop / No Navigation"} | ${c.transmission.code === "2MK" ? "M DCT" : "6-Speed Manual"}` : `Shown with ${c.wheel.name} (${c.wheel.desc})`;
+  $("indLabel").textContent = c.exterior.code === "IND" ? "BMW Individual Paint    " + money(5000) : "";
+
+  const optionsAndPackages = c.packageTotal + c.optionTotal + c.wheelPrice + c.mPerformanceTotal;
+  const dealerDetails = [state.sellingDealer, state.dealerAddress, state.dealerPhone].filter(Boolean).join("<br>");
+  const premiumTrim = selectedPremiumTrim();
+
+  $("summaryLines").innerHTML = `
+    <div class="summary-line">
+      <span>MSRP<small>2011 BMW E90 M3 Sedan${state.vin ? " | VIN: " + state.vin : ""}</small></span>
+      <strong>${money(state.baseMSRP)}</strong>
+    </div>
+    ${dealerDetails ? `
+      <div class="summary-line">
+        <span>Selling Dealer<small>${dealerDetails}</small></span>
+        <strong></strong>
+      </div>
+    ` : ""}
+    <div class="summary-line">
+      <span>Exterior Color<small>● ${formatExteriorLabel(c.exterior)}</small></span>
+      <strong>${money(c.exterior.price)}</strong>
+    </div>
+    <div class="summary-line">
+      <span>Interior Color<small>● ${c.interior.code} ${c.interior.name}</small></span>
+      <strong>${money(c.interior.price)}</strong>
+    </div>
+    ${premiumTrim ? `
+      <div class="summary-line">
+        <span>Premium Package Trim<small>${premiumTrim.code} ${premiumTrim.name}</small></span>
+        <strong>Included</strong>
+      </div>
+    ` : ""}
+    <div class="summary-line">
+      <span>Transmission<small>${c.transmission.code} ${c.transmission.name}</small></span>
+      <strong>${money(c.transmission.price)}</strong>
+    </div>
+    <div class="summary-line">
+      <span>Options & Packages<small>${c.packages.length + c.options.length + c.mPerformanceParts.length} selected</small></span>
+      <strong>${money(optionsAndPackages)}</strong>
+    </div>
+    <div class="summary-line">
+      <span>Destination & Handling</span>
+      <strong>${money(DATA.destination)}</strong>
+    </div>
+    <div class="summary-line">
+      <span>Gas Guzzler Tax</span>
+      <strong>${money(DATA.gasGuzzler)}</strong>
+    </div>
+  `;
+
+  $("totalPrice").textContent = money(c.total);
+
+  const warnings = compatibilityWarnings();
+  const box = $("compatBox");
+  box.className = "compat" + (warnings.length ? " show" : "");
+  box.innerHTML = warnings.length ? `<strong>Check duplicates:</strong><br>${warnings.join("<br>")}` : "";
+
+  $("buildOutput").value = JSON.stringify(buildOutput(), null, 2);
+}
+
+function renderMSRPSelector() {
+  const select = $("msrpSelect");
+  if (select) select.value = String(state.baseMSRP);
+}
+
+function renderAll() {
+  enforceLockouts();
+  renderExterior();
+  renderInteriors();
+  renderTransmissions();
+  renderWheels();
+  renderMSRPSelector();
+  renderChecks("packageList", DATA.packages, "packages");
+  renderPremiumTrim();
+  renderChecks("optionList", DATA.standaloneOptions, "options");
+  renderChecks("mPerformanceList", DATA.mPerformanceParts, "mPerformanceParts");
+  renderSummary();
+}
+
+function normalizeText(value) {
+  return String(value || "").trim();
+}
+
+function normalizeVIN(value) {
+  return normalizeText(value).replace(/\s/g, "").toUpperCase();
+}
+
+function findCSVValue(row, possibleNames) {
+  const wanted = possibleNames.map(name => name.toLowerCase());
+  for (const key of Object.keys(row)) {
+    if (wanted.includes(key.trim().toLowerCase()) && normalizeText(row[key])) {
+      return normalizeText(row[key]);
+    }
+  }
+  return "";
+}
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let value = "";
+  let insideQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"' && insideQuotes && next === '"') {
+      value += '"';
+      i++;
+    } else if (char === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (char === "," && !insideQuotes) {
+      row.push(value.trim());
+      value = "";
+    } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+      if (char === "\r" && next === "\n") i++;
+      if (value || row.length) {
+        row.push(value.trim());
+        rows.push(row);
+        row = [];
+        value = "";
+      }
+    } else {
+      value += char;
+    }
+  }
+
+  if (value || row.length) {
+    row.push(value.trim());
+    rows.push(row);
+  }
+
+  if (!rows.length) return [];
+  const headers = rows.shift().map(h => h.trim());
+
+  return rows.map(values => {
+    const obj = {};
+    const headerCounts = {};
+
+    headers.forEach((header, index) => {
+      const cleanHeader = header || `Column ${index + 1}`;
+      const value = values[index] || "";
+
+      if (obj[cleanHeader] === undefined) {
+        obj[cleanHeader] = value;
+        headerCounts[cleanHeader] = 1;
+      } else {
+        obj[`${cleanHeader}.${headerCounts[cleanHeader]}`] = value;
+        headerCounts[cleanHeader] += 1;
+      }
+
+      obj[`__COL_${index + 1}`] = value;
+    });
+
+    return obj;
+  });
+}
+
+
+function parseMoneyValue(value) {
+  const cleaned = String(value || "").replace(/[^0-9.-]/g, "");
+  const num = Number(cleaned);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function parseMPerformanceCSV(text) {
+  const rows = parseCSV(text);
+  const parts = [];
+
+  rows.forEach((row, index) => {
+    // M Performance Parts are stored in the main CSV near the bottom.
+    // Column C = description/code text like "Z10 - M Performance Exhaust"
+    // Column F = price like "$4,067.00"
+    const rawDesc = normalizeText(row.__COL_3 || row.Description || row.DESCRIPTION || row.description);
+    const rawPrice = row.__COL_6 || row.Price || row.PRICE || row.price;
+
+    if (!rawDesc) return;
+
+    // Only pull the M Performance accessory rows, not normal interior/code rows.
+    // This keeps regular option-code rows like ZCP, ZCV, MSRP, etc. out of this section.
+    const mPerfMatch = rawDesc.match(/^\s*(Z\d{2})\s*-\s*(.+?)\s*$/i);
+    if (!mPerfMatch) return;
+
+    const code = mPerfMatch[1].toUpperCase();
+    const name = mPerfMatch[2].trim();
+    const price = parseMoneyValue(rawPrice);
+
+    parts.push({
+      code,
+      name,
+      price,
+      desc: name,
+      type: "MP"
+    });
+  });
+
+  return parts;
+}
+
+function setMPerformanceParts(parts, sourceLabel = "CSV") {
+  if (parts.length) {
+    DATA.mPerformanceParts = parts;
+  }
+
+  [...state.mPerformanceParts].forEach(code => {
+    if (!DATA.mPerformanceParts.some(part => part.code === code)) state.mPerformanceParts.delete(code);
+  });
+
+  const note = $("mPerformanceCsvNote");
+  if (note) {
+    note.textContent = DATA.mPerformanceParts.length
+      ? `Loaded ${DATA.mPerformanceParts.length} M Performance Parts${parts.length ? " from " + sourceLabel : " from built-in CSV fallback"}. Description = column C, price = column F.`
+      : `No M Performance Parts found. Check column C for description and column F for price.`;
+  }
+
+  renderAll();
+}
+
+async function loadMPerformanceCSVFromUrl() {
+  try {
+    // Pull M Performance Parts from the same main CSV used by the VIN loader.
+    // Column C = description/code text, Column F = price.
+    const response = await fetch(CSV_URL, { cache:"no-store" });
+    if (!response.ok) throw new Error(String(response.status));
+    const text = await response.text();
+    const parsedParts = parseMPerformanceCSV(text);
+    setMPerformanceParts(parsedParts, parsedParts.length ? "main 2011 E90 M3 CSV" : "built-in CSV fallback");
+  } catch (error) {
+    setMPerformanceParts([], "built-in CSV fallback");
+  }
+}
+
+async function loadCSV() {
+  if (vinRows.length) return vinRows;
+
+  const response = await fetch(CSV_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error(`CSV could not be loaded (${response.status})`);
+
+  const text = await response.text();
+  vinRows = parseCSV(text);
+  return vinRows;
+}
+
+function normalizeDealerKey(value) {
+  return normalizeText(value)
+    .toUpperCase()
+    .replace(/&/g, "AND")
+    .replace(/\bINC\b|\bLLC\b|\bLTD\b|\bDBA\b/g, "")
+    .replace(/[^A-Z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function dealerField(row, names) {
+  return findCSVValue(row, names);
+}
+
+async function loadDealerCSV() {
+  if (dealerRows.length) return dealerRows;
+
+  const response = await fetch(DEALER_CSV_URL, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Dealer CSV could not be loaded (${response.status})`);
+
+  const text = await response.text();
+  dealerRows = parseCSV(text);
+  dealerMapByName = {};
+  dealerMapByCode = {};
+
+  dealerRows.forEach(row => {
+    const name = dealerField(row, ["name", "Name", "DEALER NAME", "Dealer Name", "dealer", "Dealer", "DEALER"]);
+    const code = dealerField(row, ["dealer_code", "dealer code", "Dealer Code", "DEALER_CODE", "code", "Code", "DEALER CODE"]);
+
+    if (name) {
+      dealerMapByName[normalizeDealerKey(name)] = row;
+    }
+
+    if (code) {
+      dealerMapByCode[normalizeDealerKey(code)] = row;
+    }
+  });
+
+  return dealerRows;
+}
+
+function getDealerInfoFromRow(row) {
+  if (!row) return { address: "", phone: "" };
+
+  const street = dealerField(row, ["street", "Street", "STREET", "address", "Address", "ADDRESS"]);
+  const city = dealerField(row, ["city", "City", "CITY"]);
+  const stateValue = dealerField(row, ["state", "State", "STATE"]);
+  const zip = dealerField(row, ["zip", "Zip", "ZIP", "postal", "Postal", "POSTAL"]);
+  const phone = dealerField(row, ["phone", "Phone", "PHONE"]);
+
+  const cityStateZip = [city, stateValue, zip].filter(Boolean).join(" ");
+  const address = [street, cityStateZip].filter(Boolean).join(", ");
+
+  return { address, phone };
+}
+
+function findDealerInfo(dealerValue) {
+  const key = normalizeDealerKey(dealerValue);
+  if (!key) return { address: "", phone: "" };
+
+  let row = dealerMapByCode[key] || dealerMapByName[key];
+
+  if (!row) {
+    row = dealerRows.find(item => {
+      const name = normalizeDealerKey(dealerField(item, ["name", "Name", "DEALER NAME", "Dealer Name", "dealer", "Dealer", "DEALER"]));
+      return name && (name.includes(key) || key.includes(name));
+    });
+  }
+
+  return getDealerInfoFromRow(row);
+}
+
+function findMatchingExterior(value) {
+  const text = normalizeText(value).toUpperCase();
+  if (!text) return null;
+
+  return DATA.exteriorColors.find(item =>
+    text.includes(item.code.toUpperCase()) ||
+    text.includes(item.name.toUpperCase())
+  );
+}
+
+function findMatchingInterior(value) {
+  const text = normalizeText(value).toUpperCase();
+  if (!text) return null;
+
+  return DATA.interiors.find(item =>
+    text.includes(item.code.toUpperCase()) ||
+    text.includes(item.name.toUpperCase())
+  );
+}
+
+function csvColumn(row, index) {
+  return normalizeText(row[`__COL_${index}`]);
+}
+
+function codeExistsInText(text, code) {
+  const escaped = String(code || "")
+    .toUpperCase()
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  return new RegExp(`(^|[^A-Z0-9])${escaped}([^A-Z0-9]|$)`).test(text);
+}
+
+function applyPackageCodes(packageText) {
+  const text = normalizeText(packageText).toUpperCase();
+
+  state.packages.clear();
+  state.options.clear();
+  state.mPerformanceParts.clear();
+
+  [...DATA.packages, ...DATA.standaloneOptions, ...DATA.mPerformanceParts].forEach(item => {
+    const code = String(item.code || "").toUpperCase();
+
+    if (codeExistsInText(text, code)) {
+      if (DATA.packages.some(pkg => pkg.code === item.code)) {
+        state.packages.add(item.code);
+      } else if (DATA.mPerformanceParts.some(part => part.code === item.code)) {
+        state.mPerformanceParts.add(item.code);
+      } else {
+        state.options.add(item.code);
+      }
+    }
+  });
+
+  if (codeExistsInText(text, "2MK")) state.transmission = "2MK";
+  else state.transmission = "6MT";
+
+  if (state.packages.has("ZCP")) state.wheel = "ZCP";
+  else if (codeExistsInText(text, "2MT")) state.wheel = "2MT";
+  else state.wheel = "STD";
+
+  let mappedPremiumTrim = "";
+  Object.entries(PREMIUM_PACKAGE_TRIM_CODE_MAP).forEach(([packageTrimCode, trimCode]) => {
+    if (codeExistsInText(text, packageTrimCode)) mappedPremiumTrim = trimCode;
+  });
+
+  const matchedPremiumTrim = PREMIUM_TRIMS.find(item => codeExistsInText(text, item.code) || text.includes(item.name.toUpperCase()));
+  state.premiumTrim = hasPremiumPackage() ? (mappedPremiumTrim || (matchedPremiumTrim ? matchedPremiumTrim.code : "")) : "";
+
+  if (state.premiumTrim) {
+    ["4MX", "4MY", "4MZ"].forEach(code => state.options.delete(code));
+  }
+}
+
+
+
+async function lookupVIN() {
+  const input = normalizeVIN($("vinSearch").value);
+  const note = $("vinSearchNote");
+
+  if (!input) {
+    note.textContent = "Enter a full VIN or last 7.";
+    return;
+  }
+
+  note.textContent = "Searching CSV...";
+
+  try {
+    const rows = await loadCSV();
+    await loadDealerCSV();
+
+    const match = rows.find(row => {
+      const vin = normalizeVIN(findCSVValue(row, ["VIN", "Vin", "vin"]));
+      return vin === input || vin.slice(-7) === input;
+    });
+
+    if (!match) {
+      note.textContent = "No matching VIN found.";
+      return;
+    }
+
+    const vin = findCSVValue(match, ["VIN", "Vin", "vin"]);
+    const exterior = findCSVValue(match, ["COLOR", "Color", "Exterior", "EXTERIOR", "Paint", "PAINT"]);
+    const interior = findCSVValue(match, ["INTERIOR", "Interior", "Upholstery", "UPHOLSTERY"]);
+    const dealer = findCSVValue(match, ["DEALER NAME", "Dealer Name", "DEALER", "Dealer", "SELLING DEALER", "Selling Dealer", "SellingDealer", "SELLING_DEALER", "__COL_14"]);
+    const csvTotalMSRP = parseMoneyValue(findCSVValue(match, [
+      "TOTAL MSRP",
+      "Total MSRP",
+      "TOTAL",
+      "Total",
+      "PACKAGES",
+      "Packages",
+      "__COL_9",
+      "MSRP",
+      "__COL_10",
+      "__COL_8"
+    ]));
+
+    const msrp55400Value =
+      match["MSRP.1"] ||
+      match["MSRP_1"] ||
+      match["MSRP 1"] ||
+      match["BASE MSRP.1"] ||
+      match["Base MSRP.1"] ||
+      match["BaseMSRP.1"] ||
+      match["BASE_MSRP.1"] ||
+      findCSVValue(match, [
+        "MSRP.1",
+        "MSRP_1",
+        "MSRP 1",
+        "BASE MSRP.1",
+        "Base MSRP.1",
+        "BaseMSRP.1",
+        "BASE_MSRP.1"
+      ]);
+
+    const msrp55900Value =
+      match["MSRP"] ||
+      match["BASE MSRP"] ||
+      match["Base MSRP"] ||
+      match["BaseMSRP"] ||
+      match["BASE_MSRP"] ||
+      findCSVValue(match, [
+        "MSRP",
+        "BASE MSRP",
+        "Base MSRP",
+        "BaseMSRP",
+        "BASE_MSRP"
+      ]);
+
+    // Column H is the package-code column in the CSV.
+    // Example: MSRP,ZCP,ZCV,ZCW,ZPP.3,ZP2.3,2MK
+    // Column L is still pulled as a fallback/additional-code column.
+    const packageTextParts = [
+      csvColumn(match, 8),
+      csvColumn(match, 12)
+    ].filter(Boolean);
+    const packageText = packageTextParts.join(",");
+
+    state.vin = vin;
+    state.sellingDealer = dealer;
+    // Do not trust/use the CSV total MSRP for display math.
+    // The build total is calculated from the selected base MSRP, paint, interior, transmission, packages/options, destination and gas guzzler.
+    state.csvTotalMSRP = 0;
+
+    const dealerInfo = findDealerInfo(dealer);
+    state.dealerAddress = dealerInfo.address || "";
+    state.dealerPhone = dealerInfo.phone || "";
+
+    if (!applyIndividualExteriorFromCsv(exterior, packageText)) {
+      const matchedExterior = findMatchingExterior(exterior);
+      if (matchedExterior) {
+        state.exterior = matchedExterior.code;
+        state.individualExteriorName = "";
+        state.individualExteriorCode = "";
+        state.individualExteriorHex = "";
+      }
+    }
+
+    const matchedInterior = findMatchingInterior(interior);
+    if (matchedInterior) state.interior = matchedInterior.code;
+
+    const packageTokens = packageText
+      .split(/[,\s]+/)
+      .map(token => token.trim().toUpperCase())
+      .filter(Boolean);
+
+    const hasPackageMSRP55400 = packageTokens.includes("MSRP.1");
+    const hasPackageMSRP55900 = packageTokens.includes("MSRP");
+
+    const hasMSRP55400 = hasPackageMSRP55400 || normalizeText(msrp55400Value) !== "";
+    const hasMSRP55900 = hasPackageMSRP55900 || normalizeText(msrp55900Value) !== "";
+
+    // MSRP.1 gets priority because it represents the $55,400 2010-build base MSRP.
+    // This checks the package-code text first, then falls back to the MSRP.1 column value.
+    // If MSRP.1 is not present, it falls back to MSRP for the $55,900 2011-build base MSRP.
+    if (hasMSRP55400) {
+      state.baseMSRP = 55400;
+    } else if (hasMSRP55900) {
+      state.baseMSRP = 55900;
+    }
+
+    applyPackageCodes(packageText);
+    enforceLockouts();
+    renderAll();
+
+    note.textContent = `Loaded ${state.vin || input}${state.sellingDealer ? " | " + state.sellingDealer : ""} | Base MSRP ${money(state.baseMSRP)} | Calculated Total ${money(calculate().total)}`;
+  } catch (error) {
+    console.error(error);
+    note.textContent = "CSV lookup failed. Check the console or CSV URL.";
+  }
+}
+
+if ($("vinSearchBtn")) $("vinSearchBtn").onclick = lookupVIN;
+
+if ($("vinSearch")) {
+  $("vinSearch").addEventListener("keydown", event => {
+    if (event.key === "Enter") lookupVIN();
+  });
+}
+
+$("msrpSelect").onchange = e => {
+  state.baseMSRP = Number(e.target.value);
+  renderAll();
+};
+
+$("toggleInteriorsBtn").onclick = () => {
+  state.showAllInteriors = !state.showAllInteriors;
+  renderAll();
+};
+
+$("toggleOptionsBtn").onclick = () => {
+  $("optionsDrawer").classList.toggle("show");
+  $("toggleOptionsBtn").textContent = $("optionsDrawer").classList.contains("show") ? "Hide Options" : "View All Options";
+};
+
+$("toggleMPerformanceBtn").onclick = () => {
+  $("mPerformanceDrawer").classList.toggle("show");
+  $("toggleMPerformanceBtn").textContent = $("mPerformanceDrawer").classList.contains("show") ? "Hide M Performance Parts" : "View M Performance Parts";
+};
+
+function pdfClean(value) {
+  return String(value ?? "")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\u2022]/g, "-")
+    .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "");
+}
+
+function pdfEscape(value) {
+  return pdfClean(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)");
+}
+
+function wrapPdfLine(line, maxLength = 86) {
+  const text = pdfClean(line);
+  if (text.length <= maxLength) return [text];
+
+  const words = text.split(/\s+/);
+  const lines = [];
+  let current = "";
+
+  words.forEach(word => {
+    if ((current + " " + word).trim().length > maxLength) {
+      if (current) lines.push(current);
+      current = word;
+    } else {
+      current = (current + " " + word).trim();
+    }
+  });
+
+  if (current) lines.push(current);
+  return lines;
+}
+
+function makeSafeFileName(value) {
+  return String(value || "build")
+    .replace(/[^a-z0-9-_]+/gi, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+
+  setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, 3000);
+}
+
+function moneyPdf(n) {
+  return Number(n || 0).toLocaleString("en-US", { style:"currency", currency:"USD", minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+function pdfTextSafe(value) {
+  return pdfClean(value).replace(/\s+/g, " ").trim();
+}
+
+function pdfStreamEscape(value) {
+  return pdfEscape(pdfTextSafe(value));
+}
+
+function pdfRect(x, y, w, h, gray = 1) {
+  return `q ${gray} ${gray} ${gray} rg ${x} ${y} ${w} ${h} re f Q\n`;
+}
+
+function pdfStrokeRect(x, y, w, h, gray = 0.82, width = 0.7) {
+  return `q ${gray} ${gray} ${gray} RG ${width} w ${x} ${y} ${w} ${h} re S Q\n`;
+}
+
+function pdfLine(x1, y1, x2, y2, gray = 0.80, width = 0.7) {
+  return `q ${gray} ${gray} ${gray} RG ${width} w ${x1} ${y1} m ${x2} ${y2} l S Q\n`;
+}
+
+function pdfText(text, x, y, size = 9, font = "F1", align = "left") {
+  const clean = pdfTextSafe(text);
+  const approx = clean.length * size * 0.48;
+  let tx = x;
+  if (align === "right") tx = x - approx;
+  if (align === "center") tx = x - approx / 2;
+  return `BT /${font} ${size} Tf ${tx.toFixed(2)} ${y.toFixed(2)} Td (${pdfStreamEscape(clean)}) Tj ET\n`;
+}
+
+function pdfTextBlock(lines, x, y, size = 8.2, leading = 10.8, maxChars = 60, font = "F1", maxY = 42) {
+  let out = "";
+  let cy = y;
+  lines.forEach(line => {
+    wrapPdfLine(line, maxChars).forEach(wrapped => {
+      if (cy >= maxY) {
+        out += pdfText(wrapped, x, cy, size, font);
+        cy -= leading;
+      }
+    });
+  });
+  return { out, y: cy };
+}
+
+function pdfPriceRow(label, value, x, y, w, bold = false) {
+  let out = "";
+  out += pdfText(label, x, y, bold ? 9.4 : 8.2, bold ? "F2" : "F1");
+  out += pdfText(value, x + w, y, bold ? 9.4 : 8.2, bold ? "F2" : "F1", "right");
+  out += pdfLine(x, y - 4, x + w, y - 4, 0.88, 0.5);
+  return out;
+}
+
+function parseDescLines(desc, itemCode = "") {
+  const trimNames = PREMIUM_TRIMS.map(item => `${item.code} ${item.name}`.toLowerCase());
+  let lines = String(desc || "")
+    .split(/\n+/)
+    .map(s => s.replace(/^[-•.]\s*/, "").trim())
+    .filter(Boolean)
+    .filter(line => !line.toLowerCase().includes("choose one trim"))
+    .filter(line => !trimNames.includes(line.toLowerCase()));
+
+  if (["ZPP", "ZP2", "ZP3"].includes(itemCode) && state.premiumTrim) {
+    const trim = selectedPremiumTrim();
+    if (trim) {
+      const trimLine = `${trim.code} ${trim.name}`;
+      const powerSeatIndex = lines.findIndex(line => line.toLowerCase().includes("power front seats"));
+      if (powerSeatIndex >= 0) lines.splice(powerSeatIndex + 1, 0, trimLine);
+      else lines.push(trimLine);
+    }
+  }
+
+  return lines;
+}
+
+function drawPageFooter(pageNo) {
+  const vin = state.vin || "CONFIGURATOR BUILD";
+  return pdfLine(44, 34, 568, 34, 0.78, 0.6) +
+    pdfText(`2011 BMW M3 Sedan - ${vin}`, 44, 20, 7.0, "F2") +
+    pdfText(`Page ${pageNo}`, 568, 20, 7.0, "F1", "right") +
+    pdfText("Custom BMW Spec Sheet for enthusiast reference only. Not an official BMW Monroney label.", 44, 10, 5.8, "F1");
+}
+
+function drawBMWRedHeader(title, x, y, w) {
+  return pdfText(title, x, y, 11.2, "F2") +
+    `q 0.80 0 0 rg ${x} ${(y - 7).toFixed(2)} 52 3 re f Q\n` +
+    pdfLine(x, y - 7, x + w, y - 7, 0.72, 0.6);
+}
+
+function pdfHexToRgb(hex, fallback = { r: 20, g: 20, b: 20 }) {
+  const clean = String(hex || "").trim();
+  const match = clean.match(/#([0-9a-fA-F]{6})/);
+  if (!match) return fallback;
+  const value = match[1];
+  return {
+    r: parseInt(value.slice(0, 2), 16),
+    g: parseInt(value.slice(2, 4), 16),
+    b: parseInt(value.slice(4, 6), 16)
+  };
+}
+
+function pdfRgbFill(rgb) {
+  return `${(rgb.r / 255).toFixed(4)} ${(rgb.g / 255).toFixed(4)} ${(rgb.b / 255).toFixed(4)}`;
+}
+
+function pdfRgbTextFromColor(value, fallback = "#141414") {
+  const colors = String(value || fallback).match(/#[0-9a-fA-F]{6}/g) || [fallback];
+  const unique = [...new Set(colors)].slice(0, 2);
+  return unique.map(hex => {
+    const rgb = pdfHexToRgb(hex);
+    return `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+  }).join(" / ");
+}
+
+function pdfSwatch(x, y, size, colorValue, fallback = "#141414") {
+  const colors = String(colorValue || fallback).match(/#[0-9a-fA-F]{6}/g) || [fallback];
+  const first = pdfHexToRgb(colors[0], pdfHexToRgb(fallback));
+  const second = colors[1] ? pdfHexToRgb(colors[1], first) : first;
+
+  if (colors.length > 1) {
+    return `q ${pdfRgbFill(first)} rg ${x} ${y} ${size / 2} ${size} re f Q\n` +
+      `q ${pdfRgbFill(second)} rg ${x + size / 2} ${y} ${size / 2} ${size} re f Q\n` +
+      pdfStrokeRect(x, y, size, size, 0.82, 0.45);
+  }
+
+  return `q ${pdfRgbFill(first)} rg ${x} ${y} ${size} ${size} re f Q\n` +
+    pdfStrokeRect(x, y, size, size, 0.82, 0.45);
+}
+
+function drawPdfSideProfileCar(c) {
+  // Uses the real side-profile PNG when the PDF generator successfully loads it.
+  // PDF-only layout: keep the homepage preview untouched and preserve the image aspect ratio.
+  if (window.__pdfCarImageReady) {
+    const targetWidth = 172;
+    const sourceWidth = Number(window.__pdfCarImageWidth || 380);
+    const sourceHeight = Number(window.__pdfCarImageHeight || 210);
+    const aspectHeight = targetWidth * (sourceHeight / sourceWidth);
+    const targetHeight = Math.max(78, Math.min(96, Math.round(aspectHeight)));
+    const x = 346;
+    const y = 600;
+
+    return `q
+${targetWidth} 0 0 ${targetHeight} ${x} ${y} cm
+/CarImage Do
+Q
+`;
+  }
+
+  const swatch = c.exterior.paintHex || c.exterior.hex || "#111111";
+  const paint = pdfHexToRgb(swatch, { r: 17, g: 17, b: 17 });
+  const dark = {
+    r: Math.max(0, Math.round(paint.r * 0.62)),
+    g: Math.max(0, Math.round(paint.g * 0.62)),
+    b: Math.max(0, Math.round(paint.b * 0.62))
+  };
+
+  let out = "";
+  out += `q 0.88 0.88 0.88 rg 330 582 145 5 re f Q
+`;
+  out += `q ${pdfRgbFill(paint)} rg 334 596 m 346 617 371 625 397 624 c 422 624 448 613 464 596 c 473 596 479 592 480 587 c 480 583 476 581 470 581 c 450 583 359 583 337 581 c 331 582 329 587 331 591 c 332 594 333 595 334 596 c f Q
+`;
+  out += `q ${pdfRgbFill(dark)} rg 358 615 m 373 624 411 625 434 615 c 413 617 381 617 358 615 c f Q
+`;
+  out += `q 0.02 0.02 0.02 rg 352 581 15 15 re f Q
+`;
+  out += `q 0.02 0.02 0.02 rg 441 581 15 15 re f Q
+`;
+  out += `q 0.75 0.75 0.75 rg 356 585 7 7 re f Q
+`;
+  out += `q 0.75 0.75 0.75 rg 445 585 7 7 re f Q
+`;
+  return out;
+}
+
+function getPdfCarImageUrl(c) {
+  return getExteriorPhoto(c.exterior.code, c.wheel.code) || null;
+}
+
+async function loadPdfImageData(url, maxWidth = 360) {
+  if (!url) return null;
+
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxWidth / img.naturalWidth);
+        const width = Math.max(1, Math.round(img.naturalWidth * scale));
+        const height = Math.max(1, Math.round(img.naturalHeight * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        const data = ctx.getImageData(0, 0, width, height).data;
+        let hex = "";
+        for (let i = 0; i < data.length; i += 4) {
+          hex += data[i].toString(16).padStart(2, "0");
+          hex += data[i + 1].toString(16).padStart(2, "0");
+          hex += data[i + 2].toString(16).padStart(2, "0");
+        }
+        resolve({ width, height, hex });
+      } catch (error) {
+        console.warn("PDF image could not be embedded", error);
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+function buildPdfImageObject(imageData) {
+  if (!imageData) return "";
+  const stream = `${imageData.hex}>`;
+  return `<< /Type /XObject /Subtype /Image /Width ${imageData.width} /Height ${imageData.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /ASCIIHexDecode /Length ${stream.length} >>
+stream
+${stream}
+endstream`;
+}
+
+function getInstalledItems(c) {
+  const installed = [];
+
+  // Always show base model first in the Installed Packages & Accessories section.
+  installed.push({
+    code:"",
+    name:"Vehicle Base Model",
+    type:"BASE",
+    price:state.baseMSRP,
+    desc:"2011 BMW M3 Sedan"
+  });
+
+  if (c.exterior.price > 0) {
+    installed.push({
+      ...c.exterior,
+      desc:c.exterior.code === "IND" ? "BMW Individual exterior paint selection" : "Metallic exterior paint",
+      type:"FIO"
+    });
+  }
+
+  if (c.interior.price > 0) {
+    installed.push({
+      ...c.interior,
+      desc:"Novillo leather upholstery selection",
+      type:"FIO"
+    });
+  }
+
+  const orderedFactoryItems = [];
+
+  if (c.transmission.price > 0) {
+    orderedFactoryItems.push({
+      ...c.transmission,
+      desc:"M Double Clutch Transmission with Drivelogic",
+      type:"FIO"
+    });
+  }
+
+  // Only list the standalone 2MT wheel option when it has its own price.
+  // Do not list "ZCP 19 inch Style 359M" as a separate included row because
+  // it is already shown inside the ZCP Competition Package.
+  if (c.wheelPrice > 0) {
+    orderedFactoryItems.push({
+      ...c.wheel,
+      code:c.wheel.code,
+      desc:"19 inch forged M light alloy wheels",
+      type:"FIO",
+      price:c.wheelPrice
+    });
+  }
+
+  orderedFactoryItems.push(
+    ...c.options.map(item => ({...item, type:"FIO"})),
+    ...c.packages.filter(item => !isDuplicateZCPWheelItem(item)).map(item => ({...item, type:"FIO"})),
+    ...c.mPerformanceParts.map(item => ({...item, type:"MP"}))
+  );
+
+  installed.push(...sortBMWOptionItems(orderedFactoryItems));
+
+  return installed;
+}
+
+function drawInstalledItem(out, item, y, maxY) {
+  const isPremium = ["ZPP", "ZP2", "ZP3"].includes(item.code);
+  const descLines = parseDescLines(item.desc, item.code).slice(0, isPremium ? 6 : 5);
+  const needed = 19 + Math.min(descLines.length, 6) * 9.1;
+  if (y - needed < maxY) return { out, y, drawn:false };
+
+  const title = item.type === "BASE" ? item.name : `${item.code || ""} ${item.name}`.trim();
+  out += pdfText(title, 44, y, item.type === "BASE" ? 9.2 : 8.7, item.type === "BASE" ? "F2" : "F1");
+  out += pdfText(item.type || "FIO", 486, y, 7.5, "F1", "right");
+  out += pdfText(moneyPdf(item.price || 0), 568, y, item.type === "BASE" ? 8.4 : 8.0, item.type === "BASE" ? "F2" : "F1", "right");
+  y -= 13;
+
+  if (descLines.length) {
+    const block = pdfTextBlock(descLines.map(line => `. ${line}`), 52, y, 6.7, 8.5, 112, "F1", maxY);
+    out += block.out;
+    y = block.y - 2;
+  }
+
+  out += pdfLine(44, y + 5, 568, y + 5, 0.88, 0.45);
+  y -= 7;
+  return { out, y, drawn:true };
+}
+
+function pdfWrappedLineCount(lines, maxChars = 64) {
+  return lines.reduce((sum, line) => sum + wrapPdfLine(line, maxChars).length, 0);
+}
+
+function drawFeatureBlock(out, title, lines, x, y, bottomY, options = {}) {
+  const titleSize = options.titleSize || 10.4;
+  const textSize = options.textSize || 7.1;
+  const leading = options.leading || 10.2;
+  const maxChars = options.maxChars || 64;
+  const titleGap = options.titleGap || 17;
+  const afterGap = options.afterGap || 18;
+  const bulletLines = lines.map(line => `• ${line}`);
+  const wrappedCount = pdfWrappedLineCount(bulletLines, maxChars);
+  const neededHeight = titleGap + (wrappedCount * leading) + afterGap;
+
+  if (y - neededHeight < bottomY) {
+    return { out, y, drawn:false };
+  }
+
+  out += pdfText(title, x, y, titleSize, "F2");
+  const block = pdfTextBlock(bulletLines, x + 10, y - titleGap, textSize, leading, maxChars, "F1", bottomY);
+  out += block.out;
+  return { out, y:block.y - afterGap, drawn:true };
+}
+
+function drawFeatures(out, c, startY, bottomY) {
+  let y = startY;
+  out += drawBMWRedHeader("FEATURES", 44, y, 524);
+
+  const topY = y - 35;
+  const leftX = 52;
+  const rightX = 318;
+
+  const mechLines = [
+    "S65 4.0-liter naturally aspirated V8",
+    "414 hp at 8,300 rpm / 295 lb-ft at 3,900 rpm",
+    "8,400 rpm redline",
+    `${c.transmission.name}`,
+    "Rear-wheel drive with Variable M Differential Lock",
+    "Hydraulic power steering",
+    "M compound brake system",
+    "Quad outlet M exhaust system"
+  ];
+
+  const interiorLines = [
+    `${c.interior.code} ${c.interior.name}`,
+    "M sport seats with driver-focused cockpit layout",
+    "M leather steering wheel with tri-color stitching",
+    "Anthracite headliner",
+    "Automatic climate control",
+    selectedPremiumTrim() ? `${selectedPremiumTrim().code} ${selectedPremiumTrim().name}` : "Interior trim selected by package or standalone option",
+    "Power front seats where equipped",
+    "Heated front seats where equipped"
+  ];
+
+  const exteriorLines = [
+    `${c.exterior.code} ${c.exterior.name}`,
+    `${c.wheel.code} ${c.wheel.name}`,
+    "M aerodynamic bodywork",
+    "Aluminum hood with power dome",
+    "Flared front and rear wheel arches",
+    "Adaptive Xenon headlights",
+    "M side gills and badging"
+  ];
+
+  const techLines = [
+    "AM/FM stereo with CD/MP3 capability",
+    "Auxiliary audio input",
+    "Automatic climate control",
+    "Cruise Control",
+    "Rain sensing windshield wipers",
+    "Auto dimming rearview mirror",
+    "M specific instrument cluster",
+    "On Board Computer with Check Control",
+    "Power windows with one touch operation",
+    "Remote keyless entry",
+    "BMW TeleService capability"
+  ];
+
+  let leftY = topY;
+  let rightY = topY;
+
+  let leftBlock = drawFeatureBlock(out, "Mechanical & Performance", mechLines, leftX, leftY, bottomY, { maxChars:62 });
+  out = leftBlock.out;
+  leftY = leftBlock.y;
+
+  leftBlock = drawFeatureBlock(out, "Interior", interiorLines, leftX, leftY, bottomY, { maxChars:62 });
+  out = leftBlock.out;
+
+  let rightBlock = drawFeatureBlock(out, "Exterior", exteriorLines, rightX, rightY, bottomY, { maxChars:62 });
+  out = rightBlock.out;
+  rightY = rightBlock.y;
+
+  rightBlock = drawFeatureBlock(out, "Audio, Technology & Convenience", techLines, rightX, rightY, bottomY, { maxChars:62 });
+  out = rightBlock.out;
+
+  return out;
+}
+
+function buildBMWStylePages(c) {
+  const buildDate = new Date().toLocaleDateString("en-US");
+  const factoryTotal = c.packageTotal + c.optionTotal + c.mPerformanceTotal + c.wheelPrice + c.transmission.price + c.interior.price + c.exterior.price;
+  const dealerName = state.sellingDealer || "BMW Dealer";
+  const installed = getInstalledItems(c);
+  const page1Bottom = 86;
+  let installedIndex = 0;
+  let out = "";
+  out += pdfRect(0, 0, 612, 792, 1);
+
+  // Header logo and BMW title.
+  if (window.__pdfLogoImageReady) {
+    out += `q
+54 0 0 54 44 728 cm
+/LogoImage Do
+Q
+`;
+  } else {
+    out += pdfText("CARBOI", 44, 756, 9.2, "F2");
+    out += pdfText("CREATIONS", 44, 742, 7.4, "F2");
+  }
+
+  out += pdfText("BMW", 120, 748, 34, "F2");
+  out += pdfText("Spec Sheet", 120, 730, 10, "F1");
+  out += pdfLine(302, 720, 302, 782, 0.86, 0.7);
+  out += pdfText(dealerName, 318, 762, 12.5, "F2");
+  if (state.dealerAddress) {
+    const dealerAddressLines = wrapPdfLine(state.dealerAddress, 58).slice(0, 2);
+    dealerAddressLines.forEach((line, index) => {
+      out += pdfText(line, 318, 746 - (index * 11), 8, "F1");
+    });
+  }
+  if (state.dealerPhone) {
+    out += pdfText(state.dealerPhone, 318, state.dealerAddress && state.dealerAddress.length > 58 ? 724 : 733, 8, "F1");
+  } else if (!state.dealerAddress) {
+    out += pdfText("Spec Sheet", 318, 733, 8, "F1");
+  }
+  out += `q 0.80 0 0 rg 44 707 524 2.2 re f Q\n`;
+
+  out += pdfText("2011 BMW M3 Sedan", 44, 666, 22, "F2");
+  out += pdfText("E90 M3", 44, 645, 17, "F2");
+  out += pdfText("4.0L S65 V8 Rear-Wheel Drive", 44, 625, 10.5, "F1");
+  out += pdfText(`Generated: ${buildDate}`, 44, 609, 8.2, "F1");
+
+  out += pdfText(`Model: 2011 BMW M3 Sedan`, 44, 581, 8.8, "F2");
+  out += pdfText(`VIN: ${state.vin || "Not loaded"}`, 44, 567, 8.5, "F1");
+  out += pdfText(`Selling Dealer: ${dealerName}`, 44, 553, 8.5, "F1");
+  out += pdfText("Engine: S65 4.0L naturally aspirated V8", 44, 539, 8.5, "F1");
+  out += pdfText(`Transmission: ${c.transmission.code} ${c.transmission.name}`, 44, 525, 8.5, "F1");
+
+  out += drawPdfSideProfileCar(c);
+
+  const exteriorSwatch = c.exterior.paintHex || c.exterior.hex || "#8fa8ff";
+  const interiorSwatch = c.interior.gradient || c.interior.hex || "#141414";
+  out += pdfSwatch(318, 565, 20, exteriorSwatch, "#111111");
+  out += pdfText("EXTERIOR", 345, 578, 8.5, "F2");
+  out += pdfText(formatExteriorLabel(c.exterior), 345, 565, 8.5, "F1");
+  out += pdfSwatch(455, 565, 20, interiorSwatch, "#111111");
+  out += pdfText("INTERIOR", 482, 578, 8.5, "F2");
+  out += pdfText(`${c.interior.code} ${c.interior.name}`, 482, 565, 8.5, "F1");
+
+  out += drawBMWRedHeader("PRICE", 44, 493, 246);
+  out += pdfPriceRow("Base MSRP *", moneyPdf(state.baseMSRP), 44, 471, 246);
+  out += pdfPriceRow("Factory Installed Packages & Accessories", moneyPdf(factoryTotal), 44, 451, 246);
+  out += pdfPriceRow("Destination & Handling", moneyPdf(DATA.destination), 44, 431, 246);
+  out += pdfPriceRow("Gas Guzzler Tax", moneyPdf(DATA.gasGuzzler), 44, 411, 246);
+  out += pdfText("Total Suggested Retail Price", 44, 386, 11.5, "F2");
+  out += pdfText(moneyPdf(c.total), 290, 386, 11.5, "F2", "right");
+
+  out += drawBMWRedHeader("PERFORMANCE", 318, 493, 250);
+  out += pdfText("414", 340, 448, 32, "F2");
+  out += pdfText("HP", 407, 452, 9, "F2");
+  out += pdfLine(435, 421, 435, 470, 0.86, 0.7);
+  out += pdfText("295", 456, 448, 24, "F2");
+  out += pdfText("LB-FT", 512, 452, 8.5, "F2");
+  out += pdfText("Horsepower", 342, 427, 8, "F1");
+  out += pdfText("Torque", 458, 427, 8, "F1");
+  out += pdfText("EPA: 14 City / 20 Highway / 16 Combined", 318, 397, 8.2, "F1");
+  out += pdfText(c.transmission.code === "2MK" ? "0-60 MPH: approx. 4.5 sec with M DCT" : "0-60 MPH: approx. 4.7 sec with 6-speed manual", 318, 381, 8.2, "F1");
+
+  out += drawBMWRedHeader("INSTALLED PACKAGES & ACCESSORIES", 44, 340, 524);
+  let y = 318;
+  if (!installed.length) {
+    out += pdfText("No additional packages or standalone options selected.", 44, y, 8.6, "F1");
+    y -= 18;
+  }
+  while (installedIndex < installed.length) {
+    const result = drawInstalledItem(out, installed[installedIndex], y, page1Bottom);
+    if (!result.drawn) break;
+    out = result.out;
+    y = result.y;
+    installedIndex++;
+  }
+  if (installedIndex < installed.length) {
+    out += pdfText(
+      "Installed packages and accessories continue on page 2.",
+      44,
+      page1Bottom - 10,
+      7.5,
+      "F2"
+    );
+  }
+  out += drawPageFooter(1);
+
+  let page2 = "";
+  page2 += pdfRect(0, 0, 612, 792, 1);
+  page2 += pdfText(`2011 BMW M3 Sedan - ${state.vin || "Build Detail"}`, 44, 764, 7.4, "F2");
+  let y2 = 730;
+
+  if (installedIndex < installed.length) {
+    page2 += drawBMWRedHeader("INSTALLED PACKAGES & ACCESSORIES CONTINUED", 44, y2, 524);
+    y2 -= 22;
+
+    // Let page 2 use almost the full page for installed equipment.
+    // Fully loaded builds can continue onto page 3 instead of cutting off the features section.
+    while (installedIndex < installed.length) {
+      const result = drawInstalledItem(page2, installed[installedIndex], y2, 86);
+      if (!result.drawn) break;
+      page2 = result.out;
+      y2 = result.y;
+      installedIndex++;
+    }
+
+    if (installedIndex < installed.length) {
+      page2 += pdfText("Installed packages and accessories continue on page 3.", 44, Math.max(y2, 104), 7.5, "F2");
+    }
+  }
+
+  let page3 = "";
+  let y3 = 730;
+
+  if (installedIndex < installed.length) {
+    page3 += pdfRect(0, 0, 612, 792, 1);
+    page3 += pdfText(`2011 BMW M3 Sedan - ${state.vin || "Build Detail"}`, 44, 764, 7.4, "F2");
+    page3 += drawBMWRedHeader("INSTALLED PACKAGES & ACCESSORIES CONTINUED", 44, y3, 524);
+    y3 -= 22;
+
+    while (installedIndex < installed.length) {
+      const result = drawInstalledItem(page3, installed[installedIndex], y3, 285);
+      if (!result.drawn) break;
+      page3 = result.out;
+      y3 = result.y;
+      installedIndex++;
+    }
+
+    y3 -= 8;
+  } else if (y2 < 245) {
+    // If page 2 is filled with equipment, move totals and features to page 3.
+    page3 += pdfRect(0, 0, 612, 792, 1);
+    page3 += pdfText(`2011 BMW M3 Sedan - ${state.vin || "Build Detail"}`, 44, 764, 7.4, "F2");
+  }
+
+  const totalsNeedPage3 = Boolean(page3);
+  let totalsPage = totalsNeedPage3 ? page3 : page2;
+  let yTotals = totalsNeedPage3 ? Math.min(y3, 700) : y2;
+
+  if (yTotals < 185) {
+    yTotals = 700;
+  }
+
+  totalsPage += pdfPriceRow("Total Optional Equipment", moneyPdf(factoryTotal), 44, yTotals, 524, true);
+  yTotals -= 20;
+  totalsPage += pdfPriceRow("Vehicle Base Model", moneyPdf(state.baseMSRP), 44, yTotals, 524);
+  yTotals -= 20;
+  totalsPage += pdfPriceRow("Destination & Handling", moneyPdf(DATA.destination), 44, yTotals, 524);
+  yTotals -= 20;
+  totalsPage += pdfPriceRow("Gas Guzzler Tax", moneyPdf(DATA.gasGuzzler), 44, yTotals, 524);
+  yTotals -= 26;
+  totalsPage += pdfText("Total Suggested Retail Price", 44, yTotals, 11.8, "F2");
+  totalsPage += pdfText(moneyPdf(c.total), 568, yTotals, 11.8, "F2", "right");
+  totalsPage += pdfLine(44, yTotals - 6, 568, yTotals - 6, 0.80, 0.65);
+  yTotals -= 38;
+
+  let featuresMovedToNewPage = false;
+  let featuresPage = "";
+
+  // Keep the features section clean. If there is not enough vertical room
+  // after long option/package descriptions, move FEATURES to the next page.
+  if (yTotals > 360) {
+    totalsPage = drawFeatures(totalsPage, c, yTotals, 50);
+  } else {
+    featuresMovedToNewPage = true;
+    featuresPage += pdfRect(0, 0, 612, 792, 1);
+    featuresPage += pdfText(`2011 BMW M3 Sedan - ${state.vin || "Build Detail"}`, 44, 764, 7.4, "F2");
+    featuresPage = drawFeatures(featuresPage, c, 730, 50);
+  }
+
+  if (totalsNeedPage3) {
+    page3 = totalsPage + drawPageFooter(3);
+    page2 += drawPageFooter(2);
+
+    if (featuresMovedToNewPage) {
+      featuresPage += drawPageFooter(4);
+      return [out, page2, page3, featuresPage];
+    }
+
+    return [out, page2, page3];
+  }
+
+  page2 = totalsPage + drawPageFooter(2);
+
+  if (featuresMovedToNewPage) {
+    featuresPage += drawPageFooter(3);
+    return [out, page2, featuresPage];
+  }
+
+  return [out, page2];
+}
+
+async function downloadBMWBuildSheetPDF() {
+  renderAll();
+
+  const c = calculate();
+  const logoUrl = "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/cd7f09d386c00ecd7635438940d543a256b54a47/Carboi-creations%20logo.png";
+  const pdfLogoImageData = await loadPdfImageData(logoUrl, 220);
+  const pdfCarImageData = await loadPdfImageData(getPdfCarImageUrl(c), 360);
+  window.__pdfLogoImageReady = Boolean(pdfLogoImageData);
+  window.__pdfCarImageReady = Boolean(pdfCarImageData);
+  window.__pdfCarImageWidth = pdfCarImageData ? pdfCarImageData.width : 0;
+  window.__pdfCarImageHeight = pdfCarImageData ? pdfCarImageData.height : 0;
+  const pages = buildBMWStylePages(c);
+
+  const objects = [];
+  const addObj = body => {
+    objects.push(body);
+    return objects.length;
+  };
+
+  addObj("<< /Type /Catalog /Pages 2 0 R >>");
+  const kids = pages.map((_, i) => `${3 + i * 2} 0 R`).join(" ");
+  addObj(`<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`);
+
+  const contentObjectNumbers = pages.map((_, i) => 4 + i * 2);
+
+  const font1Obj = 3 + pages.length * 2;
+  const font2Obj = font1Obj + 1;
+  const logoObj = pdfLogoImageData ? font2Obj + 1 : null;
+  const imageObj = pdfCarImageData ? font2Obj + (pdfLogoImageData ? 2 : 1) : null;
+  const xObjectEntries = [];
+  if (logoObj) xObjectEntries.push(`/LogoImage ${logoObj} 0 R`);
+  if (imageObj) xObjectEntries.push(`/CarImage ${imageObj} 0 R`);
+  const imageResource = xObjectEntries.length ? ` /XObject << ${xObjectEntries.join(" ")} >>` : "";
+  pages.forEach((content, i) => {
+    addObj(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 ${font1Obj} 0 R /F2 ${font2Obj} 0 R >>${imageResource} >> /Contents ${contentObjectNumbers[i]} 0 R >>`);
+    addObj(`<< /Length ${content.length} >>
+stream
+${content}
+endstream`);
+  });
+
+  addObj("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+  addObj("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>");
+  if (pdfLogoImageData) addObj(buildPdfImageObject(pdfLogoImageData));
+  if (pdfCarImageData) addObj(buildPdfImageObject(pdfCarImageData));
+
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+
+  objects.forEach((body, index) => {
+    offsets.push(pdf.length);
+    pdf += `${index + 1} 0 obj\n${body}\nendobj\n`;
+  });
+
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  offsets.slice(1).forEach(offset => {
+    pdf += `${String(offset).padStart(10, "0")} 00000 n \n`;
+  });
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+
+  const blob = new Blob([pdf], { type: "application/pdf" });
+  const vinPart = state.vin ? state.vin.slice(-7) : `${c.exterior.code}-${c.wheel.code}`;
+  downloadBlob(blob, `2011-BMW-M3-bmw-vspec-${makeSafeFileName(vinPart)}.pdf`);
+}
+
+
+function stickerEscape(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function stickerPrice(value) {
+  const num = Number(value || 0);
+  if (!num) return "Included";
+  return num.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function renderStickerOptionItem(item, forcedPrice = null) {
+  if (!item) return "";
+  const price = forcedPrice === null ? item.price : forcedPrice;
+  const lines = String(item.desc || "")
+    .split("\n")
+    .map(v => v.trim())
+    .filter(Boolean)
+    .filter(v => !/^choose one trim/i.test(v));
+
+  return `
+    <div class="sticker-row sticker-package">
+      <div>${stickerEscape(item.name || item.code)}</div>
+      <div>${stickerPrice(price)}</div>
+    </div>
+    ${lines.map(line => `<div class="sticker-child">${stickerEscape(line.replace(/^[-•]\s*/, ""))}</div>`).join("")}
+  `;
+}
+
+function buildWindowStickerHTML() {
+  const build = buildOutput();
+  const c = calculate();
+  const premiumTrim = selectedPremiumTrim();
+  const exteriorImage = build.exteriorPreviewImage || build.previewImage || "";
+  const interiorImage = build.interiorPreviewImage || "";
+
+  const esc = value => stickerEscape(value);
+  const moneyFull = value => Number(value || 0).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  function bulletsFromDesc(desc) {
+    return String(desc || "")
+      .split("\n")
+      .map(v => v.trim())
+      .filter(Boolean)
+      .filter(v => !/^choose one trim/i.test(v))
+      .map(v => v.replace(/^[-•]\s*/, ""));
+  }
+
+  const orderedFactoryItems = sortBMWOptionItems([
+    ...(build.transmission.price > 0 ? [{
+      ...build.transmission,
+      desc: "7-speed M Double Clutch Transmission with Drivelogic",
+      type: "transmission"
+    }] : []),
+    ...(c.wheelPrice > 0 ? [{
+      ...build.wheel,
+      price: c.wheelPrice,
+      desc: "19 inch forged M light alloy wheels",
+      type: "wheel"
+    }] : []),
+    ...build.packages.filter(item => !isDuplicateZCPWheelItem(item)).map(item => ({ ...item, type: "package" })),
+    ...build.standaloneOptions.map(item => ({ ...item, type: "option" })),
+    ...build.mPerformanceParts.map(item => ({ ...item, type: "mp" }))
+  ]);
+
+  const optionalRows = [];
+
+  function addOptionRow(item, forcedPrice = null) {
+    if (!item) return;
+    let bullets = bulletsFromDesc(item.desc);
+
+    if (["ZPP", "ZP2", "ZP3"].includes(item.code)) {
+      bullets = bullets.filter(line => {
+        const text = String(line || "");
+        return !text.includes("4MX") &&
+          !text.includes("4MY") &&
+          !text.includes("4MZ") &&
+          !text.includes("Blue Gray Aluminum Trim") &&
+          !text.includes("Carbon Leather Interior Trim") &&
+          !text.includes("Sycamore Anthracite Wood Trim");
+      });
+
+      if (premiumTrim) {
+        const seatIndex = bullets.findIndex(line => String(line || "").toLowerCase().includes("power front seats"));
+        const selectedTrimLine = `${premiumTrim.code} ${premiumTrim.name}`;
+        if (seatIndex !== -1) bullets.splice(seatIndex + 1, 0, selectedTrimLine);
+        else bullets.push(selectedTrimLine);
+      }
+    }
+
+    optionalRows.push({
+      code: item.code || "",
+      name: item.name || item.code || "",
+      price: forcedPrice === null ? Number(item.price || 0) : Number(forcedPrice || 0),
+      bullets
+    });
+  }
+
+  addOptionRow({ code: build.exterior.code === "IND" ? (build.exterior.individualCode || "IND") : build.exterior.code, name: formatExteriorLabel(build.exterior), price: build.exterior.price });
+  addOptionRow({ code: build.interior.code, name: build.interior.name, price: build.interior.price });
+  orderedFactoryItems.forEach(addOptionRow);
+
+  const optionalRowsHtml = optionalRows.map(row => `
+    <div class="ws-option-row">
+      <div class="ws-code">${esc(row.code)}</div>
+      <div class="ws-option-copy">
+        <strong>${esc(row.name)}</strong>
+        ${row.bullets.length ? `<div class="ws-bullets">${row.bullets.map(b => `<span>• ${esc(b)}</span>`).join("")}</div>` : ""}
+      </div>
+      <div class="ws-price">${row.price ? esc(moneyFull(row.price)) : "$0.00"}</div>
+    </div>
+  `).join("");
+
+  const dealerName = build.sellingDealer || "BMW Center";
+  const dealerAddress = build.dealerAddress || "";
+  const dealerPhone = build.dealerPhone || "";
+  const vin = build.vin || "WBSPM9C50BE698672";
+  const subtotalBeforeFees = Number(build.totalMSRP || 0) - Number(build.destinationCharge || 0) - Number(build.gasGuzzlerTax || 0);
+  const totalOptional = optionalRows.reduce((sum, row) => sum + Number(row.price || 0), 0);
+  const barcodeBars = String(vin).split("").map((ch, i) => `<i style="width:${(ch.charCodeAt(0) % 3) + 1}px"></i>`).join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>2011 BMW M3 Sedan Window Sticker</title>
+<style>
+  @page { size: 17in 11in; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #e5e7eb;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .toolbar {
+    max-width: 17in;
+    width: min(17in, calc(100vw - 24px));
+    margin: 12px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    color: #111;
+  }
+  .toolbar span { font: 700 13px Arial, Helvetica, sans-serif; }
+  .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .toolbar button {
+    border: 0;
+    border-radius: 7px;
+    background: #111;
+    color: #fff;
+    padding: 10px 16px;
+    font: 800 13px Arial, Helvetica, sans-serif;
+    cursor: pointer;
+  }
+  .toolbar button.secondary { background: #475569; }
+  .preview-wrap { width: 100%; display: flex; justify-content: center; transform-origin: top center; }
+  .preview-wrap.fit { transform: scale(var(--preview-scale, 1)); margin-bottom: calc((11in * var(--preview-scale, 1)) - 11in + 18px); }
+  .window-sticker {
+    width: 17in;
+    height: 11in;
+    margin: 0 auto 18px;
+    background: #fff;
+    border: 3px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .ws-watermark {
+    position: absolute;
+    left: 3.7in;
+    top: 4.65in;
+    width: 8.4in;
+    text-align: center;
+    font: 950 45pt Georgia, serif;
+    color: rgba(0,0,0,.16);
+    transform: rotate(-1deg);
+    pointer-events: none;
+    z-index: 30;
+  }
+  .ws-grid {
+    display: grid;
+    grid-template-columns: 5.58in 4.05in 7.12in;
+    height: 100%;
+  }
+  .ws-left, .ws-middle, .ws-right { min-width: 0; min-height: 0; }
+  .ws-left { border-right: 3px solid #000; display: grid; grid-template-rows: 3.75in 3.18in 4.07in; }
+  .ws-middle { border-right: 3px solid #000; display: grid; grid-template-rows: 7.95in 3.05in; }
+  .ws-right { display: grid; grid-template-rows: 7.95in 3.05in; }
+  .brand-block { padding: .15in .18in .1in; border-bottom: 2px solid #000; }
+  .brand-head { display: grid; grid-template-columns: .72in 1fr; gap: .14in; align-items: center; margin-bottom: .12in; }
+  .roundel {
+    width: .64in; height: .64in; border: 3px solid #000; border-radius: 50%; position: relative;
+    background: conic-gradient(#fff 0 25%, #2084c6 0 50%, #fff 0 75%, #2084c6 0);
+  }
+  .roundel:after { content: "BMW"; position: absolute; inset: -0.16in; display: flex; align-items: flex-start; justify-content: center; font: 900 7pt Arial; padding-top: .02in; }
+  .tagline { font: 950 25pt Arial, Helvetica, sans-serif; line-height: 1.03; letter-spacing: -.03em; }
+  .model-title { font: 950 20pt Arial, Helvetica, sans-serif; margin: .05in 0 .12in; }
+  .vehicle-facts { display: grid; grid-template-columns: 1.35in 1fr; gap: .055in .09in; font-size: 9.2pt; line-height: 1.15; }
+  .vehicle-facts b { font-weight: 900; }
+  .bmw-na { margin-top: .17in; font-size: 8.9pt; line-height: 1.25; font-weight: 700; }
+  .black-title { background: #000; color: #fff; text-align: center; font: 950 11pt Arial; padding: .055in .08in; text-transform: uppercase; letter-spacing: .03em; }
+  .safety { border-bottom: 2px solid #000; }
+  .safety-body { padding: .08in .12in; font-size: 7.4pt; line-height: 1.1; }
+  .rating-row { display: grid; grid-template-columns: 1.55in 1fr 1.6in; border-top: 1px solid #000; padding: .065in 0; align-items: center; }
+  .stars { font-size: 16pt; letter-spacing: .02em; white-space: nowrap; }
+  .fuel { background: #fff; }
+  .fuel-head { display: grid; grid-template-columns: .35in 1fr 1.4in; align-items: center; background: #000; color: #fff; font-weight: 950; font-size: 16pt; padding: .06in .09in; }
+  .fuel-blue { background: #9dd0f3; color: #000; font-size: 9pt; padding: .06in; text-align: center; }
+  .fuel-main { display: grid; grid-template-columns: 1.45in 1.4in 1fr; gap: .1in; padding: .1in .12in .04in; align-items: center; }
+  .mpg-big { font: 950 55pt Arial; line-height: .9; }
+  .mpg-label { font: 900 18pt Arial; }
+  .fuel-cost { font-size: 14pt; line-height: 1.05; font-weight: 900; }
+  .fuel-cost strong { display:block; font-size: 30pt; }
+  .fuel-small { display: grid; grid-template-columns: 1.5in 1fr; border-top: 2px solid #000; border-bottom: 2px solid #000; }
+  .annual { border-right: 2px solid #000; padding: .08in .1in; font-size: 10pt; font-weight: 900; }
+  .annual strong { display:block; font-size: 27pt; }
+  .bar-ratings { padding: .08in .1in; font-size: 7pt; }
+  .bar { height: .18in; border: 1px solid #000; margin: .08in 0; position: relative; }
+  .bar:before { content: ""; position:absolute; left:0; top:0; bottom:0; width:30%; background:#000; }
+  .fuel-footer { background: #000; color: #fff; padding: .08in .12in; display:grid; grid-template-columns: 1fr .8in; gap:.12in; align-items:center; }
+  .fuel-footer strong { font-size: 20pt; }
+  .qr { width: .62in; height: .62in; background: repeating-linear-gradient(90deg,#000 0 3px,#fff 3px 6px), repeating-linear-gradient(0deg,transparent 0 4px,rgba(255,255,255,.5) 4px 8px); border:2px solid #fff; }
+  .standard { padding: .1in .14in; overflow: hidden; }
+  .section-head { font: 950 11.5pt Arial; text-transform: uppercase; margin: .02in 0 .07in; }
+  .section-sub { font: 900 9.2pt Arial; text-transform: uppercase; margin: .12in 0 .035in; }
+  .standard p { margin: 0 0 .055in; font-size: 7.5pt; line-height: 1.17; }
+  .standard ul { margin: 0; padding-left: .12in; list-style-position: inside; }
+  .standard li { font-size: 7.45pt; line-height: 1.17; margin: 0; }
+  .photos { border-top: 2px solid #000; display: grid; grid-template-columns: 1fr 1fr; gap: .12in; padding: .12in; }
+  .photo-box-title { font: 950 8pt Arial; text-transform: uppercase; margin-bottom: .04in; }
+  .photo-box { height: 1.42in; border: 1px solid #999; background: #f1f5f9; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-box.exterior img { object-fit: contain; background:#eef2f7; }
+  .optional { padding: .12in .13in; overflow: hidden; }
+  .price-top { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: .1in; margin-bottom: .1in; }
+  .price-top span { font: 950 7.5pt Arial; text-transform: uppercase; }
+  .price-top strong { font: 950 12pt Arial; }
+  .ws-option-row { display: grid; grid-template-columns: .48in 1fr 1.05in; gap: .08in; padding: .035in 0; font-size: 7.9pt; line-height: 1.13; page-break-inside: avoid; }
+  .ws-code { font-weight: 900; }
+  .ws-option-copy strong { font-weight: 900; }
+  .ws-price { text-align: right; white-space: nowrap; }
+  .ws-bullets { margin-top: .018in; display: grid; gap: .005in; color: #111; }
+  .pricing-summary { border-top: 2px solid #000; padding-top: .12in; margin-top: .14in; }
+  .summary-line { display:grid; grid-template-columns: 1fr 1.25in; font-size: 8.6pt; padding: .035in 0; }
+  .summary-line div:last-child { text-align:right; }
+  .total-line { border-top: 2px solid #000; margin-top:.07in; padding-top:.08in; display:grid; grid-template-columns: 1fr 1.45in; align-items: baseline; font: 950 12pt Arial; }
+  .total-line div:last-child { text-align:right; font-size: 13pt; }
+  .dealer-footer { border-top: 2px solid #000; display: grid; grid-template-columns: 1fr 1fr; padding: .14in .22in; gap: .35in; font-size: 9.2pt; line-height: 1.22; }
+  .dealer-footer b { display:block; margin-bottom:.03in; }
+  .barcode-wrap { grid-column: 1 / -1; margin-top: .12in; text-align:center; }
+  .barcode { height: .36in; display:flex; justify-content:center; align-items:stretch; gap:2px; margin: 0 auto .035in; }
+  .barcode i { display:block; background:#000; height:100%; }
+  .legal { font-size: 6.4pt; line-height: 1.13; color:#222; margin-top: .08in; }
+  @media print {
+    html, body { width: 17in; height: 11in; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden !important; }
+    .toolbar { display: none; }
+    .preview-wrap, .preview-wrap.fit { display: block; width: 17in; transform: none !important; margin: 0 !important; }
+    .window-sticker { margin: 0 !important; border: 3px solid #000; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <span>11x17 landscape BMW window sticker preview. Printing stays full size.</span>
+    <div class="toolbar-actions">
+      <button class="secondary" onclick="zoomPreview(-0.05)">Zoom Out</button>
+      <button class="secondary" onclick="fitPreview()">Fit Screen</button>
+      <button onclick="window.print()">Print</button>
+      <button onclick="window.print()">Save PDF</button>
     </div>
   </div>
 
-  <audio id="f87OpenAudio" preload="auto" crossorigin="anonymous">
-    <source src="https://raw.githubusercontent.com/Sman19/Active-Website/28e274f91d0a71fb14dafa10bb76793c84ac508e/M2%20rev%20clip.m4a" type="audio/mp4">
-    Your browser does not support the audio element.
-  </audio>
+  <div class="preview-wrap" id="previewWrap">
+    <section class="window-sticker">
+      <div class="ws-watermark">Not Original - Copy</div>
+      <div class="ws-grid">
+        <div class="ws-left">
+          <div class="brand-block">
+            <div class="brand-head">
+              <div class="roundel"></div>
+              <div class="tagline">The Ultimate<br>Driving Machine</div>
+            </div>
+            <div class="model-title">2011 BMW M3 Sedan</div>
+            <div class="vehicle-facts">
+              <b>VIN:</b><div><b>${esc(vin)}</b></div>
+              <b>Exterior:</b><div>${esc(formatExteriorLabel(build.exterior))}</div>
+              <b>Interior:</b><div>${esc(build.interior.name)} (${esc(build.interior.code)})</div>
+              <b>Engine:</b><div>4.0L DOHC 32-valve V8 (S65)</div>
+              <b>Transmission:</b><div>${esc(build.transmission.name)} (${esc(build.transmission.code)})</div>
+              <b>Production Date:</b><div>03/2011</div>
+            </div>
+            <div class="bmw-na">
+              BMW of North America, LLC<br>
+              Woodcliff Lake, NJ 07677<br><br>
+              VPC Location: OXNARD, CALIFORNIA<br>
+              Port of Entry: HUENEME, CALIFORNIA
+            </div>
+          </div>
 
-  <audio id="e90OpenAudio" preload="auto" crossorigin="anonymous">
-    <source src="https://raw.githubusercontent.com/Sman19/Active-Website/94c7980b355c8ddbf90fd3862060c80797266cd4/E90%20M3%20Exhaust.m4a" type="audio/mp4">
-    Your browser does not support the audio element.
-  </audio>
+          <div class="safety">
+            <div class="black-title">Government 5-Star Safety Ratings</div>
+            <div class="safety-body">
+              <div style="display:grid;grid-template-columns:1fr 1.7in;gap:.1in;align-items:center;margin-bottom:.06in;"><b>Overall Vehicle Score</b><div class="stars">★★★★★</div></div>
+              Based on the combined ratings of frontal, side and rollover. Should ONLY be compared to other vehicles of similar size and weight.
+              <div class="rating-row"><b>Frontal<br>Crash</b><div>Driver<br>Passenger</div><div class="stars">★★★★★<br>★★★★★</div></div>
+              <div class="rating-row"><b>Side<br>Crash</b><div>Front seat<br>Rear seat</div><div class="stars">★★★★★<br>★★★★★</div></div>
+              <div class="rating-row"><b>Rollover</b><div></div><div class="stars">★★★★☆</div></div>
+              <div style="background:#000;color:#fff;margin:.07in -.12in -.08in;padding:.08in;text-align:center;font-weight:900;">Source: National Highway Traffic Safety Administration (NHTSA)<br>www.safercar.gov or 1-888-327-4236</div>
+            </div>
+          </div>
+
+          <div class="fuel">
+            <div class="fuel-head"><div>EPA<br>DOT</div><div>Fuel Economy and Environment</div><div class="fuel-blue">Gasoline Vehicle</div></div>
+            <div class="fuel-main">
+              <div><div style="font-weight:900;font-size:9pt;">Fuel Economy</div><div class="mpg-big">14</div></div>
+              <div><div class="mpg-label">MPG</div><div style="font-weight:900;font-size:12pt;margin-top:.18in;">12&nbsp;&nbsp;&nbsp;&nbsp;19</div><div style="font-size:7pt;">city&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;highway</div></div>
+              <div class="fuel-cost">You Spend<strong>$7,250</strong>more in fuel costs<br>over 5 years</div>
+            </div>
+            <div style="font-size:12pt;font-weight:900;padding:0 .12in .08in;">7.1 <span style="font-size:8pt;">gallons per 100 miles</span></div>
+            <div class="fuel-small"><div class="annual">Annual fuel COST<strong>$3,150</strong></div><div class="bar-ratings"><b>Fuel Economy & Greenhouse Gas Rating</b><div class="bar"></div><b>Smog Rating</b><div class="bar"></div></div></div>
+            <div class="fuel-footer"><div><strong>fueleconomy.gov</strong><br>Calculate personalized estimates and compare vehicles</div><div class="qr"></div></div>
+          </div>
+        </div>
+
+        <div class="ws-middle">
+          <div class="standard">
+            <div class="section-head">Standard Equipment</div>
+            <p>Items featured are included at no extra charge in the standard vehicle price shown at right.</p>
+            <div class="section-sub">Performance and Efficiency</div>
+            <ul>
+              <li>4.0-liter DOHC 32-valve V8 engine (S65)</li>
+              <li>M Double-VANOS and Valvetronic</li>
+              <li>M Drive and Onboard Computer</li>
+              <li>M Dynamic Stability Control (DSC)</li>
+              <li>M Servotronic</li>
+              <li>M Differential Lock</li>
+            </ul>
+            <div class="section-sub">Exterior</div>
+            <ul>
+              <li>Xenon Adaptive Headlights</li>
+              <li>LED Corona Headlight-rings</li>
+              <li>Power-folding, auto-dimming mirrors</li>
+              <li>M Double-spoke alloy wheels</li>
+              <li>Quad exhaust tips</li>
+            </ul>
+            <div class="section-sub">Interior</div>
+            <ul>
+              <li>Novillo Leather Upholstery</li>
+              <li>Power front sport seats with driver memory</li>
+              <li>3-spoke leather-wrapped M steering wheel</li>
+              <li>Automatic climate control</li>
+              <li>iDrive with 8.8 inch display</li>
+              <li>AM/FM/CD/MP3 Audio System</li>
+              <li>HD Radio with Satellite Radio</li>
+            </ul>
+            <div class="section-sub">Safety and Security</div>
+            <ul>
+              <li>Advanced Airbag System</li>
+              <li>Front-seat side-impact airbags</li>
+              <li>Side Curtain Head Protection</li>
+              <li>Dynamic Stability Control (DSC)</li>
+              <li>Tire Pressure Monitor</li>
+              <li>Anti-theft alarm system</li>
+            </ul>
+            <div class="section-sub">Warranty</div>
+            <ul>
+              <li>4-year/50,000-mile New Vehicle Limited Warranty</li>
+              <li>12-year Unlimited Mileage Rust Perforation Limited Warranty</li>
+              <li>4-year Unlimited Mileage Roadside Assistance Program</li>
+            </ul>
+          </div>
+          <div class="photos">
+            <div><div class="photo-box-title">Exterior</div><div class="photo-box exterior">${exteriorImage ? `<img src="${esc(exteriorImage)}" alt="Exterior">` : "Exterior Image"}</div></div>
+            <div><div class="photo-box-title">Interior</div><div class="photo-box">${interiorImage ? `<img src="${esc(interiorImage)}" alt="Interior">` : "Interior Image"}</div></div>
+          </div>
+        </div>
+
+        <div class="ws-right">
+          <div class="optional">
+            <div class="price-top"><span>Base Manufacturer's Suggested Retail Price</span><strong>${esc(moneyFull(build.baseMSRP))}</strong></div>
+            <div class="section-head">Optional Equipment</div>
+            <p style="font-size:8pt;margin:.02in 0 .1in;">Optionally-equipped / Check, excludes options in the standard equipment listed at left.</p>
+            ${optionalRowsHtml}
+            <div class="pricing-summary">
+              <div class="summary-line"><div>Total Optional Equipment</div><div>${esc(moneyFull(totalOptional))}</div></div>
+              <div class="summary-line"><div>Subtotal</div><div>${esc(moneyFull(subtotalBeforeFees))}</div></div>
+              <div class="summary-line"><div>Destination & Handling</div><div>${esc(moneyFull(build.destinationCharge))}</div></div>
+              <div class="summary-line"><div>Gas Guzzler Tax</div><div>${esc(moneyFull(build.gasGuzzlerTax))}</div></div>
+              <div class="total-line"><div>Total Suggested Retail Price</div><div>${esc(moneyFull(build.totalMSRP))}</div></div>
+            </div>
+          </div>
+
+          <div class="dealer-footer">
+            <div><b>Sold To:</b>${esc(dealerName)}<br>${esc(dealerAddress)}<br>${esc(dealerPhone)}</div>
+            <div><b>Ship To:</b>${esc(dealerName)}<br>${esc(dealerAddress)}<br>${esc(dealerPhone)}</div>
+            <div class="barcode-wrap">
+              <div class="barcode">${barcodeBars}</div>
+              <div>${esc(vin)}</div>
+              <div class="legal">BMW is pleased to offer a 4-year/50,000-mile New Vehicle Limited Warranty. Not an original BMW Monroney label. Recreation for enthusiast documentation only.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script>
-    const CSV_FILES = [
-      "2016 F87 M2.csv",
-      "2017 F87 M2.csv",
-      "2018 F87 M2.csv",
-      "2011 E90 M3 Sedan.csv"
-    ];
-
-    const recentTerms = [];
-    const allRows = [];
-
-    const searchInput = document.getElementById("searchInput");
-    const searchBtn = document.getElementById("searchBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const recentSearches = document.getElementById("recentSearches");
-
-    const loadingStatus = document.getElementById("loadingStatus");
-    const emptyState = document.getElementById("emptyState");
-    const resultsSection = document.getElementById("resultsSection");
-    const resultsList = document.getElementById("resultsList");
-
-    const userMenuBtn = document.getElementById("userMenuBtn");
-    const userDropdown = document.getElementById("userDropdown");
-    const authUsername = document.getElementById("auth-username");
-
-    const homeDropdownBtn = document.getElementById("homeDropdownBtn");
-    const homeDropdown = document.getElementById("homeDropdown");
-
-    const monroneyOverlay = document.getElementById("monroneyOverlay");
-    const monroneyModalText = document.getElementById("monroneyModalText");
-    const closeMonroneyModal = document.getElementById("closeMonroneyModal");
-
-    let activeAudio = null;
-    let activeButton = null;
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+    let previewScale = 1;
+    function setPreviewScale(scale) {
+      previewScale = Math.max(0.45, Math.min(1, scale));
+      const wrap = document.getElementById("previewWrap");
+      if (!wrap) return;
+      wrap.classList.add("fit");
+      wrap.style.setProperty("--preview-scale", previewScale);
     }
-
-    function parseCSVLine(line) {
-      const result = [];
-      let current = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const next = line[i + 1];
-
-        if (char === '"') {
-          if (inQuotes && next === '"') {
-            current += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (char === "," && !inQuotes) {
-          result.push(current.trim());
-          current = "";
-        } else {
-          current += char;
-        }
-      }
-
-      result.push(current.trim());
-      return result;
+    function zoomPreview(step) { setPreviewScale(previewScale + step); }
+    function fitPreview() {
+      const available = Math.max(320, window.innerWidth - 32);
+      const sheetWidth = 17 * 96;
+      setPreviewScale(Math.min(1, available / sheetWidth));
     }
-
-    function parseCSV(text, sourceFile) {
-      const lines = text
-        .replace(/\r\n/g, "\n")
-        .replace(/\r/g, "\n")
-        .split("\n")
-        .filter(line => line.trim() !== "");
-
-      if (!lines.length) return [];
-
-      const headers = parseCSVLine(lines[0]).map(h => h.trim());
-      const rows = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
-        const row = {
-          __sourceFile: sourceFile,
-          __values: values
-        };
-
-        headers.forEach((header, index) => {
-          row[header] = values[index] || "";
-        });
-
-        rows.push(row);
-      }
-
-      return rows;
-    }
-
-    function getField(row, possibleNames) {
-      const keys = Object.keys(row);
-
-      for (const name of possibleNames) {
-        const foundKey = keys.find(key => key.toLowerCase().trim() === name.toLowerCase().trim());
-        if (foundKey && row[foundKey]) return row[foundKey];
-      }
-
-      return "";
-    }
-
-    function getBestVin(row) {
-      return getField(row, [
-        "VIN",
-        "vin",
-        "Full VIN",
-        "FullVin",
-        "Full_VIN",
-        "Full VIN Number"
-      ]);
-    }
-
-    function getBestLast7(row) {
-      let last7 = getField(row, [
-        "Last 7",
-        "Last7",
-        "last 7",
-        "last7",
-        "VIN Last 7"
-      ]);
-
-      if (!last7) {
-        const vin = getBestVin(row);
-        if (vin && vin.length >= 7) last7 = vin.slice(-7);
-      }
-
-      return last7;
-    }
-
-    function getBestYear(row) {
-      return getField(row, [
-        "Year",
-        "year",
-        "Model Year",
-        "Production Year",
-        "MY"
-      ]);
-    }
-
-    function getBestTitle(row) {
-      return getField(row, [
-        "Model",
-        "Series",
-        "Description",
-        "Vehicle",
-        "Name"
-      ]) || "BMW Record";
-    }
-
-    function getBestDetails(row) {
-      const color = getField(row, [
-        "Color",
-        "Exterior",
-        "Exterior Color",
-        "Paint",
-        "Paint Code"
-      ]);
-
-      const interior = getField(row, [
-        "Interior",
-        "Interior Color",
-        "Trim",
-        "Upholstery"
-      ]);
-
-      const transmission = getField(row, [
-        "Transmission",
-        "Trans",
-        "Gearbox"
-      ]);
-
-      const parts = [color, interior, transmission].filter(Boolean);
-      return parts.length ? parts.join(" • ") : "BMW record";
-    }
-
-    function normalizeVin(value) {
-      return String(value || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-    }
-
-    function convertGitHubPdfLink(link) {
-      if (!link) return "";
-
-      let fixed = String(link).trim();
-
-      if (fixed.includes("github.com") && fixed.includes("/blob/")) {
-        fixed = fixed
-          .replace("https://github.com/", "https://raw.githubusercontent.com/")
-          .replace("/blob/", "/");
-      }
-
-      return fixed;
-    }
-
-    function getMonroneyLink(row) {
-      const rawLink = row.__values && row.__values[19] ? row.__values[19].trim() : "";
-      return convertGitHubPdfLink(rawLink);
-    }
-
-    function getSearchText(row) {
-      return Object.values(row).join(" ").toLowerCase();
-    }
-
-    function updateRecent(term) {
-      if (!term.trim()) return;
-
-      const existingIndex = recentTerms.indexOf(term);
-      if (existingIndex !== -1) recentTerms.splice(existingIndex, 1);
-
-      recentTerms.unshift(term);
-      if (recentTerms.length > 3) recentTerms.pop();
-
-      recentSearches.textContent = "Recent searches: " + recentTerms.join(" | ");
-    }
-
-    function renderMonroneyUnavailable(row = null) {
-      const vin = row ? getBestVin(row) : "";
-      const last7 = row ? getBestLast7(row) : "";
-
-      if (vin || last7) {
-        monroneyModalText.textContent =
-          `No Monroney PDF is currently available for this vehicle.${vin ? " VIN: " + vin : ""}${!vin && last7 ? " Last 7: " + last7 : ""}`;
-      } else {
-        monroneyModalText.textContent = "No Monroney PDF is currently available for this vehicle.";
-      }
-
-      monroneyOverlay.classList.remove("hidden");
-    }
-
-    function closeMonroneyUnavailable() {
-      monroneyOverlay.classList.add("hidden");
-    }
-
-    function openMonroney(row) {
-      const link = getMonroneyLink(row);
-
-      if (!link) {
-        renderMonroneyUnavailable(row);
-        return;
-      }
-
-      window.open(link, "_blank", "noopener,noreferrer");
-    }
-
-    function renderResults(matches, term) {
-      resultsList.innerHTML = "";
-
-      if (!term.trim()) {
-        resultsSection.classList.add("hidden");
-        emptyState.classList.remove("hidden");
-        emptyState.textContent = "Start typing above to search the linked BMW CSV files.";
-        return;
-      }
-
-      resultsSection.classList.remove("hidden");
-      emptyState.classList.add("hidden");
-
-      if (!matches.length) {
-        resultsList.innerHTML = `<div class="status">No matches found for "${escapeHtml(term)}".</div>`;
-        return;
-      }
-
-      matches.forEach((row) => {
-        const item = document.createElement("div");
-        item.className = "result-row";
-
-        const monroneyLink = getMonroneyLink(row);
-
-        item.innerHTML = `
-          <div class="result-main">${escapeHtml(getBestTitle(row))}</div>
-          <div class="result-cell" data-label="VIN">${escapeHtml(getBestVin(row) || "—")}</div>
-          <div class="result-cell" data-label="Last 7">${escapeHtml(getBestLast7(row) || "—")}</div>
-          <div class="result-cell" data-label="Year">${escapeHtml(getBestYear(row) || "—")}</div>
-          <div class="result-cell muted" data-label="Details">${escapeHtml(getBestDetails(row))}</div>
-          <div class="result-cell" data-label="Monroney">
-            ${
-              monroneyLink
-                ? `<a class="open-link" href="${escapeHtml(monroneyLink)}" target="_blank" rel="noopener noreferrer">Open Monroney</a>`
-                : `<span class="muted">Unavailable</span>`
-            }
-          </div>
-          <div class="result-cell" data-label="Source">${escapeHtml(row.__sourceFile || "—")}</div>
-        `;
-
-        if (monroneyLink) {
-          item.style.cursor = "pointer";
-          item.addEventListener("dblclick", () => openMonroney(row));
-          item.title = "Double-click row to open Monroney";
-        }
-
-        resultsList.appendChild(item);
-      });
-    }
-
-    function runSearch() {
-      const rawTerm = searchInput.value.trim();
-      const term = rawTerm.toLowerCase();
-      const normalizedTerm = normalizeVin(rawTerm);
-
-      if (!rawTerm) {
-        renderResults([], "");
-        return;
-      }
-
-      updateRecent(rawTerm);
-
-      const exactVinMatch = allRows.find(row => {
-        const vin = normalizeVin(getBestVin(row));
-        const last7 = normalizeVin(getBestLast7(row));
-        return vin === normalizedTerm || last7 === normalizedTerm;
-      });
-
-      if (exactVinMatch) {
-        openMonroney(exactVinMatch);
-        return;
-      }
-
-      const matches = allRows
-        .filter(row => getSearchText(row).includes(term))
-        .slice(0, 100);
-
-      renderResults(matches, rawTerm);
-    }
-
-    async function loadCSVs() {
-      try {
-        const responses = await Promise.all(
-          CSV_FILES.map(async file => {
-            const response = await fetch(encodeURI(file));
-            if (!response.ok) {
-              throw new Error(`Could not load ${file}`);
-            }
-
-            const text = await response.text();
-            const parsedRows = parseCSV(text, file);
-
-            const filteredRows = [];
-            let reachedEnd = false;
-
-            parsedRows.forEach(row => {
-              const vin = String(getBestVin(row) || "").trim();
-
-              if (vin === "END_VEHICLES") {
-                reachedEnd = true;
-                return;
-              }
-
-              if (reachedEnd) return;
-
-              if (vin !== "" && vin !== "-" && vin.length >= 11) {
-                filteredRows.push(row);
-              }
-            });
-
-            return filteredRows;
-          })
-        );
-
-        allRows.length = 0;
-        responses.flat().forEach(row => allRows.push(row));
-
-        loadingStatus.classList.add("hidden");
-        emptyState.classList.remove("hidden");
-        emptyState.textContent = `Loaded ${allRows.length} VINs.`;
-      } catch (error) {
-        loadingStatus.classList.remove("hidden");
-        loadingStatus.textContent = "Error loading CSV files. Check the exact file names and make sure GitHub Pages is serving them.";
-        console.error(error);
-      }
-    }
-
-    function updateAuthUser() {
-      if (!authUsername) return;
-
-      if (typeof login !== "undefined" && login) {
-        authUsername.textContent = login;
-      } else {
-        authUsername.textContent = "Member";
-      }
-    }
-
-    function stopActiveAudioVisual() {
-      if (activeButton) {
-        activeButton.classList.remove("playing");
-      }
-
-      if (activeAudio) {
-        activeAudio.pause();
-        activeAudio.currentTime = 0;
-        activeAudio.onended = null;
-      }
-
-      activeAudio = null;
-      activeButton = null;
-    }
-
-    function playAudioClip(audioId, button) {
-      const audio = document.getElementById(audioId);
-      if (!audio || !button) return;
-
-      if (activeAudio && activeAudio !== audio) {
-        stopActiveAudioVisual();
-      }
-
-      if (activeAudio === audio && !audio.paused) {
-        stopActiveAudioVisual();
-        return;
-      }
-
-      activeAudio = audio;
-      activeButton = button;
-
-      button.classList.add("playing");
-
-      audio.pause();
-      audio.currentTime = 0;
-
-      audio.onended = () => {
-        stopActiveAudioVisual();
-      };
-
-      audio.play().catch((err) => {
-        console.error("Audio play failed:", err);
-        stopActiveAudioVisual();
-      });
-    }
-
-    function playF87OpenAudio(event, button) {
-      event.preventDefault();
-      playAudioClip("f87OpenAudio", button);
-    }
-
-    function playE90OpenAudio(event, button) {
-      event.preventDefault();
-      playAudioClip("e90OpenAudio", button);
-    }
-
-    searchBtn.addEventListener("click", runSearch);
-
-    searchInput.addEventListener("input", () => {
-      clearBtn.style.display = searchInput.value ? "flex" : "none";
+    window.addEventListener("resize", () => {
+      const wrap = document.getElementById("previewWrap");
+      if (wrap && wrap.classList.contains("fit")) fitPreview();
     });
+    fitPreview();
+  <\/script>
+</body>
+</html>`;
+}
 
-    clearBtn.addEventListener("click", () => {
-      searchInput.value = "";
-      clearBtn.style.display = "none";
-      searchInput.focus();
-      renderResults([], "");
-    });
+function generateWindowSticker() {
+  const popup = window.open("", "_blank");
+  if (!popup) {
+    alert("Popup blocked. Please allow popups for this site to preview the window sticker.");
+    return;
+  }
 
-    searchInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") runSearch();
-    });
+  popup.document.open();
+  popup.document.write(buildWindowStickerHTML());
+  popup.document.close();
+}
 
-    homeDropdownBtn.addEventListener("click", function (event) {
-      event.stopPropagation();
-      homeDropdown.classList.toggle("hidden");
-      userDropdown.classList.add("hidden");
-    });
+if ($("windowStickerBtn")) {
+  $("windowStickerBtn").onclick = generateWindowSticker;
+}
 
-    userMenuBtn.addEventListener("click", function (event) {
-      event.stopPropagation();
-      userDropdown.classList.toggle("hidden");
-      homeDropdown.classList.add("hidden");
-    });
+$("copyBuildBtn").onclick = async () => {
+  const btn = $("copyBuildBtn");
+  btn.textContent = "Downloading...";
+  try {
+    await downloadBMWBuildSheetPDF();
+    btn.textContent = "Downloaded";
+  } catch (err) {
+    console.error(err);
+    alert("Build sheet PDF could not be generated. Check the browser console for details.");
+    btn.textContent = "PDF Error";
+  }
+  setTimeout(() => btn.textContent = "▣ Save BMW-Style PDF", 1200);
+};
 
-    document.addEventListener("click", function (event) {
-      if (!userDropdown.contains(event.target) && !userMenuBtn.contains(event.target)) {
-        userDropdown.classList.add("hidden");
-      }
+$("copySummaryBtn").onclick = async () => {
+  await navigator.clipboard.writeText(plainSummary());
+  $("copySummaryBtn").textContent = "Copied";
+  setTimeout(() => $("copySummaryBtn").textContent = "View Summary", 1000);
+};
 
-      if (!homeDropdown.contains(event.target) && !homeDropdownBtn.contains(event.target)) {
-        homeDropdown.classList.add("hidden");
-      }
-    });
+$("copySummaryBtn2").onclick = async () => {
+  await navigator.clipboard.writeText(plainSummary());
+  $("copySummaryBtn2").textContent = "Copied";
+  setTimeout(() => $("copySummaryBtn2").textContent = "View Detailed Summary ›", 1000);
+};
 
-    closeMonroneyModal.addEventListener("click", closeMonroneyUnavailable);
+document.querySelectorAll(".view-tab").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".view-tab").forEach(tab => tab.classList.remove("active"));
+    btn.classList.add("active");
+    activeView = btn.dataset.view || "side";
+    renderSummary();
+  };
+});
 
-    monroneyOverlay.addEventListener("click", function (event) {
-      if (event.target === monroneyOverlay) {
-        closeMonroneyUnavailable();
-      }
-    });
+$("resetBtn").onclick = () => {
+  state.exterior = "300";
+  state.interior = "NCSW";
+  state.transmission = "6MT";
+  state.wheel = "STD";
+  state.baseMSRP = 55400;
+  state.packages.clear();
+  state.options.clear();
+  state.premiumTrim = "";
+  state.showAllInteriors = false;
+  state.vin = "";
+  state.sellingDealer = "";
+  state.dealerAddress = "";
+  state.dealerPhone = "";
+  state.csvTotalMSRP = 0;
+  if ($("vinSearch")) $("vinSearch").value = "";
+  if ($("vinSearchNote")) $("vinSearchNote").textContent = "";
+  renderAll();
+};
 
-    document.addEventListener("DOMContentLoaded", function () {
-      updateAuthUser();
-      loadCSVs();
-    });
-  </script>
+renderAll();
+loadMPerformanceCSVFromUrl();
+</script>
 </body>
 </html>
