@@ -3247,8 +3247,6 @@ function buildWindowStickerHTML() {
   const build = buildOutput();
   const c = calculate();
   const premiumTrim = selectedPremiumTrim();
-  const exteriorImage = build.exteriorPreviewImage || build.previewImage || "";
-  const interiorImage = build.interiorPreviewImage || "";
 
   const esc = value => stickerEscape(value);
   const moneyFull = value => Number(value || 0).toLocaleString("en-US", {
@@ -3270,7 +3268,7 @@ function buildWindowStickerHTML() {
   const orderedFactoryItems = sortBMWOptionItems([
     ...(build.transmission.price > 0 ? [{
       ...build.transmission,
-      desc: "7-speed M Double Clutch Transmission with Drivelogic",
+      desc: "M Double-clutch Transmission",
       type: "transmission"
     }] : []),
     ...(c.wheelPrice > 0 ? [{
@@ -3284,9 +3282,9 @@ function buildWindowStickerHTML() {
     ...build.mPerformanceParts.map(item => ({ ...item, type: "mp" }))
   ]);
 
-  const optionalRows = [];
+  const optionRows = [];
 
-  function addOptionRow(item, forcedPrice = null) {
+  function addOptionRow(item, forcedPrice = null, includedText = "Included") {
     if (!item) return;
     let bullets = bulletsFromDesc(item.desc);
 
@@ -3303,42 +3301,70 @@ function buildWindowStickerHTML() {
 
       if (premiumTrim) {
         const seatIndex = bullets.findIndex(line => String(line || "").toLowerCase().includes("power front seats"));
-        const selectedTrimLine = `${premiumTrim.code} ${premiumTrim.name}`;
+        const selectedTrimLine = `${premiumTrim.name}`;
         if (seatIndex !== -1) bullets.splice(seatIndex + 1, 0, selectedTrimLine);
         else bullets.push(selectedTrimLine);
       }
     }
 
-    optionalRows.push({
+    optionRows.push({
       code: item.code || "",
       name: item.name || item.code || "",
       price: forcedPrice === null ? Number(item.price || 0) : Number(forcedPrice || 0),
-      bullets
+      bullets,
+      includedText
     });
   }
 
   addOptionRow({ code: build.exterior.code === "IND" ? (build.exterior.individualCode || "IND") : build.exterior.code, name: formatExteriorLabel(build.exterior), price: build.exterior.price });
   addOptionRow({ code: build.interior.code, name: build.interior.name, price: build.interior.price });
-  orderedFactoryItems.forEach(addOptionRow);
-
-  const optionalRowsHtml = optionalRows.map(row => `
-    <div class="ws-option-row">
-      <div class="ws-code">${esc(row.code)}</div>
-      <div class="ws-option-copy">
-        <strong>${esc(row.name)}</strong>
-        ${row.bullets.length ? `<div class="ws-bullets">${row.bullets.map(b => `<span>• ${esc(b)}</span>`).join("")}</div>` : ""}
-      </div>
-      <div class="ws-price">${row.price ? esc(moneyFull(row.price)) : "$0.00"}</div>
-    </div>
-  `).join("");
+  orderedFactoryItems.forEach(item => addOptionRow(item));
 
   const dealerName = build.sellingDealer || "BMW Center";
   const dealerAddress = build.dealerAddress || "";
   const dealerPhone = build.dealerPhone || "";
   const vin = build.vin || "WBSPM9C50BE698672";
-  const subtotalBeforeFees = Number(build.totalMSRP || 0) - Number(build.destinationCharge || 0) - Number(build.gasGuzzlerTax || 0);
-  const totalOptional = optionalRows.reduce((sum, row) => sum + Number(row.price || 0), 0);
+  const totalOptional = optionRows.reduce((sum, row) => sum + Number(row.price || 0), 0);
   const barcodeBars = String(vin).split("").map((ch, i) => `<i style="width:${(ch.charCodeAt(0) % 3) + 1}px"></i>`).join("");
+
+  const pricingRowsHtml = optionRows.map(row => `
+    <div class="price-row">
+      <div class="price-name">
+        <div>${esc(row.name)}</div>
+        ${row.bullets.length ? `<div class="indent-lines">${row.bullets.map(b => `<span>- ${esc(b)}</span>`).join("")}</div>` : ""}
+      </div>
+      <div class="dollar">${row.price ? "$" : ""}</div>
+      <div class="amount">${row.price ? esc(Number(row.price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : esc(row.includedText)}</div>
+    </div>
+  `).join("");
+
+  const standardColOne = [
+    "4.0-liter 32-valve V-8 engine with M Double-VANOS Steplessly variable valve timing",
+    "Dynamic Stability Control (DSC)",
+    "All Season Traction with Variable M Differential Lock",
+    "Vehicle-speed-sensitive variable-assist power steering (M Servotronic)",
+    "M Suspension",
+    "4-wheel BMW M vacuum-assisted ventilated, cross-drilled compound disc brakes",
+    "High-performance-tuned anti-lock braking system (ABS) with Dynamic Brake Control",
+    "Xenon Adaptive low- and high-beam headlights with Auto-leveling and Cornering Lights function",
+    "AM/FM stereo/CD/MP3 player audio system",
+    "HD Radio",
+    "M instrument cluster with red needles"
+  ];
+
+  const standardColTwo = [
+    "Service Interval indicator with miles-to-service display",
+    "On-board computer with check control vehicle monitoring system",
+    "Tire Pressure Monitor",
+    "Rain-sensing windshield wipers with Automatic headlight control",
+    "Cruise Control",
+    "Driver's and passenger's front airbag supplemental restraint system (SRS) with advanced technology",
+    "Front-seat-mounted side-impact airbags",
+    "Head Protection System (HPS), front and rear",
+    "BMW's Advanced Safety System",
+    "Adaptive Brake Lights",
+    "Coded Driveaway Protection"
+  ];
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -3379,113 +3405,139 @@ function buildWindowStickerHTML() {
   .toolbar button.secondary { background: #475569; }
   .preview-wrap { width: 100%; display: flex; justify-content: center; transform-origin: top center; }
   .preview-wrap.fit { transform: scale(var(--preview-scale, 1)); margin-bottom: calc((11in * var(--preview-scale, 1)) - 11in + 18px); }
-  .window-sticker {
+
+  .bmw-monroney {
     width: 17in;
     height: 11in;
     margin: 0 auto 18px;
-    background: #fff;
-    border: 3px solid #000;
-    border-radius: 10px;
-    overflow: hidden;
+    padding: .29in .30in .22in;
     position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(rgba(255,255,255,.58), rgba(255,255,255,.58)),
+      radial-gradient(circle at 48% 56%, rgba(255,255,255,.35) 0, rgba(255,255,255,.16) 18%, transparent 34%),
+      linear-gradient(115deg, rgba(55,73,47,.65), rgba(215,225,205,.75) 37%, rgba(122,139,112,.62) 58%, rgba(220,228,214,.72)),
+      repeating-linear-gradient(92deg, rgba(255,255,255,.12) 0 .08in, rgba(0,0,0,.04) .08in .16in);
+    border: 0;
   }
-  .ws-watermark {
+  .bmw-monroney:before {
+    content: "";
     position: absolute;
-    left: 3.7in;
-    top: 4.65in;
-    width: 8.4in;
-    text-align: center;
-    font: 950 45pt Georgia, serif;
-    color: rgba(0,0,0,.16);
-    transform: rotate(-1deg);
-    pointer-events: none;
-    z-index: 30;
+    left: 0;
+    right: 0;
+    bottom: .95in;
+    height: 3.1in;
+    background:
+      linear-gradient(92deg, transparent 0 36%, rgba(255,255,255,.55) 36% 51%, transparent 51% 100%),
+      linear-gradient(180deg, rgba(185,195,180,.15), rgba(80,90,70,.18));
+    transform: skewY(-5deg);
+    opacity: .65;
   }
-  .ws-grid {
+  .watermark {
+    position: absolute;
+    left: 4.15in;
+    top: 5.0in;
+    width: 7.6in;
+    text-align: center;
+    font: 950 57pt Arial, Helvetica, sans-serif;
+    color: rgba(255,255,255,.45);
+    text-shadow: 0 0 1px rgba(0,0,0,.16);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .sheet-grid {
+    position: relative;
+    z-index: 2;
     display: grid;
-    grid-template-columns: 5.58in 4.05in 7.12in;
+    grid-template-columns: 4.65in 7.1in 4.55in;
+    grid-template-rows: 9.3in 1.08in;
+    gap: .08in;
     height: 100%;
   }
-  .ws-left, .ws-middle, .ws-right { min-width: 0; min-height: 0; }
-  .ws-left { border-right: 3px solid #000; display: grid; grid-template-rows: 3.75in 3.18in 4.07in; }
-  .ws-middle { border-right: 3px solid #000; display: grid; grid-template-rows: 7.95in 3.05in; }
-  .ws-right { display: grid; grid-template-rows: 7.95in 3.05in; }
-  .brand-block { padding: .15in .18in .1in; border-bottom: 2px solid #000; }
-  .brand-head { display: grid; grid-template-columns: .72in 1fr; gap: .14in; align-items: center; margin-bottom: .12in; }
-  .roundel {
-    width: .64in; height: .64in; border: 3px solid #000; border-radius: 50%; position: relative;
-    background: conic-gradient(#fff 0 25%, #2084c6 0 50%, #fff 0 75%, #2084c6 0);
+  .panel-box {
+    border: 4px solid #000;
+    background: rgba(255,255,255,.54);
+    overflow: hidden;
   }
-  .roundel:after { content: "BMW"; position: absolute; inset: -0.16in; display: flex; align-items: flex-start; justify-content: center; font: 900 7pt Arial; padding-top: .02in; }
-  .tagline { font: 950 25pt Arial, Helvetica, sans-serif; line-height: 1.03; letter-spacing: -.03em; }
-  .model-title { font: 950 20pt Arial, Helvetica, sans-serif; margin: .05in 0 .12in; }
-  .vehicle-facts { display: grid; grid-template-columns: 1.35in 1fr; gap: .055in .09in; font-size: 9.2pt; line-height: 1.15; }
-  .vehicle-facts b { font-weight: 900; }
-  .bmw-na { margin-top: .17in; font-size: 8.9pt; line-height: 1.25; font-weight: 700; }
-  .black-title { background: #000; color: #fff; text-align: center; font: 950 11pt Arial; padding: .055in .08in; text-transform: uppercase; letter-spacing: .03em; }
-  .safety { border-bottom: 2px solid #000; }
-  .safety-body { padding: .08in .12in; font-size: 7.4pt; line-height: 1.1; }
-  .rating-row { display: grid; grid-template-columns: 1.55in 1fr 1.6in; border-top: 1px solid #000; padding: .065in 0; align-items: center; }
-  .stars { font-size: 16pt; letter-spacing: .02em; white-space: nowrap; }
-  .fuel { background: #fff; }
-  .fuel-head { display: grid; grid-template-columns: .35in 1fr 1.4in; align-items: center; background: #000; color: #fff; font-weight: 950; font-size: 16pt; padding: .06in .09in; }
-  .fuel-blue { background: #9dd0f3; color: #000; font-size: 9pt; padding: .06in; text-align: center; }
-  .fuel-main { display: grid; grid-template-columns: 1.45in 1.4in 1fr; gap: .1in; padding: .1in .12in .04in; align-items: center; }
-  .mpg-big { font: 950 55pt Arial; line-height: .9; }
-  .mpg-label { font: 900 18pt Arial; }
-  .fuel-cost { font-size: 14pt; line-height: 1.05; font-weight: 900; }
-  .fuel-cost strong { display:block; font-size: 30pt; }
-  .fuel-small { display: grid; grid-template-columns: 1.5in 1fr; border-top: 2px solid #000; border-bottom: 2px solid #000; }
-  .annual { border-right: 2px solid #000; padding: .08in .1in; font-size: 10pt; font-weight: 900; }
-  .annual strong { display:block; font-size: 27pt; }
-  .bar-ratings { padding: .08in .1in; font-size: 7pt; }
-  .bar { height: .18in; border: 1px solid #000; margin: .08in 0; position: relative; }
-  .bar:before { content: ""; position:absolute; left:0; top:0; bottom:0; width:30%; background:#000; }
-  .fuel-footer { background: #000; color: #fff; padding: .08in .12in; display:grid; grid-template-columns: 1fr .8in; gap:.12in; align-items:center; }
-  .fuel-footer strong { font-size: 20pt; }
-  .qr { width: .62in; height: .62in; background: repeating-linear-gradient(90deg,#000 0 3px,#fff 3px 6px), repeating-linear-gradient(0deg,transparent 0 4px,rgba(255,255,255,.5) 4px 8px); border:2px solid #fff; }
-  .standard { padding: .1in .14in; overflow: hidden; }
-  .section-head { font: 950 11.5pt Arial; text-transform: uppercase; margin: .02in 0 .07in; }
-  .section-sub { font: 900 9.2pt Arial; text-transform: uppercase; margin: .12in 0 .035in; }
-  .standard p { margin: 0 0 .055in; font-size: 7.5pt; line-height: 1.17; }
-  .standard ul { margin: 0; padding-left: .12in; list-style-position: inside; }
-  .standard li { font-size: 7.45pt; line-height: 1.17; margin: 0; }
-  .photos { border-top: 2px solid #000; display: grid; grid-template-columns: 1fr 1fr; gap: .12in; padding: .12in; }
-  .photo-box-title { font: 950 8pt Arial; text-transform: uppercase; margin-bottom: .04in; }
-  .photo-box { height: 1.42in; border: 1px solid #999; background: #f1f5f9; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-  .photo-box.exterior img { object-fit: contain; background:#eef2f7; }
-  .optional { padding: .12in .13in; overflow: hidden; }
-  .price-top { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: .1in; margin-bottom: .1in; }
-  .price-top span { font: 950 7.5pt Arial; text-transform: uppercase; }
-  .price-top strong { font: 950 12pt Arial; }
-  .ws-option-row { display: grid; grid-template-columns: .48in 1fr 1.05in; gap: .08in; padding: .035in 0; font-size: 7.9pt; line-height: 1.13; page-break-inside: avoid; }
-  .ws-code { font-weight: 900; }
-  .ws-option-copy strong { font-weight: 900; }
-  .ws-price { text-align: right; white-space: nowrap; }
-  .ws-bullets { margin-top: .018in; display: grid; gap: .005in; color: #111; }
-  .pricing-summary { border-top: 2px solid #000; padding-top: .12in; margin-top: .14in; }
-  .summary-line { display:grid; grid-template-columns: 1fr 1.25in; font-size: 8.6pt; padding: .035in 0; }
-  .summary-line div:last-child { text-align:right; }
-  .total-line { border-top: 2px solid #000; margin-top:.07in; padding-top:.08in; display:grid; grid-template-columns: 1fr 1.45in; align-items: baseline; font: 950 12pt Arial; }
-  .total-line div:last-child { text-align:right; font-size: 13pt; }
-  .dealer-footer { border-top: 2px solid #000; display: grid; grid-template-columns: 1fr 1fr; padding: .14in .22in; gap: .35in; font-size: 9.2pt; line-height: 1.22; }
-  .dealer-footer b { display:block; margin-bottom:.03in; }
-  .barcode-wrap { grid-column: 1 / -1; margin-top: .12in; text-align:center; }
-  .barcode { height: .36in; display:flex; justify-content:center; align-items:stretch; gap:2px; margin: 0 auto .035in; }
+  .left-pricing { grid-row: 1 / 2; grid-column: 1 / 2; padding: .08in .10in; display: flex; flex-direction: column; }
+  .middle-main { grid-row: 1 / 2; grid-column: 2 / 3; display: grid; grid-template-rows: 3.18in 1.30in 4.84in; gap: .06in; border: 0; background: transparent; }
+  .right-main { grid-row: 1 / 2; grid-column: 3 / 4; display: grid; grid-template-rows: 2.48in 3.58in 2.55in; gap: .06in; border: 0; background: transparent; }
+  .bottom-left { grid-row: 2 / 3; grid-column: 1 / 2; font-size: 7.5pt; line-height: 1.12; }
+  .bottom-mid { grid-row: 2 / 3; grid-column: 2 / 3; font-size: 7.8pt; line-height: 1.2; display:grid; grid-template-columns: 1fr 1fr; align-items:end; gap:.15in; }
+  .bottom-right { grid-row: 2 / 3; grid-column: 3 / 4; font-size: 7.5pt; line-height: 1.15; display:grid; grid-template-columns: 1fr .62in; gap:.08in; align-items:end; }
+
+  .brand-title { font: 950 20pt Arial, Helvetica, sans-serif; letter-spacing: -.03em; margin: -.02in 0 .02in; }
+  .brand-title sup { font-size: 8pt; }
+  .model-title { font: 950 13pt Arial, Helvetica, sans-serif; margin-bottom: .06in; }
+  .top-price { border: 4px solid #000; padding: .07in .08in; margin-bottom: .07in; background: rgba(255,255,255,.52); }
+  .top-price-row { display:grid; grid-template-columns: 1fr .15in .76in; gap:.04in; font-size:8.4pt; line-height:1.15; }
+  .top-price-row.header { font-weight:900; font-size:9.1pt; }
+  .pricing-list { flex: 1; overflow: hidden; }
+  .price-row { display:grid; grid-template-columns: 1fr .14in .72in; gap:.04in; font-size:8.1pt; line-height:1.08; break-inside: avoid; }
+  .price-name { min-width:0; }
+  .indent-lines { display:flex; flex-direction:column; padding-left:.11in; }
+  .dollar { text-align:right; }
+  .amount { text-align:right; white-space:nowrap; }
+  .total-msrp { margin-top:.05in; display:grid; grid-template-columns: 1fr .14in .72in; gap:.04in; font: 950 8.8pt Arial; }
+  .vin-bottom { margin-top:auto; font: 950 14pt Arial; }
+
+  .box-title { font: 950 10pt Arial; margin: .04in 0 .03in; }
+  .standard-box { padding: .06in .12in; }
+  .standard-features { display:grid; grid-template-columns: 1fr 1fr; gap:.18in; }
+  .standard-features ul { margin:0; padding-left:.12in; }
+  .standard-features li { font-size:7.55pt; line-height:1.16; margin-bottom:.025in; }
+  .warranty-box { display:grid; grid-template-columns: 1fr 1fr; gap:.12in; padding:.08in .12in; }
+  .warranty-box p, .warranty-box li { font-size:7.8pt; line-height:1.14; margin:0; }
+  .warranty-box ul { margin:0; padding-left:.12in; }
+
+  .epa-box { position:relative; display:grid; grid-template-rows:.55in 1fr .43in; background: rgba(255,255,255,.60); }
+  .epa-head { background:#000; color:#fff; font:950 23pt Arial; text-align:center; padding:.07in; }
+  .epa-content { display:grid; grid-template-columns: 1fr 1.1in 1fr; align-items:center; text-align:center; padding:.1in .18in; }
+  .mpg-label { font-size:13pt; }
+  .mpg-number { font:950 49pt Arial; line-height:.9; }
+  .mpg-sub { font-size:7.4pt; line-height:1.14; }
+  .fuel-center { border-radius:5px; background:rgba(255,255,255,.68); padding:.1in .05in; font-size:9pt; line-height:1.2; }
+  .fuel-center strong { display:block; font-size:16pt; }
+  .combined { position:absolute; left:2.68in; right:2.68in; bottom:.62in; text-align:center; font-size:9pt; }
+  .range-bar { height:.08in; background:#000; margin:.05in .15in; position:relative; }
+  .range-bar:before { content:"▼"; position:absolute; left:13%; top:-.2in; font-size:15pt; }
+  .epa-footer { background:#000; color:#fff; display:grid; grid-template-columns:.6in 1fr .6in; align-items:center; text-align:center; font-size:9pt; }
+  .epa-seal { width:.38in; height:.38in; border:2px solid #fff; border-radius:50%; margin:auto; }
+
+  .parts-box, .safety-box, .env-box { padding:.07in .10in; }
+  .parts-box { text-align:center; }
+  .parts-title { font:950 12pt Arial; }
+  .parts-line { display:grid; grid-template-columns:1fr auto; gap:.06in; font-size:12pt; line-height:1.0; text-align:left; margin:.02in 0; }
+  .parts-line b { font-weight:950; }
+  .parts-note { font-size:6.5pt; line-height:1.1; margin:.12in 0 .07in; }
+  .country-grid { display:grid; grid-template-columns:1fr 1.15in; gap:.04in; font-size:11pt; line-height:1.1; text-align:left; }
+  .safety-black { background:#000; color:#fff; text-align:center; font:950 12pt Arial; padding:.05in; margin:-.07in -.10in .08in; }
+  .safety-real-row { display:grid; grid-template-columns:1.15in 1fr 1in; gap:.05in; border-bottom:2px solid #000; padding:.08in 0; font-size:10pt; line-height:1.08; }
+  .safe-small { font-size:7pt; line-height:1.12; margin:.04in 0; }
+  .right-footer-black { background:#000; color:#fff; text-align:center; font:900 8pt Arial; padding:.045in; margin:.07in -.10in -.07in; }
+  .env-box { border-color:#2fc660; }
+  .env-title { background:#2fc660; color:#fff; text-align:center; font:20pt Arial; margin:-.07in -.10in .08in; padding:.035in; }
+  .env-bars { display:grid; grid-template-columns:1fr 1fr; gap:.22in; text-align:center; font-size:8pt; }
+  .green { color:#27bd54; font-size:11pt; }
+  .score-bar { height:.16in; background: repeating-linear-gradient(90deg,#000 0 .12in,#fff .12in .15in); border-bottom:1px solid #000; margin:.07in 0 .02in; position:relative; }
+  .score-bar:before { content:"▼"; position:absolute; left:18%; top:-.18in; font-size:11pt; }
+  .env-bottom { background:#2fc660; color:#fff; font-size:7.2pt; line-height:1.15; padding:.035in; margin:.08in -.10in -.07in; }
+  .brand-footer { display:grid; grid-template-columns:1fr .42in; gap:.07in; align-items:end; }
+  .mini-roundel { width:.36in; height:.36in; border:2px solid #000; border-radius:50%; background: conic-gradient(#fff 0 25%, #2084c6 0 50%, #fff 0 75%, #2084c6 0); }
+  .barcode { height:.36in; display:flex; justify-content:center; align-items:stretch; gap:1px; margin:.02in auto; }
   .barcode i { display:block; background:#000; height:100%; }
-  .legal { font-size: 6.4pt; line-height: 1.13; color:#222; margin-top: .08in; }
+
   @media print {
-    html, body { width: 17in; height: 11in; margin: 0 !important; padding: 0 !important; background: #fff; overflow: hidden !important; }
+    html, body { width: 17in; height: 11in; background: #fff; overflow: hidden !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .toolbar { display: none; }
     .preview-wrap, .preview-wrap.fit { display: block; width: 17in; transform: none !important; margin: 0 !important; }
-    .window-sticker { margin: 0 !important; border: 3px solid #000; box-shadow: none; }
+    .bmw-monroney { margin: 0 !important; }
   }
 </style>
 </head>
 <body>
   <div class="toolbar">
-    <span>11x17 landscape BMW window sticker preview. Printing stays full size.</span>
+    <span>11x17 landscape BMW-style window sticker preview. Printing stays full size.</span>
     <div class="toolbar-actions">
       <button class="secondary" onclick="zoomPreview(-0.05)">Zoom Out</button>
       <button class="secondary" onclick="fitPreview()">Fit Screen</button>
@@ -3495,134 +3547,105 @@ function buildWindowStickerHTML() {
   </div>
 
   <div class="preview-wrap" id="previewWrap">
-    <section class="window-sticker">
-      <div class="ws-watermark">Not Original - Copy</div>
-      <div class="ws-grid">
-        <div class="ws-left">
-          <div class="brand-block">
-            <div class="brand-head">
-              <div class="roundel"></div>
-              <div class="tagline">The Ultimate<br>Driving Machine</div>
-            </div>
-            <div class="model-title">2011 BMW M3 Sedan</div>
-            <div class="vehicle-facts">
-              <b>VIN:</b><div><b>${esc(vin)}</b></div>
-              <b>Exterior:</b><div>${esc(formatExteriorLabel(build.exterior))}</div>
-              <b>Interior:</b><div>${esc(build.interior.name)} (${esc(build.interior.code)})</div>
-              <b>Engine:</b><div>4.0L DOHC 32-valve V8 (S65)</div>
-              <b>Transmission:</b><div>${esc(build.transmission.name)} (${esc(build.transmission.code)})</div>
-              <b>Production Date:</b><div>03/2011</div>
-            </div>
-            <div class="bmw-na">
-              BMW of North America, LLC<br>
-              Woodcliff Lake, NJ 07677<br><br>
-              VPC Location: OXNARD, CALIFORNIA<br>
-              Port of Entry: HUENEME, CALIFORNIA
+    <section class="bmw-monroney">
+      <div class="watermark">Not Original</div>
+      <div class="sheet-grid">
+        <div class="panel-box left-pricing">
+          <div class="brand-title">The Ultimate Driving Machine<sup>®</sup></div>
+          <div class="model-title">2011 BMW M3 Sedan</div>
+          <div class="top-price">
+            <div class="top-price-row header"><div>Manufacturer's Suggested Retail Price</div><div>$</div><div>${esc(Number(build.baseMSRP).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}</div></div>
+            <div class="top-price-row"><div><b>Options and Additional Charges:</b></div><div></div><div></div></div>
+            <div style="font-size:7.5pt;line-height:1.1;margin-left:.12in;">(Optional equipment may supersede standard equipment; check with your authorized BMW center.)</div>
+          </div>
+          <div class="pricing-list">
+            ${pricingRowsHtml}
+            <div class="price-row"><div>Destination Charge</div><div>$</div><div class="amount">${esc(Number(build.destinationCharge).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}</div></div>
+            <div class="price-row"><div>Gas Guzzler Tax</div><div>$</div><div class="amount">${esc(Number(build.gasGuzzlerTax).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}</div></div>
+            <div class="total-msrp"><div>Total Suggest Retail Price</div><div>$</div><div class="amount">${esc(Number(build.totalMSRP).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}</div></div>
+          </div>
+          <div class="vin-bottom">VIN: ${esc(vin)}</div>
+        </div>
+
+        <div class="middle-main">
+          <div class="panel-box standard-box">
+            <div class="box-title">Standard Features</div>
+            <div class="standard-features">
+              <ul>${standardColOne.map(item => `<li>${esc(item)}</li>`).join("")}</ul>
+              <ul>${standardColTwo.map(item => `<li>${esc(item)}</li>`).join("")}</ul>
             </div>
           </div>
-
-          <div class="safety">
-            <div class="black-title">Government 5-Star Safety Ratings</div>
-            <div class="safety-body">
-              <div style="display:grid;grid-template-columns:1fr 1.7in;gap:.1in;align-items:center;margin-bottom:.06in;"><b>Overall Vehicle Score</b><div class="stars">★★★★★</div></div>
-              Based on the combined ratings of frontal, side and rollover. Should ONLY be compared to other vehicles of similar size and weight.
-              <div class="rating-row"><b>Frontal<br>Crash</b><div>Driver<br>Passenger</div><div class="stars">★★★★★<br>★★★★★</div></div>
-              <div class="rating-row"><b>Side<br>Crash</b><div>Front seat<br>Rear seat</div><div class="stars">★★★★★<br>★★★★★</div></div>
-              <div class="rating-row"><b>Rollover</b><div></div><div class="stars">★★★★☆</div></div>
-              <div style="background:#000;color:#fff;margin:.07in -.12in -.08in;padding:.08in;text-align:center;font-weight:900;">Source: National Highway Traffic Safety Administration (NHTSA)<br>www.safercar.gov or 1-888-327-4236</div>
+          <div class="panel-box warranty-box">
+            <div>
+              <div class="box-title">BMW Delivery Quality Assurance</div>
+              <p>This BMW vehicle has been designed, engineered and manufactured under strict quality control guidelines. It has been prepared and inspected to ensure that it is free of defects in workmanship and materials in accordance with the New Vehicle Limited Warranty issued by BMW of North America, LLC.</p>
+            </div>
+            <div>
+              <div class="box-title">BMW Ultimate Service</div>
+              <ul>
+                <li>4 year/50,000 mile Full Maintenance Program</li>
+                <li>4 year/50,000 mile limited warranty</li>
+                <li>12 year rust perforation limited warranty</li>
+                <li>4 year/unlimited mile BMW Roadside Assistance Program</li>
+              </ul>
             </div>
           </div>
-
-          <div class="fuel">
-            <div class="fuel-head"><div>EPA<br>DOT</div><div>Fuel Economy and Environment</div><div class="fuel-blue">Gasoline Vehicle</div></div>
-            <div class="fuel-main">
-              <div><div style="font-weight:900;font-size:9pt;">Fuel Economy</div><div class="mpg-big">14</div></div>
-              <div><div class="mpg-label">MPG</div><div style="font-weight:900;font-size:12pt;margin-top:.18in;">12&nbsp;&nbsp;&nbsp;&nbsp;19</div><div style="font-size:7pt;">city&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;highway</div></div>
-              <div class="fuel-cost">You Spend<strong>$7,250</strong>more in fuel costs<br>over 5 years</div>
+          <div class="panel-box epa-box">
+            <div class="epa-head">EPA FUEL Economy Estimates</div>
+            <div class="epa-content">
+              <div><div class="mpg-label">CITY MPG</div><div class="mpg-number">14</div><div class="mpg-sub">Expected range<br>For most drivers<br><b>11 to 17 MPG</b></div><div style="margin-top:.23in;font-weight:900;">Gas Guzzler Tax</div><div style="font:950 18pt Arial;">$1,300</div></div>
+              <div class="fuel-center"><b>Estimated<br>Annual Fuel Cost</b><strong>$3,000</strong><span>based on 15,000 miles at<br>$3.20 per gallon</span></div>
+              <div><div class="mpg-label">HIGHWAY MPG</div><div class="mpg-number">20</div><div class="mpg-sub">Expected range<br>For most drivers<br><b>16 to 24 MPG</b></div><div style="margin-top:.23in;font-weight:900;">Your actual<br>mileage will vary</div><div class="mpg-sub">depending on how you<br>drive and maintain<br>your vehicle.</div></div>
             </div>
-            <div style="font-size:12pt;font-weight:900;padding:0 .12in .08in;">7.1 <span style="font-size:8pt;">gallons per 100 miles</span></div>
-            <div class="fuel-small"><div class="annual">Annual fuel COST<strong>$3,150</strong></div><div class="bar-ratings"><b>Fuel Economy & Greenhouse Gas Rating</b><div class="bar"></div><b>Smog Rating</b><div class="bar"></div></div></div>
-            <div class="fuel-footer"><div><strong>fueleconomy.gov</strong><br>Calculate personalized estimates and compare vehicles</div><div class="qr"></div></div>
+            <div class="combined"><b>Combined Fuel Economy</b><br>This Vehicle<br><span style="font-size:17pt;">16</span><div class="range-bar"></div><div style="display:flex;justify-content:space-between;font-size:7pt;"><span>14</span><span>41</span></div><div>All Compact Cars</div></div>
+            <div class="epa-footer"><div class="epa-seal"></div><div>See the <b>FREE</b> Fuel Economy Guide at dealers or www.fueleconomy.gov</div><div class="epa-seal"></div></div>
           </div>
         </div>
 
-        <div class="ws-middle">
-          <div class="standard">
-            <div class="section-head">Standard Equipment</div>
-            <p>Items featured are included at no extra charge in the standard vehicle price shown at right.</p>
-            <div class="section-sub">Performance and Efficiency</div>
-            <ul>
-              <li>4.0-liter DOHC 32-valve V8 engine (S65)</li>
-              <li>M Double-VANOS and Valvetronic</li>
-              <li>M Drive and Onboard Computer</li>
-              <li>M Dynamic Stability Control (DSC)</li>
-              <li>M Servotronic</li>
-              <li>M Differential Lock</li>
-            </ul>
-            <div class="section-sub">Exterior</div>
-            <ul>
-              <li>Xenon Adaptive Headlights</li>
-              <li>LED Corona Headlight-rings</li>
-              <li>Power-folding, auto-dimming mirrors</li>
-              <li>M Double-spoke alloy wheels</li>
-              <li>Quad exhaust tips</li>
-            </ul>
-            <div class="section-sub">Interior</div>
-            <ul>
-              <li>Novillo Leather Upholstery</li>
-              <li>Power front sport seats with driver memory</li>
-              <li>3-spoke leather-wrapped M steering wheel</li>
-              <li>Automatic climate control</li>
-              <li>iDrive with 8.8 inch display</li>
-              <li>AM/FM/CD/MP3 Audio System</li>
-              <li>HD Radio with Satellite Radio</li>
-            </ul>
-            <div class="section-sub">Safety and Security</div>
-            <ul>
-              <li>Advanced Airbag System</li>
-              <li>Front-seat side-impact airbags</li>
-              <li>Side Curtain Head Protection</li>
-              <li>Dynamic Stability Control (DSC)</li>
-              <li>Tire Pressure Monitor</li>
-              <li>Anti-theft alarm system</li>
-            </ul>
-            <div class="section-sub">Warranty</div>
-            <ul>
-              <li>4-year/50,000-mile New Vehicle Limited Warranty</li>
-              <li>12-year Unlimited Mileage Rust Perforation Limited Warranty</li>
-              <li>4-year Unlimited Mileage Roadside Assistance Program</li>
-            </ul>
+        <div class="right-main">
+          <div class="panel-box parts-box">
+            <div class="parts-title">PARTS CONTENT INFORMATION</div>
+            <div style="font-size:11pt;line-height:1.05;">For Vehicles in this Car Line:</div>
+            <div class="parts-line"><span>US/Canadian Parts Content:</span><b>5%</b></div>
+            <div class="parts-line"><span>Major Source of Foreign Parts Content:</span><b>GERMANY: &nbsp;&nbsp; 75%</b></div>
+            <div class="parts-note">Note: Parts content does not include final assembly, distribution, or other non-parts costs.</div>
+            <div style="font-size:11pt;line-height:1.05;text-align:left;margin-bottom:.04in;">For this Vehicle:</div>
+            <div class="country-grid"><span>Final Assembly Point:</span><b>REGENSBURG, GERMANY</b><span>Country of Origin:<br>Engine:<br>Transmission:</span><b><br>GERMANY<br>GERMANY</b></div>
           </div>
-          <div class="photos">
-            <div><div class="photo-box-title">Exterior</div><div class="photo-box exterior">${exteriorImage ? `<img src="${esc(exteriorImage)}" alt="Exterior">` : "Exterior Image"}</div></div>
-            <div><div class="photo-box-title">Interior</div><div class="photo-box">${interiorImage ? `<img src="${esc(interiorImage)}" alt="Interior">` : "Interior Image"}</div></div>
+          <div class="panel-box safety-box">
+            <div class="safety-black">GOVERNMENT SAFETY RATINGS</div>
+            <div class="safety-real-row"><b>Frontal<br>Crash</b><div><b>Driver</b><br><b>Passenger</b></div><div><b>NOT Rated</b><br><b>NOT Rated</b></div></div>
+            <div class="safe-small">Star ratings based on the risk of injury in a frontal impact. Frontal ratings should ONLY be compared to other vehicles of similar size and weight.</div>
+            <div class="safety-real-row"><b>Side<br>Crash</b><div><b>Front seat</b><br><b>Rear seat</b></div><div><b>NOT Rated</b><br><b>NOT Rated</b></div></div>
+            <div class="safety-real-row" style="border-bottom:1px solid #000;"><b>Rollover</b><div></div><div style="font-size:13pt;">★★★★★</div></div>
+            <div class="safe-small">Star Ratings range from 1 to 5 stars ( ★★★★★ ) with 5 being the highest.<br>Source: National Highway Traffic Safety Administration (NHTSA).</div>
+            <div class="right-footer-black">www.safercar.gov or 1-888-327-4236</div>
+          </div>
+          <div class="panel-box env-box">
+            <div class="env-title">Environmental Performance</div>
+            <div style="text-align:center;font-size:9pt;">Protect the environment, choose vehicles with higher scores:</div>
+            <div class="env-bars">
+              <div><div class="green">Global Warming Score</div><b>3</b><div class="score-bar"></div><div style="display:flex;justify-content:space-between;"><span>1</span><span>10</span></div></div>
+              <div><div class="green">Smog Score</div><b>4</b><div class="score-bar"></div><div style="display:flex;justify-content:space-between;"><span>1</span><span>10</span></div></div>
+            </div>
+            <div class="env-bottom">Vehicle emissions are a primary contributor to global warming and smog. Scores are determined by the California Air Resources Board based on this vehicle's emissions.</div>
           </div>
         </div>
 
-        <div class="ws-right">
-          <div class="optional">
-            <div class="price-top"><span>Base Manufacturer's Suggested Retail Price</span><strong>${esc(moneyFull(build.baseMSRP))}</strong></div>
-            <div class="section-head">Optional Equipment</div>
-            <p style="font-size:8pt;margin:.02in 0 .1in;">Optionally-equipped / Check, excludes options in the standard equipment listed at left.</p>
-            ${optionalRowsHtml}
-            <div class="pricing-summary">
-              <div class="summary-line"><div>Total Optional Equipment</div><div>${esc(moneyFull(totalOptional))}</div></div>
-              <div class="summary-line"><div>Subtotal</div><div>${esc(moneyFull(subtotalBeforeFees))}</div></div>
-              <div class="summary-line"><div>Destination & Handling</div><div>${esc(moneyFull(build.destinationCharge))}</div></div>
-              <div class="summary-line"><div>Gas Guzzler Tax</div><div>${esc(moneyFull(build.gasGuzzlerTax))}</div></div>
-              <div class="total-line"><div>Total Suggested Retail Price</div><div>${esc(moneyFull(build.totalMSRP))}</div></div>
-            </div>
+        <div class="bottom-left">
+          <div style="display:grid;grid-template-columns:.2in 1fr 1fr;gap:.12in;align-items:end;">
+            <div style="writing-mode:vertical-rl;transform:rotate(180deg);">(20110627)</div>
+            <div><b>Sold To:</b><br>${esc(dealerName)}<br>${esc(dealerAddress)}<br>${esc(dealerPhone)}</div>
+            <div><b>Ship To:</b><br>${esc(dealerName)}<br>${esc(dealerAddress)}<br>${esc(dealerPhone)}</div>
           </div>
-
-          <div class="dealer-footer">
-            <div><b>Sold To:</b>${esc(dealerName)}<br>${esc(dealerAddress)}<br>${esc(dealerPhone)}</div>
-            <div><b>Ship To:</b>${esc(dealerName)}<br>${esc(dealerAddress)}<br>${esc(dealerPhone)}</div>
-            <div class="barcode-wrap">
-              <div class="barcode">${barcodeBars}</div>
-              <div>${esc(vin)}</div>
-              <div class="legal">BMW is pleased to offer a 4-year/50,000-mile New Vehicle Limited Warranty. Not an original BMW Monroney label. Recreation for enthusiast documentation only.</div>
-            </div>
-          </div>
+        </div>
+        <div class="bottom-mid">
+          <div>This vehicle is equipped with bumpers that can withstand an impact of 2.5 miles per hour with no damage to the vehicle's body and safety systems, although the bumper and related components may sustain damage.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.16in;"><div>Port of Entry: &nbsp;&nbsp; BRUNSWICK, GEORGIA</div><div>Carrier: &nbsp;&nbsp; HANSEN &amp; ADKINS AUTO TRANSPORT</div></div>
+        </div>
+        <div class="bottom-right">
+          <div><b>BMW of North America, LLC</b><br>Woodcliff Lake, NJ 07677<br><br>VPC Location: BRUNSWICK, GA<br><div class="barcode">${barcodeBars}</div><div style="text-align:center;font-weight:900;">${esc(vin)}</div></div>
+          <div class="brand-footer"><div style="font-size:5pt;text-align:right;">More about BMW<br><br>BMWUSA.COM<br>1-800-334-4BMW</div><div><div class="mini-roundel"></div><div style="font-size:5pt;line-height:1.0;text-align:center;">The Ultimate<br>Driving Machine®</div></div></div>
         </div>
       </div>
     </section>
