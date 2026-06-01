@@ -110,6 +110,31 @@
       background: #f3f4f6;
     }
 
+    .home-submenu-btn {
+      width: 100%;
+      display: block;
+      padding: 12px 16px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      color: #202124;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .home-submenu-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .home-submenu {
+      margin-top: 6px;
+      margin-left: 14px;
+      padding-left: 10px;
+      border-left: 3px solid #1f73ff;
+    }
+
     .topbar-title {
       justify-self: center;
       text-align: center;
@@ -707,6 +732,16 @@
         <a href="https://sman19.github.io/Active-Website/owned.html" target="_blank" rel="noopener noreferrer">
           Owned Vehicles
         </a>
+
+        <button class="home-submenu-btn" type="button" id="configuratorMenuBtn">
+          Configurator ›
+        </button>
+
+        <div class="home-submenu hidden" id="configuratorMenu">
+          <a href="https://sman19.github.io/2011-E90-M3-Configurator/" target="_blank" rel="noopener noreferrer">
+            2011 E90 M3 Sedans
+          </a>
+        </div>
       </div>
     </div>
 
@@ -874,6 +909,8 @@
 
     const homeDropdownBtn = document.getElementById("homeDropdownBtn");
     const homeDropdown = document.getElementById("homeDropdown");
+    const configuratorMenuBtn = document.getElementById("configuratorMenuBtn");
+    const configuratorMenu = document.getElementById("configuratorMenu");
 
     const monroneyOverlay = document.getElementById("monroneyOverlay");
     const monroneyModalText = document.getElementById("monroneyModalText");
@@ -1317,6 +1354,13 @@
       userDropdown.classList.add("hidden");
     });
 
+    if (configuratorMenuBtn && configuratorMenu) {
+      configuratorMenuBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        configuratorMenu.classList.toggle("hidden");
+      });
+    }
+
     userMenuBtn.addEventListener("click", function (event) {
       event.stopPropagation();
       userDropdown.classList.toggle("hidden");
@@ -1330,6 +1374,7 @@
 
       if (!homeDropdown.contains(event.target) && !homeDropdownBtn.contains(event.target)) {
         homeDropdown.classList.add("hidden");
+        if (configuratorMenu) configuratorMenu.classList.add("hidden");
       }
     });
 
