@@ -38,6 +38,9 @@
       align-items: center;
       padding: 0 32px;
       box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      z-index: 3000;
     }
 
     .top-nav-left,
@@ -170,9 +173,12 @@
       top: 64px;
       align-self: flex-start;
       height: calc(100vh - 64px);
+      max-height: calc(100vh - 64px);
+      z-index: 1500;
       transition: width 0.25s ease, min-width 0.25s ease, padding 0.25s ease;
       overflow-y: auto;
       overflow-x: hidden;
+      overscroll-behavior: contain;
     }
 
     .left-sidebar.collapsed {
@@ -1916,10 +1922,85 @@
       runConfiguratorInBackground("sticker", window.__e90StickerPopup);
     }
 
+    function normalizePdfDownloadUrl(urlValue) {
+      const rawValue = String(urlValue || "").trim();
+      if (!rawValue) return "";
+
+      try {
+        const url = new URL(rawValue, window.location.href);
+
+        if (url.hostname === "github.com") {
+          const parts = url.pathname.split("/").filter(Boolean);
+          const blobIndex = parts.indexOf("blob");
+          const rawIndex = parts.indexOf("raw");
+
+          if (parts.length >= 5 && blobIndex === 2) {
+            const owner = parts[0];
+            const repo = parts[1];
+            const ref = parts[3];
+            const filePath = parts.slice(4).map(encodeURIComponent).join("/");
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
+          }
+
+          if (parts.length >= 5 && rawIndex === 2) {
+            const owner = parts[0];
+            const repo = parts[1];
+            const ref = parts[3];
+            const filePath = parts.slice(4).map(encodeURIComponent).join("/");
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
+          }
+        }
+
+        url.searchParams.delete("raw");
+        return url.toString();
+      } catch (error) {
+        return rawValue;
+      }
+    }
+
+    function makeSafePdfFilename(vehicle, fallbackName) {
+      const vin = String(vehicle && vehicle.vin ? vehicle.vin : "").replace(/[^a-z0-9]/gi, "");
+      return `${vin || "E90-M3"}-${fallbackName}.pdf`;
+    }
+
+    async function downloadPdfDirectly(urlValue, filename) {
+      const downloadUrl = normalizePdfDownloadUrl(urlValue);
+      if (!downloadUrl) return;
+
+      try {
+        const response = await fetch(downloadUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = objectUrl;
+        a.download = filename || "document.pdf";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          URL.revokeObjectURL(objectUrl);
+          a.remove();
+        }, 1500);
+      } catch (error) {
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = filename || "document.pdf";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 1000);
+      }
+    }
+
     function handleOEMStickerClick() {
       const vehicle = getSelectedVehicle();
       if (!vehicle || !isAvailableLink(vehicle.sticker)) return;
-      window.open(vehicle.sticker, "_blank", "noopener,noreferrer");
+      downloadPdfDirectly(vehicle.sticker, makeSafePdfFilename(vehicle, "OEM-Sticker"));
     }
 
     function handleInvoiceClick() {
