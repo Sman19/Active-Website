@@ -894,11 +894,15 @@
         </div>
         <div class="side-panel-menu-item" onclick="handleVSpecClick()">
           <span class="side-panel-menu-icon">📋</span>
-          <span class="side-panel-menu-text">V-Spec</span>
+          <span class="side-panel-menu-text">BMW Spec Sheet</span>
         </div>
         <div class="side-panel-menu-item" onclick="handleStickerClick()">
           <span class="side-panel-menu-icon">🏷️</span>
           <span class="side-panel-menu-text">Sticker</span>
+        </div>
+        <div class="side-panel-menu-item" onclick="handleOEMStickerClick()">
+          <span class="side-panel-menu-icon">🏷️</span>
+          <span class="side-panel-menu-text">OEM Sticker</span>
         </div>
         <div class="side-panel-menu-item" onclick="handleInvoiceClick()">
           <span class="side-panel-menu-icon">📄</span>
@@ -1750,22 +1754,40 @@
       if (vehicle && vehicle.details) window.open(vehicle.details, "_blank");
     }
 
-    function handleVSpecClick() {
+    const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
+
+    function getSelectedVehicle() {
       const selectedVin = [...selectedVehicles][0];
-      const vehicle = vehicles.find(v => v.vin === selectedVin);
-      if (vehicle && vehicle.vspec) window.open(vehicle.vspec, "_blank");
+      return vehicles.find(v => v.vin === selectedVin) || null;
+    }
+
+    function openConfiguratorAuto(autoMode) {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !vehicle.vin || vehicle.vin === "-") return;
+
+      const url = new URL(CONFIGURATOR_URL);
+      url.searchParams.set("vin", vehicle.vin);
+      url.searchParams.set("auto", autoMode);
+
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+    }
+
+    function handleVSpecClick() {
+      openConfiguratorAuto("spec");
     }
 
     function handleStickerClick() {
-      const selectedVin = [...selectedVehicles][0];
-      const vehicle = vehicles.find(v => v.vin === selectedVin);
-      if (vehicle && vehicle.sticker) window.open(vehicle.sticker, "_blank");
+      openConfiguratorAuto("sticker");
+    }
+
+    function handleOEMStickerClick() {
+      const vehicle = getSelectedVehicle();
+      if (vehicle && vehicle.sticker) window.open(vehicle.sticker, "_blank", "noopener,noreferrer");
     }
 
     function handleInvoiceClick() {
-      const selectedVin = [...selectedVehicles][0];
-      const vehicle = vehicles.find(v => v.vin === selectedVin);
-      if (vehicle && vehicle.invoice) window.open(vehicle.invoice, "_blank");
+      const vehicle = getSelectedVehicle();
+      if (vehicle && vehicle.invoice) window.open(vehicle.invoice, "_blank", "noopener,noreferrer");
     }
 
     function renderTable(rowsToRender) {
