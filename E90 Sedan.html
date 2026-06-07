@@ -1761,28 +1761,106 @@
       return vehicles.find(v => v.vin === selectedVin) || null;
     }
 
-    function openConfiguratorAuto(autoMode) {
-      const vehicle = getSelectedVehicle();
-      if (!vehicle || !vehicle.vin || vehicle.vin === "-") return;
-
+    function buildConfiguratorAutoUrl(autoMode, vehicle) {
       const url = new URL(CONFIGURATOR_URL);
       url.searchParams.set("vin", vehicle.vin);
       url.searchParams.set("auto", autoMode);
-
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      url.searchParams.set("handoff", "1");
+      url.searchParams.set("_", String(Date.now()));
+      return url.toString();
     }
 
+    function removeExistingGeneratorFrame() {
+      const existing = document.getElementById("configurator-document-generator-frame");
+      if (existing) existing.remove();
+    }
+
+    function runConfiguratorInBackground(autoMode, popupWindow) {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !vehicle.vin || vehicle.vin === "-") {
+        alert("Please select a vehicle with a valid VIN first.");
+        if (popupWindow) popupWindow.close();
+        return;
+      }
+
+      removeExistingGeneratorFrame();
+
+      const iframe = document.createElement("iframe");
+      iframe.id = "configurator-document-generator-frame";
+      iframe.title = "Configurator document generator";
+      iframe.style.position = "fixed";
+      iframe.style.left = "-9999px";
+      iframe.style.top = "-9999px";
+      iframe.style.width = "1px";
+      iframe.style.height = "1px";
+      iframe.style.opacity = "0";
+      iframe.style.pointerEvents = "none";
+      iframe.style.border = "0";
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.src = buildConfiguratorAutoUrl(autoMode, vehicle);
+      document.body.appendChild(iframe);
+    }
+
+    window.addEventListener("message", function(event) {
+      if (event.origin !== "https://sman19.github.io") return;
+      const data = event.data || {};
+
+
+      if (data.type === "e90-pdf-data-url") {
+        const a = document.createElement("a");
+        a.href = data.dataUrl;
+        a.download = data.filename || "BMW-Spec-Sheet.pdf";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 1000);
+        removeExistingGeneratorFrame();
+      }
+
+      if (data.type === "e90-window-sticker-html") {
+        const popup = window.__e90StickerPopup;
+        if (popup && !popup.closed) {
+          popup.document.open();
+          popup.document.write(data.html || "");
+          popup.document.close();
+          popup.focus();
+        } else {
+          const newPopup = window.open("", "_blank");
+          if (newPopup) {
+            newPopup.document.open();
+            newPopup.document.write(data.html || "");
+            newPopup.document.close();
+          } else {
+            alert("Window sticker generated, but popup was blocked. Please allow popups for this site.");
+          }
+        }
+        window.__e90StickerPopup = null;
+        removeExistingGeneratorFrame();
+      }
+
+      if (data.type === "e90-document-ready" || data.type === "e90-document-error") {
+        removeExistingGeneratorFrame();
+      }
+    });
+
     function handleVSpecClick() {
-      openConfiguratorAuto("spec");
+      runConfiguratorInBackground("spec");
     }
 
     function handleStickerClick() {
-      openConfiguratorAuto("sticker");
+      window.__e90StickerPopup = window.open("", "_blank");
+      if (window.__e90StickerPopup) {
+        window.__e90StickerPopup.document.open();
+        window.__e90StickerPopup.document.write(`<!DOCTYPE html><html><head><title>Generating Window Sticker</title><style>html,body{height:100%;margin:0}body{font-family:Arial,sans-serif;color:#111827;background:#f8fafc;display:flex;align-items:center;justify-content:center}.loader-card{background:white;border:1px solid #e5e7eb;border-radius:14px;padding:28px 34px;box-shadow:0 18px 45px rgba(15,23,42,.14);text-align:center;min-width:280px}.spinner{width:42px;height:42px;border:4px solid #e5e7eb;border-top-color:#dc2626;border-radius:999px;animation:spin .85s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}h2{font-size:18px;margin:0 0 8px}p{font-size:13px;color:#6b7280;margin:0}</style></head><body><div class="loader-card"><div class="spinner"></div><h2>Generating Window Sticker</h2><p>Loading final document...</p></div></body></html>`);
+        window.__e90StickerPopup.document.close();
+      }
+      runConfiguratorInBackground("sticker", window.__e90StickerPopup);
     }
 
     function handleOEMStickerClick() {
       const vehicle = getSelectedVehicle();
       if (vehicle && vehicle.sticker) window.open(vehicle.sticker, "_blank", "noopener,noreferrer");
+      else alert("No OEM sticker link is available for this vehicle.");
     }
 
     function handleInvoiceClick() {
