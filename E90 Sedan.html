@@ -1851,6 +1851,13 @@
       url.searchParams.set("vin", vehicle.vin);
       url.searchParams.set("auto", autoMode);
       url.searchParams.set("handoff", "1");
+
+      // Pass package codes from the selected database row so the hidden
+      // configurator generator can build the correct optioned document even
+      // if its CSV column order changes or the VIN lookup returns only base data.
+      const packageCodes = (vehicle.packageCodes || []).filter(Boolean).join(",");
+      if (packageCodes) url.searchParams.set("packages", packageCodes);
+
       url.searchParams.set("_", String(Date.now()));
       return url.toString();
     }
