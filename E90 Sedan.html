@@ -466,6 +466,39 @@
 
     .side-panel-menu-item:nth-child(2n) { border-right: none; }
     .side-panel-menu-item:hover { background: #b91c1c; }
+
+    .side-panel-menu-item.is-disabled {
+      background: #6b7280;
+      color: rgba(255,255,255,0.72);
+      cursor: not-allowed;
+      position: relative;
+      filter: grayscale(1);
+    }
+
+    .side-panel-menu-item.is-disabled:hover { background: #6b7280; }
+
+    .side-panel-menu-item.is-disabled::after {
+      content: "";
+      position: absolute;
+      width: 72%;
+      height: 3px;
+      background: rgba(255,255,255,0.78);
+      transform: rotate(-24deg);
+      border-radius: 999px;
+      top: 50%;
+      left: 14%;
+      pointer-events: none;
+    }
+
+    .side-panel-menu-item.is-disabled .side-panel-menu-text::after {
+      content: "Not available";
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
     .side-panel-menu-icon { margin-bottom: 8px; font-size: 18px; }
     .side-panel-menu-text { font-size: 14px; font-weight: 500; text-align: center; }
 
@@ -888,23 +921,23 @@
     </div>
     <div class="side-panel-menu">
       <div class="side-panel-menu-grid">
-        <div class="side-panel-menu-item" onclick="handleDetailsClick()">
+        <div class="side-panel-menu-item" id="menu-details" onclick="handleDetailsClick()">
           <span class="side-panel-menu-icon">☰</span>
           <span class="side-panel-menu-text">Details</span>
         </div>
-        <div class="side-panel-menu-item" onclick="handleVSpecClick()">
+        <div class="side-panel-menu-item" id="menu-bmw-spec" onclick="handleVSpecClick()">
           <span class="side-panel-menu-icon">📋</span>
           <span class="side-panel-menu-text">BMW Spec Sheet</span>
         </div>
-        <div class="side-panel-menu-item" onclick="handleStickerClick()">
+        <div class="side-panel-menu-item" id="menu-sticker" onclick="handleStickerClick()">
           <span class="side-panel-menu-icon">🏷️</span>
           <span class="side-panel-menu-text">Sticker</span>
         </div>
-        <div class="side-panel-menu-item" onclick="handleOEMStickerClick()">
+        <div class="side-panel-menu-item" id="menu-oem-sticker" onclick="handleOEMStickerClick()">
           <span class="side-panel-menu-icon">🏷️</span>
           <span class="side-panel-menu-text">OEM Sticker</span>
         </div>
-        <div class="side-panel-menu-item" onclick="handleInvoiceClick()">
+        <div class="side-panel-menu-item" id="menu-invoice" onclick="handleInvoiceClick()">
           <span class="side-panel-menu-icon">📄</span>
           <span class="side-panel-menu-text">Invoice</span>
         </div>
@@ -1727,6 +1760,27 @@
       updateSelectionCount();
     }
 
+    function isAvailableLink(value) {
+      const clean = String(value || "").trim();
+      return Boolean(clean && clean !== "-" && clean.toLowerCase() !== "n/a" && clean.toLowerCase() !== "na");
+    }
+
+    function setMenuItemAvailability(id, available) {
+      const item = document.getElementById(id);
+      if (!item) return;
+      item.classList.toggle("is-disabled", !available);
+      item.setAttribute("aria-disabled", available ? "false" : "true");
+    }
+
+    function updateSidePanelMenuAvailability(vehicleInfo) {
+      const hasValidVin = isAvailableLink(vehicleInfo && vehicleInfo.vin);
+      setMenuItemAvailability("menu-details", isAvailableLink(vehicleInfo && vehicleInfo.details));
+      setMenuItemAvailability("menu-bmw-spec", hasValidVin);
+      setMenuItemAvailability("menu-sticker", hasValidVin);
+      setMenuItemAvailability("menu-oem-sticker", isAvailableLink(vehicleInfo && vehicleInfo.sticker));
+      setMenuItemAvailability("menu-invoice", isAvailableLink(vehicleInfo && vehicleInfo.invoice));
+    }
+
     function openSidePanel(vehicleInfo) {
       const panel = document.getElementById("side-panel");
       const vehicleName = document.getElementById("panel-vehicle-name");
@@ -1741,6 +1795,7 @@
 
       vehicleName.textContent = `${modelType} M3`;
       vehicleInfoEl.textContent = `${vehicleInfo.vin || "Unknown VIN"}`;
+      updateSidePanelMenuAvailability(vehicleInfo);
       panel.classList.add("open");
     }
 
@@ -1749,9 +1804,9 @@
     }
 
     function handleDetailsClick() {
-      const selectedVin = [...selectedVehicles][0];
-      const vehicle = vehicles.find(v => v.vin === selectedVin);
-      if (vehicle && vehicle.details) window.open(vehicle.details, "_blank");
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.details)) return;
+      window.open(vehicle.details, "_blank", "noopener,noreferrer");
     }
 
     const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
@@ -1844,10 +1899,14 @@
     });
 
     function handleVSpecClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
       runConfiguratorInBackground("spec");
     }
 
     function handleStickerClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
       window.__e90StickerPopup = window.open("", "_blank");
       if (window.__e90StickerPopup) {
         window.__e90StickerPopup.document.open();
@@ -1859,13 +1918,14 @@
 
     function handleOEMStickerClick() {
       const vehicle = getSelectedVehicle();
-      if (vehicle && vehicle.sticker) window.open(vehicle.sticker, "_blank", "noopener,noreferrer");
-      else alert("No OEM sticker link is available for this vehicle.");
+      if (!vehicle || !isAvailableLink(vehicle.sticker)) return;
+      window.open(vehicle.sticker, "_blank", "noopener,noreferrer");
     }
 
     function handleInvoiceClick() {
       const vehicle = getSelectedVehicle();
-      if (vehicle && vehicle.invoice) window.open(vehicle.invoice, "_blank", "noopener,noreferrer");
+      if (!vehicle || !isAvailableLink(vehicle.invoice)) return;
+      window.open(vehicle.invoice, "_blank", "noopener,noreferrer");
     }
 
     function renderTable(rowsToRender) {
