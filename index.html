@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
   <title>M Database</title>
 
   <link
@@ -725,6 +726,41 @@
         height: 340px;
         background-position: center 30%;
         background-size: cover;
+      }
+
+
+      /* Mobile Home dropdown fix: keep Configurator submenu below, not off to the right */
+      .home-dropdown {
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 360px);
+        min-width: 0;
+      }
+
+      .home-submenu-wrap {
+        position: relative;
+      }
+
+      .home-submenu {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        min-width: 0;
+        margin-top: 8px;
+        box-shadow: none;
+        border-radius: 10px;
+        z-index: 1001;
+      }
+
+      .home-submenu::before {
+        display: none;
+      }
+
+      .home-submenu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
     }
   </style>
