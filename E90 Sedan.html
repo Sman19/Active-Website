@@ -1953,6 +1953,9 @@
       try {
         const url = new URL(rawValue, window.location.href);
 
+        // GitHub "blob" links must become raw.githubusercontent links.
+        // IMPORTANT: do not encode an already-encoded path again.
+        // "%20" must stay "%20", not become "%2520", or GitHub returns 404.
         if (url.hostname === "github.com") {
           const parts = url.pathname.split("/").filter(Boolean);
           const blobIndex = parts.indexOf("blob");
@@ -1962,7 +1965,7 @@
             const owner = parts[0];
             const repo = parts[1];
             const ref = parts[3];
-            const filePath = parts.slice(4).map(encodeURIComponent).join("/");
+            const filePath = parts.slice(4).join("/");
             return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
           }
 
@@ -1970,9 +1973,14 @@
             const owner = parts[0];
             const repo = parts[1];
             const ref = parts[3];
-            const filePath = parts.slice(4).map(encodeURIComponent).join("/");
+            const filePath = parts.slice(4).join("/");
             return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
           }
+        }
+
+        // If the CSV already has a raw.githubusercontent.com link, leave it alone.
+        if (url.hostname === "raw.githubusercontent.com") {
+          return rawValue;
         }
 
         url.searchParams.delete("raw");
