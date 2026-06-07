@@ -1493,8 +1493,15 @@
         return true;
       });
 
+      const selectedVin = [...selectedVehicles][0];
+      if (selectedVin && !filteredVehicles.some(vehicle => vehicle.vin === selectedVin)) {
+        selectedVehicles.clear();
+        closeSidePanel();
+      }
+
       document.getElementById("count").textContent = filteredVehicles.length;
       renderTable(filteredVehicles);
+      updateSelectionCount();
       updateCharts();
     }
 
@@ -1767,7 +1774,7 @@
       const text = document.getElementById("selection-count-text");
 
       if (count > 0) {
-        text.textContent = `${count} Selected`;
+        text.textContent = count === 1 ? "1 Selected" : `${count} Selected`;
         counter.classList.add("visible");
       } else {
         counter.classList.remove("visible");
@@ -1775,16 +1782,34 @@
       }
     }
 
+    function clearAllVehicleSelections() {
+      selectedVehicles.clear();
+
+      document.querySelectorAll('.table-row').forEach(row => {
+        row.classList.remove('selected');
+      });
+
+      document.querySelectorAll('.cell-checkbox input[type="checkbox"]').forEach(input => {
+        input.checked = false;
+      });
+    }
+
     function handleCheckboxChange(checkbox, vehicleInfo) {
       const row = checkbox.closest(".table-row");
 
+      // Only one vehicle should ever be selected.
+      // When a new checkbox is selected, reset every previous row first so
+      // BMW Spec Sheet, Sticker, OEM Sticker, and Invoice always use the
+      // current vehicle, not the first VIN that was selected.
       if (checkbox.checked) {
+        clearAllVehicleSelections();
         selectedVehicles.add(vehicleInfo.vin);
-        row.classList.add("selected");
+        checkbox.checked = true;
+        if (row) row.classList.add("selected");
         openSidePanel(vehicleInfo);
       } else {
         selectedVehicles.delete(vehicleInfo.vin);
-        row.classList.remove("selected");
+        if (row) row.classList.remove("selected");
       }
 
       updateSelectionCount();
@@ -2055,6 +2080,8 @@
       rowsToRender.forEach((vehicle, index) => {
         const row = document.createElement("div");
         row.className = "table-row";
+        const isSelected = selectedVehicles.has(vehicle.vin);
+        if (isSelected) row.classList.add("selected");
 
         const colorData = vehicle.exteriorData || {};
         const interiorData = vehicle.interiorData || {};
@@ -2072,7 +2099,7 @@
 
         row.innerHTML = `
           <div class="cell cell-checkbox">
-            <input type="checkbox" />
+            <input type="checkbox" ${isSelected ? "checked" : ""} />
           </div>
 
           <div class="cell cell-status">
