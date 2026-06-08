@@ -903,12 +903,12 @@
               <div class="header-cell header-status">Cat.</div>
               <div class="header-cell header-image">Image</div>
               <div class="header-cell header-model">Model</div>
-              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span></div>
-              <div class="header-cell header-interior sortable-header" data-sort-field="interior">Interior <span class="sort-indicator" data-sort-indicator="interior"></span></div>
+              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior" title="Click to sort A-Z / Z-A. Use Reset to return to VIN order">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span></div>
+              <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Use Reset to return to VIN order">Interior <span class="sort-indicator" data-sort-indicator="interior"></span></div>
               <div class="header-cell header-year">Year</div>
               <div class="header-cell header-vin">VIN</div>
               <div class="header-cell header-packages">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
-              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
+              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Use Reset to return to VIN order">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
               <div class="header-cell header-dealer">Dealer Name</div>
             </div>
 
@@ -1464,10 +1464,36 @@
       applyFilters();
     }
 
+    function getSortLabel() {
+      if (!currentSort.field || !currentSort.direction) return "";
+
+      const fieldLabel = {
+        msrp: "MSRP",
+        exterior: "Exterior",
+        interior: "Interior"
+      }[currentSort.field] || currentSort.field;
+
+      const directionLabel = currentSort.field === "msrp"
+        ? (currentSort.direction === "desc" ? "High to Low" : "Low to High")
+        : (currentSort.direction === "asc" ? "A to Z" : "Z to A");
+
+      return `${fieldLabel}: ${directionLabel}`;
+    }
+
+    function resetSortOnly() {
+      currentSort.field = null;
+      currentSort.direction = null;
+      applyFilters();
+    }
+
     function clearAllFilters() {
       document.querySelectorAll(".filter-input").forEach(input => {
         input.value = "";
       });
+
+      currentSort.field = null;
+      currentSort.direction = null;
+
       applyFilters();
     }
 
@@ -1476,7 +1502,9 @@
       activeFiltersContainer.innerHTML = "";
 
       const entries = Object.entries(filters);
-      if (!entries.length) return;
+      const sortLabel = getSortLabel();
+
+      if (!entries.length && !sortLabel) return;
 
       entries.forEach(([field, value]) => {
         const chip = document.createElement("span");
@@ -1488,14 +1516,28 @@
         activeFiltersContainer.appendChild(chip);
       });
 
+      if (sortLabel) {
+        const sortChip = document.createElement("span");
+        sortChip.className = "filter-chip";
+        sortChip.innerHTML = `
+          <span>Sort: ${escapeHtml(sortLabel)}</span>
+          <span class="filter-chip-remove" data-sort-remove="true">×</span>
+        `;
+        activeFiltersContainer.appendChild(sortChip);
+      }
+
       const clearBtn = document.createElement("button");
       clearBtn.className = "clear-filters-btn";
-      clearBtn.textContent = "Clear";
+      clearBtn.textContent = "Reset";
       clearBtn.addEventListener("click", clearAllFilters);
       activeFiltersContainer.appendChild(clearBtn);
 
-      activeFiltersContainer.querySelectorAll(".filter-chip-remove").forEach(btn => {
+      activeFiltersContainer.querySelectorAll(".filter-chip-remove[data-field]").forEach(btn => {
         btn.addEventListener("click", () => removeFilter(btn.dataset.field));
+      });
+
+      activeFiltersContainer.querySelectorAll(".filter-chip-remove[data-sort-remove]").forEach(btn => {
+        btn.addEventListener("click", resetSortOnly);
       });
     }
 
@@ -1573,18 +1615,13 @@
       if (currentSort.field !== field) {
         currentSort.field = field;
         currentSort.direction = field === "msrp" ? "desc" : "asc";
-      } else if (currentSort.direction === "desc") {
-        currentSort.direction = "asc";
-      } else if (currentSort.direction === "asc") {
-        currentSort.field = null;
-        currentSort.direction = null;
       } else {
-        currentSort.direction = field === "msrp" ? "desc" : "asc";
+        currentSort.direction = currentSort.direction === "desc" ? "asc" : "desc";
       }
 
-      filteredVehicles = applyCurrentSort(filteredVehicles);
-      renderTable(filteredVehicles);
-      updateSortIndicators();
+      // Rebuild from the original CSV/VIN order every time, then apply the active sort.
+      // Use the Reset button in the active filter bar to return to the normal VIN order.
+      applyFilters();
     }
 
     function setupSortableHeaders() {
