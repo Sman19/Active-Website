@@ -841,8 +841,8 @@
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
-              <option value="2010 E90 M3 Sedan.csv">2011 E92 M3 Coupe</option>
               <option value="2011 E90 M3 Sedan.csv">2011 E90 M3 Sedan</option>
+              <option value="2010 E90 M3 Sedan.csv">2010 E90 M3 Sedan</option>
             </select>
           </div>
 
@@ -1107,7 +1107,7 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");<span class="badge-m3">M3</span>
+        .replace(/'/g, "&#39;");
     }
 
     function debounce(func, wait) {
@@ -2337,7 +2337,7 @@
         currentCsvFile = getCsvFileFromUrl();
         syncDatasetDropdown();
 
-        const response = await fetch(encodeURI(currentCsvFile));
+        const response = await fetch(encodeURI(currentCsvFile), { cache: "no-store" });
         if (!response.ok) {
           throw new Error(`Could not load ${currentCsvFile}`);
         }
