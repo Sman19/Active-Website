@@ -2014,6 +2014,58 @@
 
     const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
 
+    // Easy PDF / Window Sticker pull alert.
+    // Replace this with your Google Apps Script Web App URL after you deploy it.
+    const PDF_ALERT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwr_S10LZqvDM9RI6Yg-Rwl30Go_ERDrx1Pne-HzSs9CZcWpau0Lep1kUiEn2X9HFS9/exec";
+    const PDF_ALERT_TO_EMAIL = "carboicreations@outlook.com";
+
+    function getAuthProUsername() {
+      if (typeof login !== "undefined" && login) return String(login);
+      const el = document.getElementById("auth-username");
+      return el && el.textContent ? el.textContent.trim() : "Member";
+    }
+
+    function getAuthProEmail() {
+      const possibleNames = ["email", "user_email", "member_email", "auth_email"];
+      for (const name of possibleNames) {
+        try {
+          if (typeof window[name] !== "undefined" && window[name]) return String(window[name]);
+        } catch (err) {}
+      }
+      return "";
+    }
+
+    function sendPdfPullAlert(documentType, vehicle) {
+      if (!PDF_ALERT_WEBHOOK_URL || PDF_ALERT_WEBHOOK_URL.includes("PASTE_GOOGLE_APPS_SCRIPT")) {
+        console.warn("PDF alert skipped: add your Google Apps Script Web App URL to PDF_ALERT_WEBHOOK_URL.");
+        return;
+      }
+
+      const payload = {
+        alertTo: PDF_ALERT_TO_EMAIL,
+        username: getAuthProUsername(),
+        email: getAuthProEmail(),
+        vin: vehicle && vehicle.vin ? vehicle.vin : "",
+        year: vehicle && vehicle.year ? vehicle.year : "",
+        model: vehicle && vehicle.model ? vehicle.model : "",
+        documentType,
+        pulledAt: new Date().toLocaleString(),
+        pulledAtIso: new Date().toISOString(),
+        pageUrl: window.location.href
+      };
+
+      try {
+        fetch(PDF_ALERT_WEBHOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        }).catch(err => console.warn("PDF alert failed:", err));
+      } catch (err) {
+        console.warn("PDF alert failed:", err);
+      }
+    }
+
     function getSelectedVehicle() {
       const selectedVin = [...selectedVehicles][0];
       return vehicles.find(v => v.vin === selectedVin) || null;
@@ -2024,6 +2076,9 @@
       url.searchParams.set("vin", vehicle.vin);
       url.searchParams.set("auto", autoMode);
       url.searchParams.set("handoff", "1");
+      url.searchParams.set("authuser", getAuthProUsername());
+      const authEmail = getAuthProEmail();
+      if (authEmail) url.searchParams.set("authemail", authEmail);
 
       // Pass package codes from the selected database row so the hidden
       // configurator generator can build the correct optioned document even
@@ -2072,6 +2127,7 @@
 
 
       if (data.type === "e90-pdf-data-url") {
+        sendPdfPullAlert("BMW Spec Sheet PDF", getSelectedVehicle());
         const a = document.createElement("a");
         a.href = data.dataUrl;
         a.download = data.filename || "BMW-Spec-Sheet.pdf";
@@ -2083,6 +2139,7 @@
       }
 
       if (data.type === "e90-window-sticker-html") {
+        sendPdfPullAlert("Window Sticker", getSelectedVehicle());
         const popup = window.__e90StickerPopup;
         if (popup && !popup.closed) {
           popup.document.open();
