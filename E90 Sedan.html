@@ -1110,6 +1110,15 @@
         .replace(/'/g, "&#39;");
     }
 
+    function formatVin(vin) {
+      vin = String(vin || "").trim();
+
+      if (vin.length !== 17) return vin;
+
+      // Hide the 9th digit/check digit and keep the full VIN stored for searching/links.
+      return vin.slice(0, 8) + "-" + vin.slice(9);
+    }
+
     function debounce(func, wait) {
       let timeout;
       return function (...args) {
@@ -1997,7 +2006,7 @@
       }
 
       vehicleName.textContent = `${modelType} M3`;
-      vehicleInfoEl.textContent = `${vehicleInfo.vin || "Unknown VIN"}`;
+      vehicleInfoEl.textContent = `${formatVin(vehicleInfo.vin) || "Unknown VIN"}`;
       updateSidePanelMenuAvailability(vehicleInfo);
       panel.classList.add("open");
     }
@@ -2351,8 +2360,8 @@
 
           <div class="cell cell-vin">
             <div class="tooltip">
-              <span class="vin-text" id="vin-${index}">${escapeHtml(vehicle.vin)}</span>
-              <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.vin)}</div>
+              <span class="vin-text" id="vin-${index}">${escapeHtml(formatVin(vehicle.vin))}</span>
+              <div class="tooltiptext tooltip-red-content">${escapeHtml(formatVin(vehicle.vin))}</div>
             </div>
             <button class="copy-btn" data-copy-target="vin-${index}" title="Copy VIN">⧉</button>
           </div>
