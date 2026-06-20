@@ -947,8 +947,8 @@
             </span>
             <div id="active-filters" class="active-filters-inline"></div>
             <div class="admin-tools" id="admin-tools">
-              <span class="admin-note">Admin comments mode</span>
-              <button class="admin-save-btn" type="button" onclick="downloadUpdatedCsv()">Save updated CSV</button>
+              <span class="admin-note">Admin comments mode — Column M</span>
+              <button class="admin-save-btn" type="button" onclick="downloadUpdatedCsv()">Save updated CSV for GitHub</button>
             </div>
           </div>
         </div>
@@ -1065,7 +1065,7 @@
     let currentCsvFile = "2011 E90 M3 Sedan.csv";
     let csvHeaders = [];
     let csvRowsByVin = new Map();
-    let commentsHeaderName = "Comments";
+    let commentsHeaderName = "Notes";
     const ADMIN_USERS = ["sman201", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
     let filteredVehicles = [];
@@ -1305,21 +1305,34 @@
       if (!lines.length) return [];
 
       csvHeaders = parseCSVLine(lines[0]).map(h => h.trim());
-      const noteHeader = csvHeaders.find(h => ["notes", "note", "comments", "comment"].includes(h.toLowerCase().trim()));
-      commentsHeaderName = noteHeader || csvHeaders[12] || "Comments";
 
-      if (!csvHeaders.includes(commentsHeaderName)) {
-        csvHeaders.push(commentsHeaderName);
+      // Column M is the permanent Notes/Comments source.
+      // Zero-based index 12 = spreadsheet Column M.
+      const commentsColumnIndex = 12;
+
+      while (csvHeaders.length <= commentsColumnIndex) {
+        csvHeaders.push("");
       }
+
+      commentsHeaderName = csvHeaders[commentsColumnIndex] || "Notes";
+      csvHeaders[commentsColumnIndex] = commentsHeaderName;
 
       csvRowsByVin = new Map();
 
       return lines.slice(1).map(line => {
         const values = parseCSVLine(line);
+
+        while (values.length <= commentsColumnIndex) {
+          values.push("");
+        }
+
         const row = {};
         csvHeaders.forEach((header, index) => {
           row[header] = values[index] || "";
         });
+
+        // Always keep the visible Comments box tied directly to Column M.
+        row[commentsHeaderName] = values[commentsColumnIndex] || "";
         row.__originalValues = values;
         return row;
       });
@@ -1352,15 +1365,8 @@
     }
 
     function getCommentsFromRow(row) {
-      return getField(row, [
-        "Comments",
-        "Comment",
-        "NOTES",
-        "Notes",
-        "NOTE",
-        "Note",
-        commentsHeaderName
-      ]) || row[commentsHeaderName] || "";
+      // Do not search other similarly named columns; comments must come from Column M only.
+      return row[commentsHeaderName] || "";
     }
 
     function setCommentForVehicle(vin, value) {
@@ -1399,7 +1405,7 @@
       const a = document.createElement("a");
       const baseName = String(currentCsvFile || "vehicles.csv").replace(/\.csv$/i, "");
       a.href = url;
-      a.download = `${baseName} - updated comments.csv`;
+      a.download = `${baseName}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -2554,7 +2560,7 @@
           <div class="cell cell-comments">
             ${
               isAdminUser()
-                ? `<textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" placeholder="Add comments...">${escapeHtml(vehicle.comments || "")}</textarea>`
+                ? `<textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" placeholder="Add note/comment...">${escapeHtml(vehicle.comments || "")}</textarea>`
                 : `<div class="comments-display">${escapeHtml(vehicle.comments || "-")}</div>`
             }
           </div>
