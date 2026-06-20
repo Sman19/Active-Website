@@ -955,7 +955,7 @@
             <div id="active-filters" class="active-filters-inline"></div>
             <div class="admin-tools" id="admin-tools">
               <span class="admin-note">Admin comments mode — Column M</span>
-              <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save comments to GitHub</button>
+              <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save comments</button>
             </div>
           </div>
         </div>
@@ -1076,7 +1076,8 @@
 
     // Paste your Google Apps Script Web App URL here.
     // This lets the admin Save button update the CSV in GitHub directly instead of downloading a file.
-    const GITHUB_SAVE_WEBHOOK_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const GITHUB_SAVE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxJyobR2ghwsldwXn4OPwXOgm2f8UM1CtF3gljRzHQFIMxyuih4_cecbcPod2jRz0_YFw/exec";
+    const COMMENTS_SAVE_TOKEN = "CHANGE_THIS_PASSWORD";
     const ADMIN_USERS = ["sman201", "admin", "seth", "seth c", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
     let filteredVehicles = [];
@@ -1448,7 +1449,12 @@
       }
 
       if (!GITHUB_SAVE_WEBHOOK_URL || GITHUB_SAVE_WEBHOOK_URL.includes("PASTE_YOUR")) {
-        alert("GitHub save endpoint is not configured yet. Paste your Google Apps Script Web App URL into GITHUB_SAVE_WEBHOOK_URL.");
+        alert("Save endpoint is not configured yet. Paste your Google Apps Script Web App URL into GITHUB_SAVE_WEBHOOK_URL.");
+        return;
+      }
+
+      if (!COMMENTS_SAVE_TOKEN || COMMENTS_SAVE_TOKEN === "CHANGE_THIS_PASSWORD") {
+        alert("Set COMMENTS_SAVE_TOKEN in this HTML to match ADMIN_TOKEN in Apps Script before saving.");
         return;
       }
 
@@ -1461,15 +1467,24 @@
           button.textContent = "Saving...";
         }
 
-        const csv = buildUpdatedCsvFromCurrentComments();
+        const updates = [];
+
+        document.querySelectorAll(".comments-edit").forEach(textarea => {
+          setCommentForVehicle(textarea.dataset.vin, textarea.value);
+          updates.push({
+            vin: textarea.dataset.vin,
+            comment: textarea.value
+          });
+        });
 
         const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
           method: "POST",
           mode: "cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            fileName: currentCsvFile,
-            csv: csv,
+            token: COMMENTS_SAVE_TOKEN,
+            sheetName: currentCsvFile,
+            updates: updates,
             source: "E90 Admin Comments",
             updatedBy: getCurrentLoginName() || "Admin",
             updatedAt: new Date().toISOString()
@@ -1480,18 +1495,25 @@
         let result = {};
         try { result = JSON.parse(resultText); } catch (e) {}
 
-        if (!response.ok || result.ok === false) {
-          throw new Error(result.error || resultText || "GitHub save failed.");
+        if (!response.ok || result.success === false || result.ok === false) {
+          throw new Error(result.error || resultText || "Save failed.");
         }
 
-        alert("Comments saved to GitHub successfully.");
+        const savedCount = typeof result.saved === "number" ? result.saved : updates.length;
+        const missingCount = Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
+
+        if (missingCount) {
+          alert(`Comments saved. ${savedCount} row(s) updated. ${missingCount} VIN(s) were not found in the sheet.`);
+        } else {
+          alert(`Comments saved successfully. ${savedCount} row(s) updated.`);
+        }
       } catch (error) {
         console.error(error);
         alert("Save failed: " + (error && error.message ? error.message : error));
       } finally {
         if (button) {
           button.disabled = false;
-          button.textContent = originalText || "Save comments to GitHub";
+          button.textContent = originalText || "Save comments";
         }
       }
     }
