@@ -347,7 +347,7 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    .grid-inner { min-width: 2140px; }
+    .grid-inner { min-width: 2520px; }
     .left-sidebar.collapsed + .main-content .grid-wrapper {
       max-width: calc(100vw - 44px);
     }
@@ -406,6 +406,7 @@
     .header-packages { width: 400px; }
     .header-msrp { width: 120px; }
     .header-dealer { width: 280px; }
+    .header-comments { width: 380px; }
 
     .cell-status { width: 40px; }
     .cell-checkbox { width: 40px; }
@@ -418,6 +419,68 @@
     .cell-packages { width: 400px; }
     .cell-msrp { width: 120px; }
     .cell-dealer { width: 280px; }
+    .cell-comments { width: 380px; }
+
+    .comments-display {
+      width: 100%;
+      white-space: pre-wrap;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .comments-edit {
+      width: 100%;
+      min-height: 58px;
+      resize: vertical;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.35;
+      background: #ffffff;
+      color: #111827;
+      outline: none;
+    }
+
+    .comments-edit:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    .admin-tools {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    body.is-admin .admin-tools { display: flex; }
+
+    .admin-save-btn {
+      border: 1px solid #111827;
+      background: #111827;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .admin-save-btn:hover { background: #374151; }
+
+    .admin-note {
+      font-size: 12px;
+      color: #6b7280;
+      white-space: nowrap;
+    }
 
     .side-panel {
       position: fixed;
@@ -883,6 +946,10 @@
               <span id="count">0</span> of <span id="total-count">0</span> Vehicle(s)
             </span>
             <div id="active-filters" class="active-filters-inline"></div>
+            <div class="admin-tools" id="admin-tools">
+              <span class="admin-note">Admin comments mode</span>
+              <button class="admin-save-btn" type="button" onclick="downloadUpdatedCsv()">Save updated CSV</button>
+            </div>
           </div>
         </div>
 
@@ -900,6 +967,7 @@
               <div class="header-cell header-packages">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
               <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Use Reset to return to VIN order">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
               <div class="header-cell header-dealer">Dealer Name</div>
+              <div class="header-cell header-comments">Comments</div>
             </div>
 
             <div class="table-header">
@@ -930,6 +998,9 @@
               </div>
               <div class="header-cell header-dealer">
                 <input class="filter-input" data-field="dealer" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-comments">
+                <input class="filter-input" data-field="comments" placeholder="Filter comments..." />
               </div>
             </div>
 
@@ -992,6 +1063,10 @@
     const interiorLookup = {};
     const packageLookup = {};
     let currentCsvFile = "2011 E90 M3 Sedan.csv";
+    let csvHeaders = [];
+    let csvRowsByVin = new Map();
+    let commentsHeaderName = "Comments";
+    const ADMIN_USERS = ["sman201", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
     let filteredVehicles = [];
     let selectedVehicles = new Set();
@@ -1229,14 +1304,23 @@
 
       if (!lines.length) return [];
 
-      const headers = parseCSVLine(lines[0]).map(h => h.trim());
+      csvHeaders = parseCSVLine(lines[0]).map(h => h.trim());
+      const noteHeader = csvHeaders.find(h => ["notes", "note", "comments", "comment"].includes(h.toLowerCase().trim()));
+      commentsHeaderName = noteHeader || csvHeaders[12] || "Comments";
+
+      if (!csvHeaders.includes(commentsHeaderName)) {
+        csvHeaders.push(commentsHeaderName);
+      }
+
+      csvRowsByVin = new Map();
 
       return lines.slice(1).map(line => {
         const values = parseCSVLine(line);
         const row = {};
-        headers.forEach((header, index) => {
+        csvHeaders.forEach((header, index) => {
           row[header] = values[index] || "";
         });
+        row.__originalValues = values;
         return row;
       });
     }
@@ -1250,6 +1334,76 @@
       }
 
       return "";
+    }
+
+    function getCurrentLoginName() {
+      if (typeof login !== "undefined" && login) return String(login).trim();
+      if (typeof username !== "undefined" && username) return String(username).trim();
+      return "";
+    }
+
+    function isAdminUser() {
+      const currentLogin = getCurrentLoginName().toLowerCase();
+      return ADMIN_USERS.some(admin => admin.toLowerCase() === currentLogin);
+    }
+
+    function updateAdminMode() {
+      document.body.classList.toggle("is-admin", isAdminUser());
+    }
+
+    function getCommentsFromRow(row) {
+      return getField(row, [
+        "Comments",
+        "Comment",
+        "NOTES",
+        "Notes",
+        "NOTE",
+        "Note",
+        commentsHeaderName
+      ]) || row[commentsHeaderName] || "";
+    }
+
+    function setCommentForVehicle(vin, value) {
+      const vehicle = vehicles.find(item => item.vin === vin);
+      if (!vehicle) return;
+
+      vehicle.comments = value;
+      if (vehicle.csvRow) vehicle.csvRow[commentsHeaderName] = value;
+    }
+
+    function csvEscape(value) {
+      const text = String(value ?? "");
+      if (/[",\n\r]/.test(text)) {
+        return `"${text.replace(/"/g, '""')}"`;
+      }
+      return text;
+    }
+
+    function downloadUpdatedCsv() {
+      if (!isAdminUser()) {
+        alert("Only the admin account can save updated comments.");
+        return;
+      }
+
+      const csv = [
+        csvHeaders.map(csvEscape).join(","),
+        ...vehicles.map(vehicle => {
+          const row = vehicle.csvRow || {};
+          row[commentsHeaderName] = vehicle.comments || "";
+          return csvHeaders.map(header => csvEscape(row[header] || "")).join(",");
+        })
+      ].join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const baseName = String(currentCsvFile || "vehicles.csv").replace(/\.csv$/i, "");
+      a.href = url;
+      a.download = `${baseName} - updated comments.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
     function extractCode(value) {
@@ -1336,6 +1490,8 @@
         "Dealer Name "
       ]);
 
+      const comments = getCommentsFromRow(row);
+
       const details = getField(row, ["DETAILS", "Details"]);
       const vspec = getField(row, ["V-SPEC", "VSPEC", "VSpec"]);
       const sticker = getField(row, ["STICKER", "Monroney", "Window Sticker"]);
@@ -1357,6 +1513,8 @@
         interior: cleanLabel(interiorRaw),
         msrp: cleanLabel(msrp),
         dealer: cleanLabel(dealer),
+        comments: String(comments || ""),
+        csvRow: row,
         details,
         vspec,
         sticker,
@@ -1393,6 +1551,8 @@
           return vehicle.msrp || "";
         case "dealer":
           return vehicle.dealer || "";
+        case "comments":
+          return vehicle.comments || "";
         default:
           return "";
       }
@@ -2390,6 +2550,14 @@
               ${vehicle.dealer ? `<div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.dealer)}</div>` : ""}
             </div>
           </div>
+
+          <div class="cell cell-comments">
+            ${
+              isAdminUser()
+                ? `<textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" placeholder="Add comments...">${escapeHtml(vehicle.comments || "")}</textarea>`
+                : `<div class="comments-display">${escapeHtml(vehicle.comments || "-")}</div>`
+            }
+          </div>
         `;
 
         table.appendChild(row);
@@ -2397,6 +2565,12 @@
         const checkbox = row.querySelector('input[type="checkbox"]');
         checkbox.addEventListener("change", function () {
           handleCheckboxChange(this, vehicle);
+        });
+      });
+
+      table.querySelectorAll(".comments-edit").forEach(textarea => {
+        textarea.addEventListener("input", function () {
+          setCommentForVehicle(this.dataset.vin, this.value);
         });
       });
 
@@ -2457,6 +2631,7 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       updateAuthUser();
+      updateAdminMode();
       setupFilterInputs();
       setupSortableHeaders();
       loadCSV();
