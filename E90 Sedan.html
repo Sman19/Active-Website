@@ -955,7 +955,7 @@
             <div id="active-filters" class="active-filters-inline"></div>
             <div class="admin-tools" id="admin-tools">
               <span class="admin-note">Admin comments mode — Column M</span>
-              <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save comments</button>
+              <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save Comments</button>
             </div>
           </div>
         </div>
@@ -1077,7 +1077,7 @@
     // Paste your Google Apps Script Web App URL here.
     // This lets the admin Save button update the CSV in GitHub directly instead of downloading a file.
     const GITHUB_SAVE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxJyobR2ghwsldwXn4OPwXOgm2f8UM1CtF3gljRzHQFIMxyuih4_cecbcPod2jRz0_YFw/exec";
-    const COMMENTS_SAVE_TOKEN = "CHANGE_THIS_PASSWORD";
+    const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
     const ADMIN_USERS = ["sman201", "admin", "seth", "seth c", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
     let filteredVehicles = [];
@@ -1454,7 +1454,7 @@
       }
 
       if (!COMMENTS_SAVE_TOKEN || COMMENTS_SAVE_TOKEN === "CHANGE_THIS_PASSWORD") {
-        alert("Set COMMENTS_SAVE_TOKEN in this HTML to match ADMIN_TOKEN in Apps Script before saving.");
+        alert("COMMENTS_SAVE_TOKEN is missing. It must match ADMIN_TOKEN in Apps Script.");
         return;
       }
 
