@@ -347,7 +347,7 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    .grid-inner { min-width: 2520px; }
+    .grid-inner { min-width: 2250px; }
     .left-sidebar.collapsed + .main-content .grid-wrapper {
       max-width: calc(100vw - 44px);
     }
@@ -406,7 +406,7 @@
     .header-packages { width: 400px; }
     .header-msrp { width: 120px; }
     .header-dealer { width: 280px; }
-    .header-comments { width: 380px; }
+    .header-comments { width: 260px; }
 
     .cell-status { width: 40px; }
     .cell-checkbox { width: 40px; }
@@ -419,7 +419,7 @@
     .cell-packages { width: 400px; }
     .cell-msrp { width: 120px; }
     .cell-dealer { width: 280px; }
-    .cell-comments { width: 380px; }
+    .cell-comments { width: 260px; }
 
     .comments-display {
       width: 100%;
@@ -451,6 +451,13 @@
     .comments-edit:focus {
       border-color: #2563eb;
       box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    .comments-edit.readonly {
+      background: transparent;
+      border-color: transparent;
+      resize: none;
+      cursor: default;
     }
 
     .admin-tools {
@@ -1066,7 +1073,7 @@
     let csvHeaders = [];
     let csvRowsByVin = new Map();
     let commentsHeaderName = "Notes";
-    const ADMIN_USERS = ["sman201", "seth_cole1", "seth_cole1@outlook.com"];
+    const ADMIN_USERS = ["sman201", "admin", "seth", "seth c", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
     let filteredVehicles = [];
     let selectedVehicles = new Set();
@@ -1350,18 +1357,48 @@
     }
 
     function getCurrentLoginName() {
-      if (typeof login !== "undefined" && login) return String(login).trim();
-      if (typeof username !== "undefined" && username) return String(username).trim();
+      // AuthPro normally exposes login, but different embeds can expose user/userName/username.
+      const possibleGlobals = [
+        "login",
+        "username",
+        "userName",
+        "authpro_login",
+        "authpro_user"
+      ];
+
+      for (const key of possibleGlobals) {
+        try {
+          if (window[key]) return String(window[key]).trim();
+        } catch (error) {}
+      }
+
+      const authEl = document.getElementById("auth-username");
+      if (authEl && authEl.textContent && authEl.textContent.trim() !== "Member") {
+        return authEl.textContent.trim();
+      }
+
       return "";
     }
 
     function isAdminUser() {
+      const params = new URLSearchParams(window.location.search);
+
+      // Use this only on the protected admin page if AuthPro does not expose the login name:
+      // index.html?admin=1
+      if (params.get("admin") === "1") return true;
+
       const currentLogin = getCurrentLoginName().toLowerCase();
       return ADMIN_USERS.some(admin => admin.toLowerCase() === currentLogin);
     }
 
     function updateAdminMode() {
-      document.body.classList.toggle("is-admin", isAdminUser());
+      const admin = isAdminUser();
+      document.body.classList.toggle("is-admin", admin);
+      document.querySelectorAll(".comments-edit").forEach(textarea => {
+        textarea.readOnly = !admin;
+        textarea.classList.toggle("readonly", !admin);
+        textarea.title = admin ? "Edit Column M comment" : "Only admin can edit comments";
+      });
     }
 
     function getCommentsFromRow(row) {
@@ -1390,6 +1427,10 @@
         alert("Only the admin account can save updated comments.");
         return;
       }
+
+      document.querySelectorAll(".comments-edit").forEach(textarea => {
+        setCommentForVehicle(textarea.dataset.vin, textarea.value);
+      });
 
       const csv = [
         csvHeaders.map(csvEscape).join(","),
@@ -2558,11 +2599,7 @@
           </div>
 
           <div class="cell cell-comments">
-            ${
-              isAdminUser()
-                ? `<textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" placeholder="Add note/comment...">${escapeHtml(vehicle.comments || "")}</textarea>`
-                : `<div class="comments-display">${escapeHtml(vehicle.comments || "-")}</div>`
-            }
+            <textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" placeholder="Add note/comment...">${escapeHtml(vehicle.comments || "")}</textarea>
           </div>
         `;
 
@@ -2576,10 +2613,12 @@
 
       table.querySelectorAll(".comments-edit").forEach(textarea => {
         textarea.addEventListener("input", function () {
+          if (!isAdminUser()) return;
           setCommentForVehicle(this.dataset.vin, this.value);
         });
       });
 
+      updateAdminMode();
       initCopyButtons();
     }
 
