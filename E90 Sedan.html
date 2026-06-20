@@ -1076,7 +1076,7 @@
 
     // Paste your Google Apps Script Web App URL here.
     // This lets the admin Save button update the CSV in GitHub directly instead of downloading a file.
-    const GITHUB_SAVE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec?v=2";
+    const GITHUB_SAVE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
     const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
     const ADMIN_USERS = ["sman201", "admin", "seth", "seth c", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
@@ -1480,7 +1480,9 @@
         const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
           method: "POST",
           mode: "cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             token: COMMENTS_SAVE_TOKEN,
             sheetName: currentCsvFile,
@@ -1496,7 +1498,10 @@
         try { result = JSON.parse(resultText); } catch (e) {}
 
         if (!response.ok || result.success === false || result.ok === false) {
-          throw new Error(result.error || resultText || "Save failed.");
+          const debugDetails = result && Object.keys(result).length
+            ? JSON.stringify(result, null, 2)
+            : resultText;
+          throw new Error(debugDetails || "Save failed.");
         }
 
         const savedCount = typeof result.saved === "number" ? result.saved : updates.length;
@@ -1505,7 +1510,7 @@
         if (missingCount) {
           alert(`Comments saved. ${savedCount} row(s) updated. ${missingCount} VIN(s) were not found in the sheet.`);
         } else {
-          alert(`Comments saved successfully. ${savedCount} row(s) updated.`);
+          alert(`Save successful. ${savedCount} row(s) updated.`);
         }
       } catch (error) {
         console.error(error);
