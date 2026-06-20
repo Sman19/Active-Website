@@ -1203,12 +1203,8 @@
     }
 
     function formatVin(vin) {
-      vin = String(vin || "").trim();
-
-      if (vin.length !== 17) return vin;
-
-      // Hide the 9th digit/check digit and keep the full VIN stored for searching/links.
-      return vin.slice(0, 8) + "-" + vin.slice(9);
+      // Temporarily show the full VIN so comment saving can match Column A in Google Sheets.
+      return String(vin || "").trim();
     }
 
     function debounce(func, wait) {
