@@ -1470,12 +1470,22 @@
         const updates = [];
 
         document.querySelectorAll(".comments-edit").forEach(textarea => {
-          setCommentForVehicle(textarea.dataset.vin, textarea.value);
-          updates.push({
-            vin: textarea.dataset.vin,
-            comment: textarea.value
-          });
+          const originalComment = textarea.dataset.originalComment || "";
+          const currentComment = textarea.value || "";
+
+          if (currentComment !== originalComment) {
+            setCommentForVehicle(textarea.dataset.vin, currentComment);
+            updates.push({
+              vin: textarea.dataset.vin,
+              comment: currentComment
+            });
+          }
         });
+
+        if (!updates.length) {
+          alert("No comment changes to save.");
+          return;
+        }
 
         const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
           method: "POST",
@@ -1506,6 +1516,10 @@
 
         const savedCount = typeof result.saved === "number" ? result.saved : updates.length;
         const missingCount = Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
+
+        document.querySelectorAll(".comments-edit").forEach(textarea => {
+          textarea.dataset.originalComment = textarea.value || "";
+        });
 
         if (missingCount) {
           alert(`Comments saved. ${savedCount} row(s) updated. ${missingCount} VIN(s) were not found in the sheet.`);
@@ -2669,7 +2683,7 @@
           </div>
 
           <div class="cell cell-comments">
-            <textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" placeholder="Add note/comment...">${escapeHtml(vehicle.comments || "")}</textarea>
+            <textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" data-original-comment="${escapeHtml(vehicle.comments || "")}" placeholder="Add note/comment...">${escapeHtml(vehicle.comments || "")}</textarea>
           </div>
         `;
 
