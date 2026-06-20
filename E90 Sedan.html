@@ -955,7 +955,7 @@
             <div id="active-filters" class="active-filters-inline"></div>
             <div class="admin-tools" id="admin-tools">
               <span class="admin-note">Admin comments mode — Column M</span>
-              <button class="admin-save-btn" type="button" onclick="downloadUpdatedCsv()">Save updated CSV for GitHub</button>
+              <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save comments to GitHub</button>
             </div>
           </div>
         </div>
@@ -1073,6 +1073,10 @@
     let csvHeaders = [];
     let csvRowsByVin = new Map();
     let commentsHeaderName = "Notes";
+
+    // Paste your Google Apps Script Web App URL here.
+    // This lets the admin Save button update the CSV in GitHub directly instead of downloading a file.
+    const GITHUB_SAVE_WEBHOOK_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
     const ADMIN_USERS = ["sman201", "admin", "seth", "seth c", "seth_cole1", "seth_cole1@outlook.com"];
     let vehicles = [];
     let filteredVehicles = [];
@@ -1422,17 +1426,12 @@
       return text;
     }
 
-    function downloadUpdatedCsv() {
-      if (!isAdminUser()) {
-        alert("Only the admin account can save updated comments.");
-        return;
-      }
-
+    function buildUpdatedCsvFromCurrentComments() {
       document.querySelectorAll(".comments-edit").forEach(textarea => {
         setCommentForVehicle(textarea.dataset.vin, textarea.value);
       });
 
-      const csv = [
+      return [
         csvHeaders.map(csvEscape).join(","),
         ...vehicles.map(vehicle => {
           const row = vehicle.csvRow || {};
@@ -1440,17 +1439,61 @@
           return csvHeaders.map(header => csvEscape(row[header] || "")).join(",");
         })
       ].join("\n");
+    }
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      const baseName = String(currentCsvFile || "vehicles.csv").replace(/\.csv$/i, "");
-      a.href = url;
-      a.download = `${baseName}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    async function saveUpdatedCsvToGitHub() {
+      if (!isAdminUser()) {
+        alert("Only the admin account can save updated comments.");
+        return;
+      }
+
+      if (!GITHUB_SAVE_WEBHOOK_URL || GITHUB_SAVE_WEBHOOK_URL.includes("PASTE_YOUR")) {
+        alert("GitHub save endpoint is not configured yet. Paste your Google Apps Script Web App URL into GITHUB_SAVE_WEBHOOK_URL.");
+        return;
+      }
+
+      const button = document.querySelector(".admin-save-btn");
+      const originalText = button ? button.textContent : "";
+
+      try {
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Saving...";
+        }
+
+        const csv = buildUpdatedCsvFromCurrentComments();
+
+        const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            fileName: currentCsvFile,
+            csv: csv,
+            source: "E90 Admin Comments",
+            updatedBy: getCurrentLoginName() || "Admin",
+            updatedAt: new Date().toISOString()
+          })
+        });
+
+        const resultText = await response.text();
+        let result = {};
+        try { result = JSON.parse(resultText); } catch (e) {}
+
+        if (!response.ok || result.ok === false) {
+          throw new Error(result.error || resultText || "GitHub save failed.");
+        }
+
+        alert("Comments saved to GitHub successfully.");
+      } catch (error) {
+        console.error(error);
+        alert("Save failed: " + (error && error.message ? error.message : error));
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalText || "Save comments to GitHub";
+        }
+      }
     }
 
     function extractCode(value) {
