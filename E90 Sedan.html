@@ -402,21 +402,29 @@
       background: #dbeafe;
     }
 
-    .column-divider {
+    .header-cell {
+      position: relative;
+    }
+
+    .column-labels .header-cell:not(:last-child)::after {
+      content: "║";
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
       color: #c7ccd3;
+      font-size: 22px;
       font-weight: 300;
-      margin-left: 12px;
-      margin-right: 12px;
-      user-select: none;
       pointer-events: none;
+      z-index: 2;
       transition: color 0.2s ease, font-weight 0.2s ease;
     }
 
-    .header-cell:hover .column-divider {
-      color: #5f6b7a;
+    .column-labels .header-cell:hover::after {
+      color: #6b7280;
     }
 
-    .header-cell.column-dragging .column-divider {
+    .column-labels .header-cell.column-dragging::after {
       color: #2563eb;
       font-weight: 700;
     }
@@ -1027,16 +1035,16 @@
           <div class="grid-inner">
             <div class="column-labels">
               <div class="header-cell header-checkbox"></div>
-              <div class="header-cell header-status">Cat.<span class="column-divider">║</span></div>
-              <div class="header-cell header-image">Image<span class="column-divider">║</span></div>
-              <div class="header-cell header-model">Model<span class="column-divider">║</span></div>
-              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior" title="Click to sort A-Z / Z-A. Drag to move column.">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span><span class="column-divider">║</span></div>
-              <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Drag to move column.">Interior <span class="sort-indicator" data-sort-indicator="interior"></span><span class="column-divider">║</span></div>
-              <div class="header-cell header-year" title="Drag to move column">Year<span class="column-divider">║</span></div>
-              <div class="header-cell header-vin" title="Drag to move column">VIN<span class="column-divider">║</span></div>
-              <div class="header-cell header-packages" title="Drag to move column">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)<span class="column-divider">║</span></div>
-              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Drag to move column.">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span><span class="column-divider">║</span></div>
-              <div class="header-cell header-dealer" title="Drag to move column">Dealer Name<span class="column-divider">║</span></div>
+              <div class="header-cell header-status">Cat.</div>
+              <div class="header-cell header-image">Image</div>
+              <div class="header-cell header-model">Model</div>
+              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior" title="Click to sort A-Z / Z-A. Drag to move column.">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span></div>
+              <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Drag to move column.">Interior <span class="sort-indicator" data-sort-indicator="interior"></span></div>
+              <div class="header-cell header-year" title="Drag to move column">Year</div>
+              <div class="header-cell header-vin" title="Drag to move column">VIN</div>
+              <div class="header-cell header-packages" title="Drag to move column">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
+              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Drag to move column.">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
+              <div class="header-cell header-dealer" title="Drag to move column">Dealer Name</div>
               <div class="header-cell header-comments" title="Drag to move column">Comments</div>
             </div>
 
