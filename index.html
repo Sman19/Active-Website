@@ -1370,6 +1370,43 @@
       }
     });
 
+    function getBestPackageText(row) {
+      const pieces = [];
+
+      const fieldGroups = [
+        ["Packages", "Package", "Package Codes", "Packages & Options"],
+        ["Transmission", "Trans", "Gearbox"],
+        ["Options", "Option Codes", "Factory Installed Packages & Accessories"],
+        ["Color", "Exterior", "Exterior Color", "Paint", "Paint Code"],
+        ["Interior", "Interior Color", "Trim", "Upholstery"]
+      ];
+
+      fieldGroups.forEach(names => {
+        const value = getField(row, names);
+        if (value) pieces.push(value);
+      });
+
+      // E90 CSVs have shifted/extra columns over time. Add the row values too so
+      // package codes like ZCV, ZCW, ZCP, ZP2/ZP3, 223, 2MK, and 2MT are not missed.
+      if (row.__values && Array.isArray(row.__values)) {
+        row.__values.forEach(value => {
+          const text = String(value || "").trim();
+          if (/\b(ZCV|ZCW|ZCP|ZPP|ZP2|ZP3|ZTP|223|2MK|2MT|1CC|6FL|6NF|6NR|403|415|494|655|752|4MX|4MY|4MZ|771|XE2|XE8)\b/i.test(text)) {
+            pieces.push(text);
+          }
+        });
+      }
+
+      return [...new Set(
+        pieces
+          .join(" ")
+          .replace(/[|;]/g, " ")
+          .split(/\s*,\s*|\s{2,}|\n/)
+          .map(item => item.trim())
+          .filter(Boolean)
+      )].join(", ");
+    }
+
     function openE90ConfiguratorSpecSheet(row) {
       const vin = normalizeVin(getBestVin(row));
       const last7 = normalizeVin(getBestLast7(row));
@@ -1380,11 +1417,16 @@
         return;
       }
 
+      const packageText = getBestPackageText(row);
       const url =
         "https://sman19.github.io/2011-E90-M3-Configurator/" +
         "?vin=" + encodeURIComponent(vinParam) +
         "&auto=spec" +
-        "&handoff=1";
+        "&handoff=1" +
+        "&packages=" + encodeURIComponent(packageText) +
+        "&packageCodes=" + encodeURIComponent(packageText) +
+        "&source=home-search" +
+        "&cache=" + Date.now();
 
       showGeneratorOverlay(url);
 
