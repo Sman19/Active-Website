@@ -402,6 +402,31 @@
       background: #dbeafe;
     }
 
+    .column-divider {
+      color: #c7ccd3;
+      font-weight: 300;
+      margin-left: 12px;
+      margin-right: 12px;
+      user-select: none;
+      pointer-events: none;
+      transition: color 0.2s ease, font-weight 0.2s ease;
+    }
+
+    .header-cell:hover .column-divider {
+      color: #5f6b7a;
+    }
+
+    .header-cell.column-dragging .column-divider {
+      color: #2563eb;
+      font-weight: 700;
+    }
+
+    .column-drag-hint {
+      color: #6b7280;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
     .column-reset-btn {
       border: 1px solid #d1d5db;
       background: #ffffff;
@@ -990,6 +1015,7 @@
             </span>
             <div id="active-filters" class="active-filters-inline"></div>
             <button class="column-reset-btn" type="button" onclick="resetColumnOrder()" title="Reset saved column order">Reset Columns</button>
+            <span class="column-drag-hint">Drag column headers to rearrange</span>
             <div class="admin-tools" id="admin-tools">
               <span class="admin-note">Admin comments mode — Column M</span>
               <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save Comments</button>
@@ -1001,17 +1027,17 @@
           <div class="grid-inner">
             <div class="column-labels">
               <div class="header-cell header-checkbox"></div>
-              <div class="header-cell header-status">Cat.</div>
-              <div class="header-cell header-image">Image</div>
-              <div class="header-cell header-model">Model</div>
-              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior" title="Click to sort A-Z / Z-A. Use Reset to return to VIN order">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span></div>
-              <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Use Reset to return to VIN order">Interior <span class="sort-indicator" data-sort-indicator="interior"></span></div>
-              <div class="header-cell header-year">Year</div>
-              <div class="header-cell header-vin">VIN</div>
-              <div class="header-cell header-packages">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
-              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Use Reset to return to VIN order">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
-              <div class="header-cell header-dealer">Dealer Name</div>
-              <div class="header-cell header-comments">Comments</div>
+              <div class="header-cell header-status">Cat.<span class="column-divider">║</span></div>
+              <div class="header-cell header-image">Image<span class="column-divider">║</span></div>
+              <div class="header-cell header-model">Model<span class="column-divider">║</span></div>
+              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior" title="Click to sort A-Z / Z-A. Drag to move column.">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span><span class="column-divider">║</span></div>
+              <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Drag to move column.">Interior <span class="sort-indicator" data-sort-indicator="interior"></span><span class="column-divider">║</span></div>
+              <div class="header-cell header-year" title="Drag to move column">Year<span class="column-divider">║</span></div>
+              <div class="header-cell header-vin" title="Drag to move column">VIN<span class="column-divider">║</span></div>
+              <div class="header-cell header-packages" title="Drag to move column">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)<span class="column-divider">║</span></div>
+              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Drag to move column.">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span><span class="column-divider">║</span></div>
+              <div class="header-cell header-dealer" title="Drag to move column">Dealer Name<span class="column-divider">║</span></div>
+              <div class="header-cell header-comments" title="Drag to move column">Comments</div>
             </div>
 
             <div class="table-header">
