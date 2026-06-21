@@ -383,6 +383,42 @@
       color: #111827;
     }
 
+
+    .header-cell.draggable-column {
+      cursor: grab;
+    }
+
+    .header-cell.draggable-column:active {
+      cursor: grabbing;
+    }
+
+    .header-cell.column-dragging {
+      opacity: 0.45;
+    }
+
+    .header-cell.column-drop-target {
+      outline: 2px dashed #2563eb;
+      outline-offset: -2px;
+      background: #dbeafe;
+    }
+
+    .column-reset-btn {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #111827;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .column-reset-btn:hover {
+      background: #f3f4f6;
+    }
+
     .sort-indicator {
       font-size: 11px;
       color: #6b7280;
@@ -953,6 +989,7 @@
               <span id="count">0</span> of <span id="total-count">0</span> Vehicle(s)
             </span>
             <div id="active-filters" class="active-filters-inline"></div>
+            <button class="column-reset-btn" type="button" onclick="resetColumnOrder()" title="Reset saved column order">Reset Columns</button>
             <div class="admin-tools" id="admin-tools">
               <span class="admin-note">Admin comments mode — Column M</span>
               <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save Comments</button>
@@ -1088,6 +1125,38 @@
     let interiorPieChart = null;
     let transmissionPieChart = null;
     let currentSort = { field: null, direction: null };
+
+    const DEFAULT_COLUMN_ORDER = [
+      "checkbox",
+      "status",
+      "image",
+      "model",
+      "exterior",
+      "interior",
+      "year",
+      "vin",
+      "packages",
+      "msrp",
+      "dealer",
+      "comments"
+    ];
+
+    const COLUMN_CLASS_MAP = {
+      checkbox: ["header-checkbox", "cell-checkbox"],
+      status: ["header-status", "cell-status"],
+      image: ["header-image", "cell-image"],
+      model: ["header-model", "cell-model"],
+      exterior: ["header-exterior", "cell-exterior"],
+      interior: ["header-interior", "cell-interior"],
+      year: ["header-year", "cell-year"],
+      vin: ["header-vin", "cell-vin"],
+      packages: ["header-packages", "cell-packages"],
+      msrp: ["header-msrp", "cell-msrp"],
+      dealer: ["header-dealer", "cell-dealer"],
+      comments: ["header-comments", "cell-comments"]
+    };
+
+    let isColumnDragAction = false;
 
     const defaultColors = {
       "300": { rgb: "244, 244, 236", name: "Alpine White", image: "https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true" },
@@ -1276,6 +1345,121 @@
         dropdown.classList.remove("open");
       }
     });
+
+    function getColumnOrderStorageKey() {
+      const user = (getCurrentLoginName() || "guest")
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]/g, "_");
+
+      return `e90_column_order_${user}`;
+    }
+
+    function getSavedColumnOrder() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(getColumnOrderStorageKey()) || "[]");
+        const validSaved = Array.isArray(saved)
+          ? saved.filter(column => DEFAULT_COLUMN_ORDER.includes(column))
+          : [];
+
+        return [
+          ...validSaved,
+          ...DEFAULT_COLUMN_ORDER.filter(column => !validSaved.includes(column))
+        ];
+      } catch (error) {
+        return [...DEFAULT_COLUMN_ORDER];
+      }
+    }
+
+    function saveColumnOrder(order) {
+      localStorage.setItem(getColumnOrderStorageKey(), JSON.stringify(order));
+    }
+
+    function resetColumnOrder() {
+      localStorage.removeItem(getColumnOrderStorageKey());
+      applyColumnOrder();
+    }
+
+    function setColumnDatasetAttributes() {
+      Object.entries(COLUMN_CLASS_MAP).forEach(([column, classNames]) => {
+        classNames.forEach(className => {
+          document.querySelectorAll(`.${className}`).forEach(element => {
+            element.dataset.column = column;
+          });
+        });
+      });
+    }
+
+    function applyColumnOrder() {
+      setColumnDatasetAttributes();
+      const order = getSavedColumnOrder();
+      const orderMap = new Map(order.map((column, index) => [column, index]));
+
+      document.querySelectorAll("[data-column]").forEach(element => {
+        const column = element.dataset.column;
+        element.style.order = orderMap.has(column) ? orderMap.get(column) : DEFAULT_COLUMN_ORDER.length;
+      });
+    }
+
+    function setupColumnDragAndDrop() {
+      setColumnDatasetAttributes();
+
+      document.querySelectorAll(".column-labels .header-cell[data-column]").forEach(header => {
+        header.draggable = true;
+        header.classList.add("draggable-column");
+        header.title = `${header.title || ""}${header.title ? " | " : ""}Drag to reorder columns`;
+
+        header.addEventListener("dragstart", event => {
+          const column = header.dataset.column;
+          if (!column) return;
+
+          isColumnDragAction = true;
+          header.classList.add("column-dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", column);
+        });
+
+        header.addEventListener("dragend", () => {
+          header.classList.remove("column-dragging");
+          document.querySelectorAll(".column-drop-target").forEach(el => el.classList.remove("column-drop-target"));
+
+          setTimeout(() => {
+            isColumnDragAction = false;
+          }, 0);
+        });
+
+        header.addEventListener("dragover", event => {
+          event.preventDefault();
+          header.classList.add("column-drop-target");
+          event.dataTransfer.dropEffect = "move";
+        });
+
+        header.addEventListener("dragleave", () => {
+          header.classList.remove("column-drop-target");
+        });
+
+        header.addEventListener("drop", event => {
+          event.preventDefault();
+          header.classList.remove("column-drop-target");
+
+          const fromColumn = event.dataTransfer.getData("text/plain");
+          const toColumn = header.dataset.column;
+          if (!fromColumn || !toColumn || fromColumn === toColumn) return;
+
+          const order = getSavedColumnOrder();
+          const fromIndex = order.indexOf(fromColumn);
+          const toIndex = order.indexOf(toColumn);
+          if (fromIndex === -1 || toIndex === -1) return;
+
+          order.splice(fromIndex, 1);
+          order.splice(toIndex, 0, fromColumn);
+
+          saveColumnOrder(order);
+          applyColumnOrder();
+        });
+      });
+
+      applyColumnOrder();
+    }
 
     function parseCSVLine(line) {
       const result = [];
@@ -1913,7 +2097,10 @@
 
     function setupSortableHeaders() {
       document.querySelectorAll(".sortable-header").forEach(header => {
-        header.addEventListener("click", () => sortByField(header.dataset.sortField));
+        header.addEventListener("click", () => {
+          if (isColumnDragAction) return;
+          sortByField(header.dataset.sortField);
+        });
       });
       updateSortIndicators();
     }
@@ -2696,6 +2883,7 @@
 
       updateAdminMode();
       initCopyButtons();
+      applyColumnOrder();
     }
 
     async function loadCSV() {
@@ -2756,6 +2944,7 @@
       updateAdminMode();
       setupFilterInputs();
       setupSortableHeaders();
+      setupColumnDragAndDrop();
       loadCSV();
     });
   </script>
