@@ -402,31 +402,22 @@
       background: #dbeafe;
     }
 
-    .header-cell {
+    .column-labels .header-cell {
       position: relative;
+      border-right: 1px solid #cfd5dd;
     }
 
-    .column-labels .header-cell:not(:last-child)::after {
-      content: "║";
-      position: absolute;
-      right: -14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #c7ccd3;
-      font-size: 22px;
-      font-weight: 300;
-      pointer-events: none;
-      z-index: 2;
-      transition: color 0.2s ease, font-weight 0.2s ease;
+    .column-labels .header-cell:last-child,
+    .column-labels .header-checkbox {
+      border-right: none;
     }
 
-    .column-labels .header-cell:hover::after {
-      color: #6b7280;
+    .column-labels .header-cell.draggable-column:hover {
+      background: rgba(37, 99, 235, 0.04);
     }
 
-    .column-labels .header-cell.column-dragging::after {
-      color: #2563eb;
-      font-weight: 700;
+    .column-labels .header-cell.column-dragging {
+      border-right-color: #2563eb;
     }
 
     .column-drag-hint {
