@@ -603,6 +603,77 @@
       background: #165fd3;
     }
 
+
+    .generator-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #10203a 0%, #05070c 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 6000;
+      color: #ffffff;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .generator-box {
+      max-width: 760px;
+      width: min(92vw, 760px);
+    }
+
+    .generator-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 18px;
+      letter-spacing: 0.01em;
+    }
+
+    .generator-text {
+      font-size: 18px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 24px;
+    }
+
+    .generator-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .generator-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #1f73ff;
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .generator-btn.secondary {
+      background: rgba(255,255,255,0.14);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.22) inset;
+    }
+
+    .hidden-generator-frame {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      left: -9999px;
+      top: -9999px;
+      border: 0;
+    }
+
     @keyframes rainbowFlow {
       0% { background-position: 0% 50%; }
       100% { background-position: 200% 50%; }
@@ -924,6 +995,20 @@
     </div>
   </div>
 
+
+  <div id="generatorOverlay" class="generator-overlay hidden">
+    <div class="generator-box">
+      <div id="generatorTitle" class="generator-title">Generating BMW document...</div>
+      <div id="generatorText" class="generator-text">Please wait while the E90 M3 BMW Spec Sheet PDF is created.</div>
+      <div id="generatorActions" class="generator-actions hidden">
+        <a id="openConfiguratorFallback" class="generator-btn" href="#" target="_blank" rel="noopener noreferrer">Open Configurator</a>
+        <button id="cancelGeneratorBtn" class="generator-btn secondary" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="e90GeneratorFrame" class="hidden-generator-frame" title="E90 M3 PDF Generator"></iframe>
+
   <audio id="f87OpenAudio" preload="auto" crossorigin="anonymous">
     <source src="https://raw.githubusercontent.com/Sman19/Active-Website/28e274f91d0a71fb14dafa10bb76793c84ac508e/M2%20rev%20clip.m4a" type="audio/mp4">
     Your browser does not support the audio element.
@@ -968,6 +1053,15 @@
     const monroneyModalText = document.getElementById("monroneyModalText");
     const closeMonroneyModal = document.getElementById("closeMonroneyModal");
 
+    const generatorOverlay = document.getElementById("generatorOverlay");
+    const generatorTitle = document.getElementById("generatorTitle");
+    const generatorText = document.getElementById("generatorText");
+    const generatorActions = document.getElementById("generatorActions");
+    const openConfiguratorFallback = document.getElementById("openConfiguratorFallback");
+    const cancelGeneratorBtn = document.getElementById("cancelGeneratorBtn");
+    const e90GeneratorFrame = document.getElementById("e90GeneratorFrame");
+
+    let e90GeneratorTimeout = null;
     let activeAudio = null;
     let activeButton = null;
 
@@ -1205,6 +1299,77 @@
       );
     }
 
+    function showGeneratorOverlay(url) {
+      if (!generatorOverlay) return;
+
+      generatorTitle.textContent = "Generating BMW document...";
+      generatorText.textContent = "Please wait while the E90 M3 BMW Spec Sheet PDF is created.";
+      generatorActions.classList.add("hidden");
+
+      if (openConfiguratorFallback) openConfiguratorFallback.href = url || "#";
+      generatorOverlay.classList.remove("hidden");
+    }
+
+    function showGeneratorFallback(url) {
+      if (!generatorOverlay) return;
+
+      generatorTitle.textContent = "Still generating...";
+      generatorText.textContent = "The E90 configurator did not send the PDF back yet. You can open the configurator directly, or cancel and try again.";
+      if (openConfiguratorFallback) openConfiguratorFallback.href = url || "#";
+      generatorActions.classList.remove("hidden");
+      generatorOverlay.classList.remove("hidden");
+    }
+
+    function hideGeneratorOverlay() {
+      if (generatorOverlay) generatorOverlay.classList.add("hidden");
+      if (generatorActions) generatorActions.classList.add("hidden");
+
+      if (e90GeneratorTimeout) {
+        clearTimeout(e90GeneratorTimeout);
+        e90GeneratorTimeout = null;
+      }
+    }
+
+    function resetE90GeneratorFrame() {
+      if (e90GeneratorFrame) e90GeneratorFrame.removeAttribute("src");
+    }
+
+    function downloadDataUrl(dataUrl, filename) {
+      if (!dataUrl) return false;
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = filename || "BMW_E90_M3_Spec_Sheet.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      return true;
+    }
+
+    function isAllowedGeneratorOrigin(origin) {
+      return origin === "https://sman19.github.io" || origin === window.location.origin;
+    }
+
+    window.addEventListener("message", function (event) {
+      if (!isAllowedGeneratorOrigin(event.origin)) return;
+
+      const data = event.data || {};
+
+      if (data.type === "e90-pdf-data-url") {
+        downloadDataUrl(data.dataUrl, data.filename);
+        hideGeneratorOverlay();
+        resetE90GeneratorFrame();
+        return;
+      }
+
+      if (data.type === "e90-document-error") {
+        hideGeneratorOverlay();
+        resetE90GeneratorFrame();
+        monroneyModalText.textContent = "BMW Spec Sheet could not be generated for this E90 M3 VIN. Please open the configurator and try the BMW Spec Sheet PDF button there.";
+        monroneyOverlay.classList.remove("hidden");
+      }
+    });
+
     function openE90ConfiguratorSpecSheet(row) {
       const vin = normalizeVin(getBestVin(row));
       const last7 = normalizeVin(getBestLast7(row));
@@ -1218,14 +1383,23 @@
       const url =
         "https://sman19.github.io/2011-E90-M3-Configurator/" +
         "?vin=" + encodeURIComponent(vinParam) +
-        "&document=BMW%20Spec%20Sheet" +
-        "&type=spec" +
-        "&auto=1" +
+        "&auto=spec" +
         "&handoff=1";
 
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
+      showGeneratorOverlay(url);
 
+      if (e90GeneratorFrame) {
+        e90GeneratorFrame.src = url;
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      if (e90GeneratorTimeout) clearTimeout(e90GeneratorTimeout);
+      e90GeneratorTimeout = setTimeout(() => {
+        showGeneratorFallback(url);
+      }, 45000);
+    }
 
     function renderResults(matches, term) {
       resultsList.innerHTML = "";
@@ -1470,6 +1644,13 @@
         if (configuratorMenu) configuratorMenu.classList.add("hidden");
       }
     });
+
+    if (cancelGeneratorBtn) {
+      cancelGeneratorBtn.addEventListener("click", function () {
+        hideGeneratorOverlay();
+        resetE90GeneratorFrame();
+      });
+    }
 
     closeMonroneyModal.addEventListener("click", closeMonroneyUnavailable);
 
