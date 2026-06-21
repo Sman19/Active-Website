@@ -1190,6 +1190,43 @@
       window.open(link, "_blank", "noopener,noreferrer");
     }
 
+    function isE90M3Row(row) {
+      const source = String(row.__sourceFile || "").toLowerCase();
+      const title = String(getBestTitle(row) || "").toLowerCase();
+      const details = String(getBestDetails(row) || "").toLowerCase();
+
+      return (
+        source.includes("e90") ||
+        source.includes("m3 sedan") ||
+        title.includes("e90") ||
+        title.includes("m3 sedan") ||
+        details.includes("e90") ||
+        details.includes("m3 sedan")
+      );
+    }
+
+    function openE90ConfiguratorSpecSheet(row) {
+      const vin = normalizeVin(getBestVin(row));
+      const last7 = normalizeVin(getBestLast7(row));
+      const vinParam = vin || last7;
+
+      if (!vinParam) {
+        renderMonroneyUnavailable(row);
+        return;
+      }
+
+      const url =
+        "https://sman19.github.io/2011-E90-M3-Configurator/" +
+        "?vin=" + encodeURIComponent(vinParam) +
+        "&document=BMW%20Spec%20Sheet" +
+        "&type=spec" +
+        "&auto=1" +
+        "&handoff=1";
+
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+
     function renderResults(matches, term) {
       resultsList.innerHTML = "";
 
@@ -1259,7 +1296,11 @@
       });
 
       if (exactVinMatch) {
-        openMonroney(exactVinMatch);
+        if (isE90M3Row(exactVinMatch)) {
+          openE90ConfiguratorSpecSheet(exactVinMatch);
+        } else {
+          openMonroney(exactVinMatch);
+        }
         return;
       }
 
