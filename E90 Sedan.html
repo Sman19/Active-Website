@@ -1080,7 +1080,7 @@
     const GOOGLE_SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
     const GITHUB_SAVE_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
     const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
-    const ADMIN_USERS = ["sman201", "admin", "seth", "seth c", "seth_cole1", "seth_cole1@outlook.com"];
+    const ADMIN_USERS = ["sman201"];
     let vehicles = [];
     let filteredVehicles = [];
     let selectedVehicles = new Set();
@@ -1384,14 +1384,8 @@
     }
 
     function isAdminUser() {
-      const params = new URLSearchParams(window.location.search);
-
-      // Use this only on the protected admin page if AuthPro does not expose the login name:
-      // index.html?admin=1
-      if (params.get("admin") === "1") return true;
-
       const currentLogin = getCurrentLoginName().toLowerCase();
-      return ADMIN_USERS.some(admin => admin.toLowerCase() === currentLogin);
+      return currentLogin === "sman201";
     }
 
     function updateAdminMode() {
