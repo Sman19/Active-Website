@@ -2924,7 +2924,12 @@
         currentCsvFile = getCsvFileFromUrl();
         syncDatasetDropdown();
 
-        const csvUrl = GOOGLE_SHEET_CSV_URL + "?t=" + Date.now();
+        const sheetName = currentCsvFile.includes("2010")
+          ? "2010 E90 M3 Sedan"
+          : "2011 E90 M3 Sedan";
+
+        const csvUrl =
+          `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
         const response = await fetch(csvUrl, { cache: "no-store" });
         if (!response.ok) {
           throw new Error(`Could not load Google Sheet CSV`);
