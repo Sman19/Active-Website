@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>2011 E90 M3 Sedan Database</title>
+  <title>E90 M3 Sedan Database</title>
 
   <link 
     id="favicon"
@@ -1130,7 +1130,7 @@
     const colorLookup = {};
     const interiorLookup = {};
     const packageLookup = {};
-    let currentCsvFile = "2011 E90 M3 Sedan.csv";
+    let currentCsvFile = "2010 E90 M3 Sedan.csv";
     let csvHeaders = [];
     let csvRowsByVin = new Map();
     let commentsHeaderName = "Notes";
@@ -1313,7 +1313,7 @@
 
     function getCsvFileFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      return params.get("file") || "2011 E90 M3 Sedan.csv";
+      return params.get("file") || "2010 E90 M3 Sedan.csv";
     }
 
     function syncDatasetDropdown() {
