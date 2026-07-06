@@ -1033,7 +1033,7 @@
               <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Drag to move column.">Interior <span class="sort-indicator" data-sort-indicator="interior"></span></div>
               <div class="header-cell header-year" title="Drag to move column">Year</div>
               <div class="header-cell header-vin" title="Drag to move column">VIN</div>
-              <div class="header-cell header-packages" title="Drag to move column">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
+              <div class="header-cell header-packages" id="packages-header" title="Drag to move column">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
               <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Drag to move column.">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
               <div class="header-cell header-dealer" title="Drag to move column">Dealer Name</div>
               <div class="header-cell header-comments" title="Drag to move column">Comments</div>
@@ -1368,6 +1368,12 @@
     function syncDatasetDropdown() {
       const select = document.getElementById("dataset-select");
       if (select) select.value = currentCsvFile;
+
+      const packagesHeader = document.getElementById("packages-header");
+      if (packagesHeader) {
+        const destination = currentCsvFile.includes("2009") ? "$825" : "$875";
+        packagesHeader.textContent = `Packages(Destination Charge: ${destination} | Gas Guzzler Tax: $1,300)`;
+      }
     }
 
     function handleDatasetChange(fileName) {
