@@ -2925,9 +2925,15 @@
         currentCsvFile = getCsvFileFromUrl();
         syncDatasetDropdown();
 
-        const sheetName = currentCsvFile.includes("2010")
-          ? "2010 E90 M3 Sedan"
-          : "2011 E90 M3 Sedan";
+        let sheetName;
+
+        if (currentCsvFile.includes("2009")) {
+          sheetName = "2009 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2010")) {
+          sheetName = "2010 E90 M3 Sedan";
+        } else {
+          sheetName = "2011 E90 M3 Sedan";
+        }
 
         const csvUrl =
           `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
