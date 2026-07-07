@@ -1763,9 +1763,12 @@
           },
           body: JSON.stringify({
             token: COMMENTS_SAVE_TOKEN,
-            sheetName: currentCsvFile.includes("2010")
-              ? "2010 E90 M3 Sedan"
-              : "2011 E90 M3 Sedan",
+            sheetName:
+              currentCsvFile.includes("2009")
+                ? "2009 E90 M3 Sedan"
+                : currentCsvFile.includes("2010")
+                  ? "2010 E90 M3 Sedan"
+                  : "2011 E90 M3 Sedan",
             updates: updates,
             source: "E90 Admin Comments",
             updatedBy: getCurrentLoginName() || "Admin",
