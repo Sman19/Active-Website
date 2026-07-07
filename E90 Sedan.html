@@ -1143,6 +1143,11 @@
     const GITHUB_SAVE_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
     const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
     const ADMIN_USERS = ["admin"];
+
+    // Server-side 5-per-24-hour document limit endpoint.
+    // Same Apps Script handles CSV loading, admin comment saving, and document limit checks.
+    const DOCUMENT_LIMIT_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
+
     let vehicles = [];
     let filteredVehicles = [];
     let selectedVehicles = new Set();
@@ -2662,6 +2667,51 @@
       return url.toString();
     }
 
+    async function checkDocumentGenerationLimit(documentType, vehicle) {
+      if (!DOCUMENT_LIMIT_WEBHOOK_URL) {
+        alert("Document limit endpoint is not configured yet.");
+        return false;
+      }
+
+      const username = getAuthProUsername() || "Member";
+      const vin = vehicle && vehicle.vin ? vehicle.vin : "";
+
+      try {
+        const response = await fetch(DOCUMENT_LIMIT_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action: "checkDocumentLimit",
+            username,
+            documentType,
+            vin,
+            page: "E90 Sedan Database",
+            sheetName: currentCsvFile,
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        const result = await response.json();
+
+        if (!result || result.allowed !== true) {
+          alert((result && result.message) || "Daily document limit reached. Please try again later.");
+          return false;
+        }
+
+        if (!result.admin && typeof result.remaining !== "undefined") {
+          console.log(`${documentType} allowed. ${result.remaining} document download(s) remaining in the last 24 hours.`);
+        }
+
+        return true;
+      } catch (err) {
+        console.error("Document limit check failed:", err);
+        alert("Could not verify your document limit. Please try again.");
+        return false;
+      }
+    }
+
     function removeExistingGeneratorFrame() {
       const existing = document.getElementById("configurator-document-generator-frame");
       if (existing) existing.remove();
@@ -2737,15 +2787,23 @@
       }
     });
 
-    function handleVSpecClick() {
+    async function handleVSpecClick() {
       const vehicle = getSelectedVehicle();
       if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+
+      const allowed = await checkDocumentGenerationLimit("BMW Spec Sheet", vehicle);
+      if (!allowed) return;
+
       runConfiguratorInBackground("spec");
     }
 
-    function handleStickerClick() {
+    async function handleStickerClick() {
       const vehicle = getSelectedVehicle();
       if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+
+      const allowed = await checkDocumentGenerationLimit("Window Sticker", vehicle);
+      if (!allowed) return;
+
       window.__e90StickerPopup = window.open("", "_blank");
       if (window.__e90StickerPopup) {
         window.__e90StickerPopup.document.open();
