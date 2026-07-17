@@ -1968,7 +1968,9 @@
     function matchesFilter(text, rawFilter) {
       const cellText = normalize(text);
       const parts = String(rawFilter || "")
-        .match(/-?[^\\s,]+/g) || [];
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
 
       for (const part of parts) {
         if (/^-\s*/.test(part)) {
@@ -1991,26 +1993,42 @@
 
     function matchesPackageFilter(vehicle, rawFilter) {
       const packageTokens = getNormalizedPackageTokens(vehicle);
-      const detailsText = normalize(`${vehicle.details || ""} ${vehicle.vspec || ""}`);
+
+      // Include package codes, descriptions, Details, and V-Spec in the searchable text.
+      const searchableText = normalize(`
+        ${packageTokens.join(" ")}
+        ${(vehicle.packageDetails || []).join(" ")}
+        ${vehicle.details || ""}
+        ${vehicle.vspec || ""}
+      `);
+
+      // Allow either spaces or commas between codes.
+      // Examples: IND Z9B, IND,Z9B, ZCP 2MK
       const parts = String(rawFilter || "")
-        .match(/-?[^\\s,]+/g) || [];
+        .match(/-?[^\s,]+/g) || [];
 
-      for (const part of parts) {
-        if (/^-\s*/.test(part)) {
-          const excludeTerm = normalize(part.replace(/^-\s*/, ""));
-          if (!excludeTerm) continue;
+      const includeTerms = [];
+      const excludeTerms = [];
 
-          const hasExcludedPackage = packageTokens.includes(excludeTerm);
-          const hasExcludedDetailText = detailsText.includes(excludeTerm);
-          if (hasExcludedPackage || hasExcludedDetailText) return false;
+      parts.forEach(part => {
+        if (part.startsWith("-")) {
+          const term = normalize(part.slice(1));
+          if (term) excludeTerms.push(term);
         } else {
-          const includeTerm = normalize(part);
-          if (!includeTerm) continue;
-
-          const hasIncludedPackage = packageTokens.includes(includeTerm);
-          const hasIncludedDetailText = detailsText.includes(includeTerm);
-          if (!hasIncludedPackage && !hasIncludedDetailText) return false;
+          const term = normalize(part);
+          if (term) includeTerms.push(term);
         }
+      });
+
+      // Excluded terms always remove a vehicle.
+      if (excludeTerms.some(term => searchableText.includes(term))) {
+        return false;
+      }
+
+      // Multiple positive package codes use OR logic.
+      // "IND Z9B" returns vehicles containing IND OR Z9B.
+      if (includeTerms.length) {
+        return includeTerms.some(term => searchableText.includes(term));
       }
 
       return true;
