@@ -1992,43 +1992,31 @@
     }
 
     function matchesPackageFilter(vehicle, rawFilter) {
+      // Search only the actual package codes stored for this vehicle.
+      // Do not search Details, V-Spec, exterior names, or package descriptions.
       const packageTokens = getNormalizedPackageTokens(vehicle);
 
-      // Include package codes, descriptions, Details, and V-Spec in the searchable text.
-      const searchableText = normalize(`
-        ${packageTokens.join(" ")}
-        ${(vehicle.packageDetails || []).join(" ")}
-        ${vehicle.details || ""}
-        ${vehicle.vspec || ""}
-      `);
-
-      // Allow either spaces or commas between codes.
-      // Examples: IND Z9B, IND,Z9B, ZCP 2MK
+      // Accept spaces, commas, or a mixture of both:
+      // IND -2MK
+      // IND, -2MK
+      // IND,-2MK
       const parts = String(rawFilter || "")
         .match(/-?[^\s,]+/g) || [];
 
-      const includeTerms = [];
-      const excludeTerms = [];
-
-      parts.forEach(part => {
+      for (const part of parts) {
         if (part.startsWith("-")) {
-          const term = normalize(part.slice(1));
-          if (term) excludeTerms.push(term);
+          const excludeTerm = normalize(part.slice(1));
+          if (!excludeTerm) continue;
+
+          // Excluded code must not be present.
+          if (packageTokens.includes(excludeTerm)) return false;
         } else {
-          const term = normalize(part);
-          if (term) includeTerms.push(term);
+          const includeTerm = normalize(part);
+          if (!includeTerm) continue;
+
+          // Every included code must be present.
+          if (!packageTokens.includes(includeTerm)) return false;
         }
-      });
-
-      // Excluded terms always remove a vehicle.
-      if (excludeTerms.some(term => searchableText.includes(term))) {
-        return false;
-      }
-
-      // Multiple positive package codes use OR logic.
-      // "IND Z9B" returns vehicles containing IND OR Z9B.
-      if (includeTerms.length) {
-        return includeTerms.some(term => searchableText.includes(term));
       }
 
       return true;
