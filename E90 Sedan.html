@@ -1968,9 +1968,7 @@
     function matchesFilter(text, rawFilter) {
       const cellText = normalize(text);
       const parts = String(rawFilter || "")
-        .split(",")
-        .map(part => part.trim())
-        .filter(Boolean);
+        .match(/-?[^\\s,]+/g) || [];
 
       for (const part of parts) {
         if (/^-\s*/.test(part)) {
@@ -1995,9 +1993,7 @@
       const packageTokens = getNormalizedPackageTokens(vehicle);
       const detailsText = normalize(`${vehicle.details || ""} ${vehicle.vspec || ""}`);
       const parts = String(rawFilter || "")
-        .split(",")
-        .map(part => part.trim())
-        .filter(Boolean);
+        .match(/-?[^\\s,]+/g) || [];
 
       for (const part of parts) {
         if (/^-\s*/.test(part)) {
