@@ -1856,8 +1856,24 @@
       return null;
     }
 
-    function getPackageDetail(code) {
-      return packageLookup[code] || defaultPackages[code] || code;
+    function getPackageDetail(code, vehicleYear = "") {
+      const normalizedCode = String(code || "").trim();
+      const normalizedYear = String(vehicleYear || "").trim();
+
+      // 2009-specific option pricing must take priority over the generic table.
+      if (
+        normalizedYear === "2009" ||
+        currentCsvFile.includes("2009")
+      ) {
+        return packageLookup[normalizedCode] ||
+          packagePrices2009[normalizedCode] ||
+          defaultPackages[normalizedCode] ||
+          normalizedCode;
+      }
+
+      return packageLookup[normalizedCode] ||
+        defaultPackages[normalizedCode] ||
+        normalizedCode;
     }
 
     function parsePackageCodes(value) {
@@ -1908,7 +1924,7 @@
 
       const packageCodesRaw = getField(row, ["Package Codes", "PACKAGE CODES", "PACKAGES", "Packages"]);
       const packageCodes = parsePackageCodes(packageCodesRaw);
-      const packageDetails = packageCodes.map(code => getPackageDetail(code));
+      const packageDetails = packageCodes.map(code => getPackageDetail(code, year));
 
       const exteriorData = getColorData(exteriorRaw);
       const interiorData = getInteriorData(interiorRaw);
@@ -2908,6 +2924,18 @@
       // if its CSV column order changes or the VIN lookup returns only base data.
       const packageCodes = (vehicle.packageCodes || []).filter(Boolean).join(",");
       if (packageCodes) url.searchParams.set("packages", packageCodes);
+
+      // Explicitly pass the model year to the configurator so its PDF pricing
+      // logic can select the correct year-specific option table.
+      if (vehicle.year && vehicle.year !== "-") {
+        url.searchParams.set("year", vehicle.year);
+      }
+
+      // Pass the corrected 2009 Satellite Radio price as an explicit override.
+      // The configurator should prioritize this value when generating documents.
+      if (String(vehicle.year).trim() === "2009" && (vehicle.packageCodes || []).includes("655")) {
+        url.searchParams.set("option655Price", "595");
+      }
 
       url.searchParams.set("_", String(Date.now()));
       return url.toString();
