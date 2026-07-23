@@ -3314,8 +3314,12 @@
           sheetName = "2009 E90 M3 Sedan";
         } else if (currentCsvFile.includes("2010")) {
           sheetName = "2010 E90 M3 Sedan";
-        } else {
+        } else if (currentCsvFile.includes("2011")) {
           sheetName = "2011 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2012")) {
+          sheetName = "2012 E90 M3 Sedan CRT";
+        } else {
+          sheetName = "2009 E90 M3 Sedan";
         }
 
         const csvUrl =
