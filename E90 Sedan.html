@@ -3313,9 +3313,7 @@
 
         let sheetName;
 
-        if (currentCsvFile.includes("2008")) {
-          sheetName = "2008 E90 M3 Sedan";
-        } else if (currentCsvFile.includes("2009")) {
+        if (currentCsvFile.includes("2009")) {
           sheetName = "2009 E90 M3 Sedan";
         } else if (currentCsvFile.includes("2010")) {
           sheetName = "2010 E90 M3 Sedan";
@@ -3324,7 +3322,7 @@
         } else if (currentCsvFile.includes("2012")) {
           sheetName = "2012 E90 M3 Sedan CRT";
         } else {
-          sheetName = "2008 E90 M3 Sedan";
+          sheetName = "2009 E90 M3 Sedan";
         }
 
         const csvUrl =
