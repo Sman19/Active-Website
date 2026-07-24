@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>E90 M3 Sedan Database</title>
+  <title>E90 M3 Sedan Archiv</title>
 
   <link 
     id="favicon"
@@ -1772,7 +1772,9 @@
           body: JSON.stringify({
             token: COMMENTS_SAVE_TOKEN,
             sheetName:
-            currentCsvFile.includes("2009")
+            currentCsvFile.includes("2008")
+              ? "2008 E90 M3 Sedan"
+              : currentCsvFile.includes("2009")
               ? "2009 E90 M3 Sedan"
               : currentCsvFile.includes("2010")
               ? "2010 E90 M3 Sedan"
@@ -1780,7 +1782,7 @@
               ? "2011 E90 M3 Sedan"
               : currentCsvFile.includes("2012")
               ? "2012 E90 M3 Sedan CRT"
-              : "2009 E90 M3 Sedan",
+              : "2008 E90 M3 Sedan",
             updates: updates,
             source: "E90 Admin Comments",
             updatedBy: getCurrentLoginName() || "Admin",
@@ -3313,7 +3315,9 @@
 
         let sheetName;
 
-        if (currentCsvFile.includes("2009")) {
+        if (currentCsvFile.includes("2008")) {
+          sheetName = "2008 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2009")) {
           sheetName = "2009 E90 M3 Sedan";
         } else if (currentCsvFile.includes("2010")) {
           sheetName = "2010 E90 M3 Sedan";
@@ -3322,7 +3326,7 @@
         } else if (currentCsvFile.includes("2012")) {
           sheetName = "2012 E90 M3 Sedan CRT";
         } else {
-          sheetName = "2009 E90 M3 Sedan";
+          sheetName = "2008 E90 M3 Sedan";
         }
 
         const csvUrl =
