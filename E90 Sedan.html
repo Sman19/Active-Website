@@ -3345,7 +3345,7 @@
 
         rows.forEach(row => {
           const vehicle = buildVehicle(row);
-          const vin = String(vehicle.vin || "").trim();
+          const vin = String(vehicle.vin || "").trim().toUpperCase();
 
           if (vin === "END_VEHICLES") {
             reachedEnd = true;
@@ -3354,6 +3354,10 @@
 
           if (reachedEnd) return;
 
+          // Ignore placeholder rows
+          if (vin === "VIN SKIP") return;
+
+          // Only include real VINs
           if (vin !== "" && vin !== "-" && vin.length >= 11) {
             vehicles.push(vehicle);
           }
