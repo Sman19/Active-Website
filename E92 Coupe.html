@@ -975,7 +975,7 @@
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
-              <option value="2008 E90 M3 Coupe.csv">2008 E90 M3 Sedan</option>
+              <option value="2008 E90 M3 Coupe.csv">2008 E92 M3 Coupe</option>
             </select>
           </div>
 
@@ -1374,7 +1374,7 @@
 
     function getCsvFileFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      return params.get("file") || "2008 E90 M3 Sedan.csv";
+      return params.get("file") || "2008 E92 M3 Coupe.csv";
     }
 
     function syncDatasetDropdown() {
@@ -1771,16 +1771,16 @@
             token: COMMENTS_SAVE_TOKEN,
             sheetName:
             currentCsvFile.includes("2008")
-              ? "2008 E90 M3 Sedan"
+              ? "2008 E92 M3 Coupe"
               : currentCsvFile.includes("2009")
-              ? "2009 E90 M3 Sedan"
+              ? "2009 E92 M3 Coupe"
               : currentCsvFile.includes("2010")
-              ? "2010 E90 M3 Sedan"
+              ? "2010 E92 M3 Coupe"
               : currentCsvFile.includes("2011")
-              ? "2011 E90 M3 Sedan"
+              ? "2011 E90 M3 Coupe"
               : currentCsvFile.includes("2012")
               ? "2012 E90 M3 Sedan CRT"
-              : "2008 E90 M3 Sedan",
+              : "2008 E92 M3 Coupe",
             updates: updates,
             source: "E90 Admin Comments",
             updatedBy: getCurrentLoginName() || "Admin",
