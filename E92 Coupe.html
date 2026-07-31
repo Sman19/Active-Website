@@ -1143,7 +1143,7 @@
     // POST = saves admin comments back to Google Sheets.
     const GOOGLE_SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
     const GITHUB_SAVE_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
-    const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
+    const COMMENTS_SAVE_TOKEN = "E92M3COMMENTS2026";
     const ADMIN_USERS = ["admin"];
     let vehicles = [];
     let filteredVehicles = [];
@@ -1777,12 +1777,12 @@
               : currentCsvFile.includes("2010")
               ? "2010 E92 M3 Coupe"
               : currentCsvFile.includes("2011")
-              ? "2011 E92 M3 Coupe"
+              ? "2011 E90 M3 Coupe"
               : currentCsvFile.includes("2012")
-              ? "2012 E92 M3 Sedan CRT"
+              ? "2012 E90 M3 Sedan CRT"
               : "2008 E92 M3 Coupe",
             updates: updates,
-            source: "E92 Admin Comments",
+            source: "E90 Admin Comments",
             updatedBy: getCurrentLoginName() || "Admin",
             updatedAt: new Date().toISOString()
           })
@@ -2625,9 +2625,9 @@
       const vehicleName = document.getElementById("panel-vehicle-name");
       const vehicleInfoEl = document.getElementById("panel-vehicle-info");
 
-      let modelType = "E90";
+      let modelType = "E92";
       if (vehicleInfo.model) {
-        if (vehicleInfo.model.startsWith("C5")) modelType = "E90";
+        if (vehicleInfo.model.startsWith("C5")) modelType = "E92";
         else if (vehicleInfo.model.startsWith("C6")) modelType = "E92";
         else if (vehicleInfo.model.startsWith("C7")) modelType = "E93";
       }
@@ -2753,7 +2753,7 @@
           username: getAuthProUsername(),
           documentType: documentType,
           vin: vehicle && vehicle.vin ? vehicle.vin : "",
-          source: "E90 Database",
+          source: "E92 Database",
           timestamp: new Date().toISOString()
         })
       });
