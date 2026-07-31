@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>E90 M3 Sedan Archiv</title>
+  <title>E92 M3 Coupe Archiv</title>
 
   <link 
     id="favicon"
@@ -975,7 +975,7 @@
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
-              <option value="2008 E90 M3 Coupe.csv">2008 E92 M3 Coupe</option>
+              <option value="2008 E92 M3 Coupe.csv">2008 E92 M3 Coupe</option>
             </select>
           </div>
 
@@ -1443,7 +1443,7 @@
         .toLowerCase()
         .replace(/[^a-z0-9._-]/g, "_");
 
-      return `e90_column_order_${user}`;
+      return `e92_column_order_${user}`;
     }
 
     function getSavedColumnOrder() {
