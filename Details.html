@@ -14,6 +14,13 @@
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#fff}
     button{font:inherit}.topbar{height:var(--top-height);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line)}
     .back{border:0;background:transparent;font-size:31px;color:#555;cursor:pointer}.title{min-width:0;flex:1;display:flex;align-items:center;gap:18px}.title h1{margin:0;color:var(--red);font-size:20px;white-space:nowrap}.meta{display:flex;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-size:14px}.meta span{overflow:hidden;text-overflow:ellipsis}
+    .vin-meta-wrap{display:inline-flex;align-items:center;gap:8px;min-width:0}
+    .copy-vin-btn{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;border:1px solid #d3d8de;border-radius:7px;background:#fff;color:#3f4750;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+    .copy-vin-btn:hover{background:#f4f6f8;border-color:#bcc3ca}
+    .copy-vin-btn:active{transform:scale(.96)}
+    .copy-vin-btn.copied{background:#ecfdf3;border-color:#86d3a5;color:#168447}
+    .copy-vin-btn svg{width:17px;height:17px;display:block}
+
     .badge{background:var(--blue);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:.08em}
     .quick-wrap{position:relative}
     .quick{border:0;border-radius:999px;padding:11px 21px;background:var(--red);color:#fff;font-weight:750;cursor:pointer}
@@ -64,7 +71,15 @@
   <div class="title">
     <h1 id="topTitle">E90 M3 Vehicle Details</h1>
     <div class="meta">
-      <span id="topModel">BMW M3 Sedan</span><span>•</span><span id="topVin">VIN</span>
+      <span id="topModel">BMW M3 Sedan</span><span>•</span><span class="vin-meta-wrap">
+        <span id="topVin">VIN</span>
+        <button class="copy-vin-btn" id="copyVinButton" type="button" title="Copy VIN" aria-label="Copy VIN">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="8" y="8" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+            <path d="M5 16V6.5A1.5 1.5 0 0 1 6.5 5H16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </span>
       <span class="badge">DATABASE</span><span id="topDealer">Dealer</span>
     </div>
   </div>
@@ -720,6 +735,56 @@ window.initDetailsGoogleMaps=function(){
   initializeDealerMapIfReady();
 };
 
+
+let currentDisplayedVin="";
+
+function copyVinIconSvg(){
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="8" y="8" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+      <path d="M5 16V6.5A1.5 1.5 0 0 1 6.5 5H16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+    </svg>
+  `;
+}
+
+function copiedVinIconSvg(){
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5.5 12.5 10 17l8.5-10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  `;
+}
+
+async function copyCurrentVin(){
+  const button=document.getElementById("copyVinButton");
+  const vin=String(currentDisplayedVin||"").trim();
+  if(!button||!vin)return;
+
+  try{
+    await navigator.clipboard.writeText(vin);
+  }catch(error){
+    const textarea=document.createElement("textarea");
+    textarea.value=vin;
+    textarea.style.position="fixed";
+    textarea.style.opacity="0";
+    textarea.style.pointerEvents="none";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+
+  button.classList.add("copied");
+  button.innerHTML=copiedVinIconSvg();
+  button.title="VIN copied";
+
+  setTimeout(()=>{
+    button.classList.remove("copied");
+    button.innerHTML=copyVinIconSvg();
+    button.title="Copy VIN";
+  },1200);
+}
+
 function render(row){
   const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
   const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
@@ -759,6 +824,7 @@ function render(row){
   document.title=`${year} BMW M3 Sedan – ${vin}`;
   set("topTitle",`${year} BMW M3 Sedan`);
   set("topModel",`${model} • E90 M3 Sedan`);
+  currentDisplayedVin=vin;
   set("topVin",`VIN: ${vin}`);
   set("topDealer",dealer?`Current Dealer: ${dealer}`:"Dealer not listed");
   set("basePrice",money(base));set("optionPrice",money(optionsTotal));set("destinationPrice",money(destination));set("gasPrice",money(gas));set("totalPrice",money(total));
@@ -893,6 +959,11 @@ document.addEventListener("click",event=>{
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");const h=t.dataset.tab==="history";document.getElementById("detailPanel").classList.toggle("hidden",h);document.getElementById("historyPanel").classList.toggle("active",h)});
 const sidebar=document.getElementById("sidebar");document.getElementById("mobileMenu").onclick=()=>sidebar.classList.toggle("open");document.querySelectorAll(".nav a").forEach(a=>a.onclick=()=>sidebar.classList.remove("open"));
 const links=[...document.querySelectorAll(".nav a")];const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);const obs=new IntersectionObserver(entries=>{const v=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v)links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+v.target.id))},{rootMargin:"-25% 0px -60% 0px",threshold:[.01,.2]});sections.forEach(s=>obs.observe(s));
+const copyVinButton=document.getElementById("copyVinButton");
+if(copyVinButton){
+  copyVinButton.addEventListener("click",copyCurrentVin);
+}
+
 init();
 </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6wmsZHv6hoIzkt5eIcm5NVVqxQHoThcA&callback=initDetailsGoogleMaps"></script>
