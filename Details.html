@@ -149,6 +149,11 @@
 <script>
 const GOOGLE_SHEET_CSV_URL="https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
 const CONFIGURATOR_URL="https://sman19.github.io/2011-E90-M3-Configurator/";
+const DOCUMENT_LIMIT_WEBHOOK_URL=GOOGLE_SHEET_CSV_URL;
+let detailsVehicle=null;
+let documentLimitReached=false;
+let lastDocumentLimitResult=null;
+
 
 const COLORS={
 "300":{rgb:"244,244,236",name:"Alpine White",image:"https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true"},
@@ -376,8 +381,142 @@ function getBaseFromCodes(codes,year){for(const c of codes){if(c.startsWith("MSR
 function destinationForYear(y){return y==="2009"?825:875}
 function getPriceForCode(code,year){if(year==="2009"&&code==="655")return 595;return priceFromText(PACKAGE_TEXT[code]||"")}
 function descriptionFor(code,year){if(year==="2009"&&code==="655")return"Satellite Radio with 1-year subscription - $595.00";return PACKAGE_TEXT[code]||code}
+
+function getDetailsUsername(){
+  try{
+    const fromUrl=params.get("authuser")||params.get("username")||params.get("user");
+    if(fromUrl)return fromUrl;
+    if(window.opener && !window.opener.closed && typeof window.opener.getAuthProUsername==="function"){
+      return window.opener.getAuthProUsername();
+    }
+    if(typeof login!=="undefined" && login)return String(login);
+  }catch(error){}
+  return "Member";
+}
+function getDetailsEmail(){
+  try{
+    const fromUrl=params.get("authemail")||params.get("email");
+    if(fromUrl)return fromUrl;
+    if(window.opener && !window.opener.closed && typeof window.opener.getAuthProEmail==="function"){
+      return window.opener.getAuthProEmail()||"";
+    }
+  }catch(error){}
+  return "";
+}
+async function checkDocumentLimit(documentType,vehicle){
+  const response=await fetch(DOCUMENT_LIMIT_WEBHOOK_URL,{
+    method:"POST",
+    mode:"cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({
+      action:"checkDocumentLimit",
+      username:getDetailsUsername(),
+      documentType,
+      vin:vehicle&&vehicle.vin?vehicle.vin:"",
+      source:"E90 Details",
+      timestamp:new Date().toISOString()
+    })
+  });
+  const responseText=await response.text();
+  let result={};
+  try{result=JSON.parse(responseText||"{}")}catch(error){}
+  if(!response.ok||result.success===false){
+    throw new Error(result.error||result.message||responseText||"Document limit check failed.");
+  }
+  lastDocumentLimitResult=result;
+  documentLimitReached=Boolean(!result.admin&&Number.isFinite(Number(result.remaining))&&Number(result.remaining)<=0);
+  return result;
+}
+function showDocumentLimitBlocked(result){
+  const message=result&&result.message
+    ?result.message
+    :"You have reached the 5 document request limit in the last 24 hours. Please try again later.";
+  alert(`${message}\n\nThanks for helping protect the E9x M3 Database.`);
+}
+function showDocumentRemainingToast(result,documentType){
+  const old=document.getElementById("details-document-toast");
+  if(old)old.remove();
+  const toast=document.createElement("div");
+  toast.id="details-document-toast";
+  toast.style.cssText="position:fixed;right:22px;bottom:22px;z-index:999999;background:#111827;color:#fff;border-radius:12px;padding:14px 17px;box-shadow:0 14px 36px rgba(0,0,0,.28);font-weight:750;max-width:340px";
+  const remaining=result&&result.admin
+    ?"Admin unlimited access"
+    :`${Math.max(Number(result&&result.remaining)||0,0)} of ${Number(result&&result.limit)||5} document requests remaining`;
+  toast.innerHTML=`<div>${escapeHtml(documentType)} request approved</div><div style="font-size:12px;color:#d1d5db;margin-top:4px">${escapeHtml(remaining)}</div>`;
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),4200);
+}
+function showDocumentLimitNotice(documentType,onContinue){
+  const existing=document.getElementById("details-document-limit-modal");
+  if(existing)existing.remove();
+  const overlay=document.createElement("div");
+  overlay.id="details-document-limit-modal";
+  overlay.style.cssText="position:fixed;inset:0;background:rgba(17,24,39,.56);z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px";
+  overlay.innerHTML=`<div style="width:min(520px,100%);background:#fff;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,.32);overflow:hidden;color:#111827">
+    <div style="background:#111827;color:#fff;padding:18px 22px"><div style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.72;font-weight:800">M Archiv</div><div style="font-size:22px;font-weight:800;margin-top:4px">Document Request</div></div>
+    <div style="padding:22px;line-height:1.48"><p style="margin:0 0 14px;font-size:15px"><strong>Document generation is limited to 5 Spec Sheet and/or Window Sticker requests per rolling 24 hours.</strong></p><p style="margin:0 0 18px;font-size:14px;color:#4b5563">The PDF will generate and download in the background.</p><div style="background:#f3f4f6;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;font-size:14px;color:#374151">Requested document: <strong>${escapeHtml(documentType)}</strong></div><div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px"><button id="details-limit-cancel" style="border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer">Cancel</button><button id="details-limit-continue" style="border:1px solid #dc2626;background:#dc2626;color:#fff;border-radius:999px;padding:10px 18px;font-weight:900;cursor:pointer">Continue</button></div></div></div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("details-limit-cancel").onclick=()=>overlay.remove();
+  document.getElementById("details-limit-continue").onclick=()=>{overlay.remove();onContinue()};
+}
+function removeExistingGeneratorFrame(){
+  const existing=document.getElementById("details-configurator-generator-frame");
+  if(existing)existing.remove();
+}
+function runConfiguratorInBackground(mode,vehicle){
+  removeExistingGeneratorFrame();
+  const iframe=document.createElement("iframe");
+  iframe.id="details-configurator-generator-frame";
+  iframe.title="Configurator document generator";
+  iframe.style.cssText="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;border:0";
+  iframe.setAttribute("aria-hidden","true");
+  iframe.src=buildConfiguratorUrl(mode,vehicle);
+  document.body.appendChild(iframe);
+}
+async function handleBackgroundSpecSheet(){
+  const vehicle=detailsVehicle;
+  if(!vehicle||!available(vehicle.vin))return;
+  if(documentLimitReached){showDocumentLimitBlocked(lastDocumentLimitResult);return;}
+  showDocumentLimitNotice("BMW Spec Sheet",async()=>{
+    const button=document.getElementById("specButton");
+    const original=button?button.textContent:"BMW Spec Sheet";
+    if(button){button.disabled=true;button.textContent="Checking…";}
+    try{
+      const result=await checkDocumentLimit("BMW Spec Sheet",vehicle);
+      if(!result.allowed){showDocumentLimitBlocked(result);return;}
+      showDocumentRemainingToast(result,"BMW Spec Sheet");
+      if(button)button.textContent="Generating…";
+      runConfiguratorInBackground("spec",vehicle);
+    }catch(error){
+      console.error(error);
+      alert("Document request could not be verified. Please try again.");
+    }finally{
+      setTimeout(()=>{if(button){button.disabled=false;button.textContent=original;}},1800);
+    }
+  });
+}
+window.addEventListener("message",event=>{
+  if(event.origin!=="https://sman19.github.io")return;
+  const data=event.data||{};
+  if(data.type==="e90-pdf-data-url"){
+    const a=document.createElement("a");
+    a.href=data.dataUrl;
+    a.download=data.filename||"BMW-Spec-Sheet.pdf";
+    a.style.display="none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>a.remove(),1000);
+    removeExistingGeneratorFrame();
+  }
+  if(data.type==="e90-document-ready"||data.type==="e90-document-error"){
+    removeExistingGeneratorFrame();
+  }
+});
+
 function buildConfiguratorUrl(mode,v){
   const u=new URL(CONFIGURATOR_URL);u.searchParams.set("vin",v.vin);u.searchParams.set("auto",mode);u.searchParams.set("handoff","1");
+  u.searchParams.set("authuser",getDetailsUsername());
+  const authEmail=getDetailsEmail();if(authEmail)u.searchParams.set("authemail",authEmail);
   if(v.codes.length)u.searchParams.set("packages",v.codes.join(","));if(v.year)u.searchParams.set("year",v.year);
   if(v.year==="2009"&&v.codes.includes("655"))u.searchParams.set("option655Price","595");u.searchParams.set("_",Date.now());return u.toString()
 }
@@ -416,6 +555,7 @@ function render(row){
   const csvTotal=numberFromMoney(totalMsrpRaw);
   const total=csvTotal||calculated;
   const vehicle={vin,year,model,codes};
+  detailsVehicle=vehicle;
 
   document.title=`${year} BMW M3 Sedan – ${vin}`;
   set("topTitle",`${year} BMW M3 Sedan`);
@@ -460,7 +600,7 @@ function render(row){
   const dealerGrid=document.getElementById("dealerGrid");
   [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
 
-  document.getElementById("specButton").onclick=()=>openConfigurator("spec",vehicle);
+  document.getElementById("specButton").onclick=handleBackgroundSpecSheet;
   document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
   const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
   oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
