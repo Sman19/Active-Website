@@ -2673,7 +2673,10 @@
         detailsUrl.searchParams.set("packages", packageCodes.join(","));
       }
 
-      window.open(detailsUrl.toString(), "_blank", "noopener,noreferrer");
+      const detailsWindow = window.open(detailsUrl.toString(), "_blank");
+      if (detailsWindow) {
+        detailsWindow.opener = window;
+      }
     }
 
     const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
