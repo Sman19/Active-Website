@@ -13,15 +13,19 @@
     }
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#fff}
     button{font:inherit}.topbar{height:var(--top-height);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line)}
-    .back{border:0;background:transparent;font-size:31px;color:#555;cursor:pointer}.title{min-width:0;flex:1;display:flex;align-items:center;gap:18px}.title h1{margin:0;color:var(--red);font-size:20px;white-space:nowrap}.meta{display:flex;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-size:14px}.meta span{overflow:hidden;text-overflow:ellipsis}
-    .vin-meta-wrap{display:inline-flex;align-items:center;gap:8px;margin-right:28px;min-width:0}
-    .copy-vin-btn{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;border:1px solid #d3d8de;border-radius:7px;background:#fff;color:#3f4750;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+    .back{border:0;background:transparent;font-size:31px;color:#555;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+    .title{min-width:0;flex:1;display:flex;align-items:center;gap:18px;height:100%}
+    .title h1{margin:0;color:var(--red);font-size:20px;line-height:1;white-space:nowrap;display:flex;align-items:center}
+    .meta{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-size:14px;line-height:1}
+    .meta>span{display:inline-flex;align-items:center;min-height:32px;overflow:hidden;text-overflow:ellipsis;line-height:1}
+    .vin-meta-wrap{display:inline-flex;align-items:center;gap:8px;margin-right:18px;min-width:0;height:32px;line-height:1}
+    .copy-vin-btn{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;padding:0;margin:0;border:1px solid #d3d8de;border-radius:7px;background:#fff;color:#3f4750;cursor:pointer;line-height:1;vertical-align:middle;transition:background .15s ease,border-color .15s ease,transform .15s ease}
     .copy-vin-btn:hover{background:#f4f6f8;border-color:#bcc3ca}
     .copy-vin-btn:active{transform:scale(.96)}
     .copy-vin-btn.copied{background:#ecfdf3;border-color:#86d3a5;color:#168447}
     .copy-vin-btn svg{width:17px;height:17px;display:block}
 
-    .badge{background:var(--blue);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:.08em}
+    .badge{display:inline-flex!important;align-items:center;justify-content:center;height:32px;min-height:32px;padding:0 10px;background:var(--blue);color:#fff;border-radius:4px;font-size:11px;font-weight:800;line-height:1;letter-spacing:.08em;flex:0 0 auto}
     .quick-wrap{position:relative}
     .quick{border:0;border-radius:999px;padding:11px 21px;background:var(--red);color:#fff;font-weight:750;cursor:pointer}
     .quick-menu{display:none;position:absolute;right:0;top:calc(100% + 12px);width:360px;background:var(--red);box-shadow:0 16px 35px rgba(0,0,0,.22);border-radius:8px;overflow:hidden;z-index:220}
@@ -80,7 +84,7 @@
           </svg>
         </button>
       </span>
-      <span class="badge">DATABASE</span><span id="topDealer">Dealer</span>
+      <span class="badge">DATABASE</span><span id="topDealer" style="display:inline-flex;align-items:center;line-height:1;">Dealer</span>
     </div>
   </div>
   <div class="quick-wrap" id="quickWrap">
