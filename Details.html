@@ -149,7 +149,6 @@
                 <div class="dealer-card-actions">
                   <a class="dealer-map-link primary" id="dealerGoogleMapsLink" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
                   <a class="dealer-map-link" id="dealerWebsiteLink" href="#" target="_blank" rel="noopener">Dealer Website</a>
-                  <a class="dealer-map-link" id="dealerFullMapLink" href="dealer.html" target="_blank" rel="noopener">View Dealer Map</a>
                 </div>
               </div>
             </div>
@@ -673,11 +672,6 @@ function renderDealerPreview(record,fallbackName){
     mapsLink.style.display="inline-flex";
   }else{
     mapsLink.style.display="none";
-  }
-
-  const fullMap=document.getElementById("dealerFullMapLink");
-  if(record&&record.name){
-    fullMap.href=`dealer.html?dealer=${encodeURIComponent(record.name)}`;
   }
 
   pendingDealerMapRecord=record;
