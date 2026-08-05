@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E90 M3 Vehicle Details</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
+  <style>
+    :root{
+      --red:#dc2626;--red2:#b91c1c;--blue:#1769ff;--text:#252a31;--muted:#747d86;
+      --line:#e1e5e9;--panel:#eef1f4;--sidebar:#f6f7f8;--white:#fff;--green:#169b50;
+      --sidebar-width:225px;--top-height:70px
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#fff}
+    button{font:inherit}.topbar{height:var(--top-height);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line)}
+    .back{border:0;background:transparent;font-size:31px;color:#555;cursor:pointer}.title{min-width:0;flex:1;display:flex;align-items:center;gap:18px}.title h1{margin:0;color:var(--red);font-size:20px;white-space:nowrap}.meta{display:flex;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-size:14px}.meta span{overflow:hidden;text-overflow:ellipsis}
+    .badge{background:var(--blue);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:.08em}.quick{border:0;border-radius:999px;padding:11px 21px;background:var(--red);color:#fff;font-weight:750;cursor:pointer}
+    .shell{display:grid;grid-template-columns:var(--sidebar-width) minmax(0,1fr)}aside{position:sticky;top:var(--top-height);height:calc(100vh - var(--top-height));overflow:auto;background:var(--sidebar);border-right:1px solid var(--line)}
+    .jump-title{padding:22px 16px 17px;border-bottom:1px solid var(--line);font-weight:750;color:#4d5964}.nav{display:flex;flex-direction:column}.nav a{padding:17px 16px;border-left:4px solid transparent;color:#4d5964;text-decoration:none;font-weight:650}.nav a:hover,.nav a.active{background:#eceeef;border-left-color:var(--red);color:#222}
+    main{min-width:0}.tabs{position:sticky;top:var(--top-height);z-index:90;height:61px;display:flex;gap:32px;align-items:end;padding:0 8%;background:#fff;border-bottom:1px solid var(--line)}
+    .tab{height:100%;padding:20px 0 14px;border:0;border-bottom:3px solid transparent;background:transparent;font-weight:750;cursor:pointer}.tab.active{color:var(--red);border-bottom-color:var(--red)}
+    .loading-page,.error-page{padding:70px 30px;text-align:center}.spinner{width:48px;height:48px;border:4px solid #e4e7eb;border-top-color:var(--red);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 18px}@keyframes spin{to{transform:rotate(360deg)}}
+    #content{display:none}.hero{position:relative;min-height:500px;display:flex;align-items:center;justify-content:center;padding:45px 80px 36px;background:#f2f4f5}.hero img{width:min(900px,78%);height:390px;object-fit:contain;filter:drop-shadow(0 18px 10px rgba(0,0,0,.13))}
+    .hero-note{position:absolute;right:20px;bottom:15px;color:#999;font-size:13px}.section{scroll-margin-top:145px;padding:38px 7% 48px;border-bottom:1px solid #edf0f2}.heading{margin:0 0 25px;font-size:24px;letter-spacing:.04em;font-weight:650}
+    .two-col{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,.85fr);gap:65px}.bar{padding:10px 16px;border-radius:5px;background:#eceff2;font-size:13px;font-weight:850;letter-spacing:.11em}
+    .summary-row{display:grid;grid-template-columns:1fr auto;gap:20px;padding:15px 16px;border-bottom:1px solid var(--line);color:#4a5561}.summary-row strong{font-weight:750}.summary-row.total{color:var(--red);font-weight:850}
+    .colors{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:27px 17px 0}.color-card{display:flex;align-items:center;gap:17px}.swatch,.interior{width:72px;height:72px;flex:0 0 72px;border-radius:10px;border:1px solid #cbd1d6;box-shadow:0 4px 7px rgba(0,0,0,.15);background-position:center;background-size:cover}.small-label{color:var(--muted);font-size:13px}.value{font-size:17px;font-weight:750}
+    .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}.detail{padding:13px 0;border-bottom:1px solid var(--line)}.detail.full{grid-column:1/-1}.detail-label{color:#7b848d;font-size:13px}.detail-value{font-size:16px;font-weight:650;overflow-wrap:anywhere}
+    .card{padding:21px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 5px 16px rgba(0,0,0,.04)}
+    .pricing{width:100%;border-collapse:collapse;table-layout:fixed}.pricing th{padding:13px 17px;background:#eceff2;text-align:left;font-size:13px;letter-spacing:.12em}.pricing th:last-child,.pricing td:last-child{text-align:right}.pricing td{padding:17px;border-bottom:1px solid var(--line);color:#4a5561}.pricing .category td{padding:11px 17px;background:#eceff2;color:var(--red);font-size:13px;font-weight:850;letter-spacing:.12em}.pricing .total td{font-size:18px;font-weight:900;color:var(--red)}
+    .pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}.pill{padding:13px 15px;border:1px solid var(--line);border-radius:8px;background:#fafbfc}.code{font-weight:850;margin-right:6px}.price{float:right;font-weight:750}
+    .actions{display:flex;flex-wrap:wrap;gap:13px}.action{padding:12px 17px;border:1px solid #cfd5da;border-radius:7px;background:#fff;font-weight:750;cursor:pointer}.action.primary{background:var(--red);border-color:var(--red);color:#fff}.action:disabled{opacity:.45;cursor:not-allowed}
+    .history{display:none;padding:45px 7%}.history.active{display:block}.detail-panel.hidden{display:none}.mobile-menu{display:none}
+    @media(max-width:1000px){.meta{display:none}.two-col{grid-template-columns:1fr}.shell{grid-template-columns:190px minmax(0,1fr)}}
+    @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick{width:100%}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <button class="back" onclick="history.back()" aria-label="Back">‹</button>
+  <div class="title">
+    <h1 id="topTitle">E90 M3 Vehicle Details</h1>
+    <div class="meta">
+      <span id="topModel">BMW M3 Sedan</span><span>•</span><span id="topVin">VIN</span>
+      <span class="badge">DATABASE</span><span id="topDealer">Dealer</span>
+    </div>
+  </div>
+  <button class="quick" onclick="document.getElementById('documents').scrollIntoView({behavior:'smooth'})">Quick Actions</button>
+</header>
+<button class="mobile-menu" id="mobileMenu">☰ Jump to section</button>
+<div class="shell">
+  <aside id="sidebar">
+    <div class="jump-title">Jump to</div>
+    <nav class="nav">
+      <a href="#basics" class="active">Basics</a>
+      <a href="#comments">Comments</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#packages">Packages</a>
+      <a href="#options">Standard Options</a>
+      <a href="#dealer">Dealer Information</a>
+      <a href="#documents">Documents</a>
+    </nav>
+  </aside>
+  <main>
+    <div class="tabs">
+      <button class="tab active" data-tab="detail">Detail</button>
+      <button class="tab" data-tab="history">History</button>
+    </div>
+
+    <div id="loading" class="loading-page"><div class="spinner"></div><div>Loading vehicle details…</div></div>
+    <div id="error" class="error-page" style="display:none"></div>
+
+    <div id="content">
+      <div class="detail-panel" id="detailPanel">
+        <section class="hero">
+          <img id="vehicleImage" alt="BMW M3">
+          <div class="hero-note">Image represents configured vehicle</div>
+        </section>
+
+        <section class="section" id="basics">
+          <div class="two-col">
+            <div>
+              <h2 class="heading">Basics</h2>
+              <div class="bar">PRICE</div>
+              <div class="summary-row"><span>Base MSRP</span><strong id="basePrice">—</strong></div>
+              <div class="summary-row"><span>Installed packages / options</span><strong id="optionPrice">—</strong></div>
+              <div class="summary-row"><span>Destination charge</span><strong id="destinationPrice">—</strong></div>
+              <div class="summary-row"><span>Gas-guzzler tax</span><strong id="gasPrice">—</strong></div>
+              <div class="summary-row total"><span>Total MSRP</span><strong id="totalPrice">—</strong></div>
+              <div class="bar" style="margin-top:22px">COLOR</div>
+              <div class="colors">
+                <div class="color-card"><div class="swatch" id="exteriorSwatch"></div><div><div class="small-label">Exterior color</div><div class="value" id="exteriorText">—</div></div></div>
+                <div class="color-card"><div class="interior" id="interiorImage"></div><div><div class="small-label">Interior color</div><div class="value" id="interiorText">—</div></div></div>
+              </div>
+            </div>
+            <div>
+              <h2 class="heading">Details</h2>
+              <div class="details-grid" id="detailsGrid"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="comments"><h2 class="heading">Comments</h2><div class="card" id="commentsText">—</div></section>
+
+        <section class="section" id="pricing">
+          <h2 class="heading">Pricing</h2>
+          <table class="pricing"><thead><tr><th style="width:76%">FACTORY ITEM</th><th>RETAIL</th></tr></thead><tbody id="pricingRows"></tbody></table>
+        </section>
+
+        <section class="section" id="packages"><h2 class="heading">Packages</h2><div class="pills" id="packageList"></div></section>
+        <section class="section" id="options"><h2 class="heading">Standard Options</h2><div class="pills" id="optionList"></div></section>
+        <section class="section" id="dealer"><h2 class="heading">Dealer Information</h2><div class="details-grid" id="dealerGrid"></div></section>
+
+        <section class="section" id="documents">
+          <h2 class="heading">Documents</h2>
+          <div class="actions">
+            <button class="action primary" id="specButton">BMW Spec Sheet</button>
+            <button class="action" id="stickerButton">Window Sticker</button>
+            <button class="action" id="oemButton">OEM Sticker</button>
+            <button class="action" id="invoiceButton">Invoice</button>
+          </div>
+        </section>
+      </div>
+      <section class="history" id="historyPanel"><h2 class="heading">Vehicle History</h2><div class="card">No separate vehicle-history records are stored in the current E90 CSV.</div></section>
+    </div>
+  </main>
+</div>
+
+<script>
+const GOOGLE_SHEET_CSV_URL="https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
+const CONFIGURATOR_URL="https://sman19.github.io/2011-E90-M3-Configurator/";
+
+const COLORS={
+"300":{rgb:"244,244,236",name:"Alpine White",image:"https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true"},
+"668":{rgb:"0,0,0",name:"Jet Black",image:"https://github.com/Sman19/E90-ext.380x260px/blob/184a291efe57013d3e0607390ab5a2eb6bde6a2b/jet%20black%20-%20E90.png?raw=true"},
+"A29":{rgb:"205,223,244",name:"Silverstone Metallic II",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Silverstone%20-%20E90.png?raw=true"},
+"A30":{rgb:"30,53,138",name:"Interlagos Blue Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Interlogos%20Blue%20Metallic%20-%20E90.png?raw=true"},
+"A52":{rgb:"102,109,127",name:"Space Grey Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/9fd94093c78555c094f7399c638ce1736e2e8a88/Space%20Gray%20Metallic%20-%20E90.png?raw=true"},
+"A73":{rgb:"39,41,56",name:"Jerez Black Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Jerez%20black%20Metallic%20-%20E90.png?raw=true"},
+"A75":{rgb:"240,0,0",name:"Melbourne Red Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Melborune%20Red%20Metallic%20-%20E90.png?raw=true"},
+"381":{rgb:"17,93,176",name:"Le Mans Blue Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/LE%20Mans%20blue%20metallic%20-%20E90.png?raw=true"},
+"U94":{rgb:"224,92,32",name:"Fire Orange 2",image:"https://github.com/Sman19/E90-ext.380x260px/blob/ead4fd3fc308c2408f822f53805c4d722032b7f5/Fire%20Orange%202%20-%20E90.png?raw=true"},
+"X03":{rgb:"116,68,64",name:"Ruby Black Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/aacc8f31633be6c7567631c7af297e444ac2f08c/Ruby%20Black%20Metallic.png?raw=true"},
+"X04":{rgb:"204,200,197",name:"Moonstone Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/b7a0aa857a2cee27b9dfdefc58af4777aa91b6ae/Moonstone%20-%20E90.png?raw=true"},
+"U83":{rgb:"116,127,144",name:"Frozen Grey",image:"https://github.com/Sman19/E90-ext.380x260px/blob/aacc8f31633be6c7567631c7af297e444ac2f08c/Frozen%20Grey%20-%20E90.png?raw=true"},
+"U91":{rgb:"55,62,72",name:"Frozen Black Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/42d0f66d97e9b4f2a8a8f96ab19bfdeda8194cd0/Frozen%20Black%20-%20E90.png?raw=true"},
+"448":{rgb:"0,145,193",name:"Laguna Seca Blue",image:"https://github.com/Sman19/E90-ext.380x260px/blob/b9094b424abfef2586265286f36777848f8068b4/Laguna%20Seca%20Blue%20-%20E90.png?raw=true"},
+"W73":{rgb:"174,177,178",name:"Polar Silver Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/CRT.png?raw=true"}
+};
+const INTERIORS={
+"GEAT":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/ANTHRACITE%20Black%20Cloth.png",name:"Anthracite/Black Cloth & Leather"},
+"NCSW":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png",name:"Black Novillo Leather"},
+"NDSW":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png",name:"Black Extended Novillo Leather"},
+"NCH1":{image:"https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png",name:"Palladium/Silver Novillo Leather"},
+"NDH1":{image:"https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png",name:"Palladium Extended Novillo Leather"},
+"NCH2":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png",name:"Fox Red Novillo Leather"},
+"NDH2":{image:"https://raw.githubusercontent.com/Sman19/E9x-Interiors/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png",name:"Fox Red Extended Novillo Leather"},
+"NCH3":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png",name:"Bamboo Beige Novillo Leather"},
+"NDH3":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png",name:"Bamboo Beige Extended Novillo Leather"},
+"NCH4":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%3APadllaium%20Two-TOne.png",name:"Palladium/Black Novillo Leather"},
+"NCH5":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png",name:"Fox Red/Black Novillo Leather"},
+"NDH5":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png",name:"Fox Red/Black Extended Novillo Leather"},
+"Z1XX1":{image:"https://github.com/Sman19/E9x-Interiors/raw/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Z1XX.1%20Amarone%20.png",name:"Amarone Extended Novillo Leather"},
+"ZAP2":{image:"https://raw.githubusercontent.com/Sman19/E9x-Interiors/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Rust%20Brown%20Ind%20Interior.png",name:"Rust Brown Extended Leather"}
+};
+const PACKAGE_TEXT={
+"MSRP.3":"MSRP - $53,800.00","MSRP.2":"MSRP - $54,850.00","MSRP.1":"MSRP - $55,400.00","MSRP":"MSRP - $55,900.00",
+"IND":"INDIVIDUAL PAINT - $5,000.00","ZCP":"Competition Package - $2,500.00","ZCV":"Convenience Package - $2,900.00",
+"ZCW":"Cold Weather Package - $1,000.00","ZPP":"Premium Package - $2,000.00","ZPP.1":"Premium Package - $2,000.00",
+"ZPP.2":"Premium Package - $2,000.00","ZPP.3":"Premium Package - $2,000.00","ZP2":"Premium Package 2 - $2,000.00",
+"ZP2.1":"Premium Package 2 - $2,500.00","ZP2.2":"Premium Package 2 - $2,500.00","ZP2.3":"Premium Package 2 - $2,500.00",
+"ZP3.1":"Premium Package 3 - $2,500.00","ZP3.2":"Premium Package 3 - $2,500.00","ZP3.3":"Premium Package 3 - $2,500.00",
+"ZTP":"Technology Package - $3,250.00","223":"Dynamic Damper Control - $1,000.00","2MK":"M Double-Clutch Transmission - $2,900.00",
+"2MT":"19-inch Alloy Wheels - $1,250.00","2MT.1":"19-inch Alloy Wheels - $1,200.00","302":"Anti-Theft Alarm System - $400.00",
+"403":"Moonroof - $1,050.00","417":"Rear Manual Side Window Shades - $575.00","465":"Split Fold-Down Rear Seat - $475.00",
+"494":"Heated Front Seats - $500.00","507":"Park Distance Control (rear) - $380.00","5AC":"Automatic High Beams - $250.00",
+"609":"Navigation System - $2,100.00","639":"BMW Assist with Bluetooth - $750.00","653":"High Definition Radio - $350.00",
+"655":"Satellite Radio with 1-year subscription - $350.00","6FL":"iPod & USB Adapter - $400.00","6NF":"Smartphone Integration - $150.00",
+"6NR":"BMW Apps - $250.00","752":"Enhanced Premium Sound - $1,900.00","771":"Titanium Shadow Trim - $0.00",
+"4MY":"Carbon Fiber Leather Trim - $500.00","4MX":"Blue-Gray Brushed Aluminum - $500.00","4MZ":"Sycamore Anthracite Trim - $0.00"
+};
+const PACKAGE_CODES=new Set(["ZCP","ZCV","ZCW","ZPP","ZPP.1","ZPP.2","ZPP.3","ZPP.5","ZP2","ZP2.1","ZP2.2","ZP2.3","ZP2.4","ZP2.5","ZP3.1","ZP3.2","ZP3.3","ZP3.4","ZP3.5","ZTP","IND"]);
+
+const params=new URLSearchParams(location.search);
+const wantedVin=(params.get("vin")||"").trim().toUpperCase();
+const fileName=params.get("file")||`${params.get("year")||"2008"} E90 M3 Sedan.csv`;
+const passedPackages=(params.get("packages")||"").split(",").map(x=>x.trim()).filter(Boolean);
+
+function sheetNameFromFile(name){
+  if(name.includes("2008"))return"2008 E90 M3 Sedan";
+  if(name.includes("2009"))return"2009 E90 M3 Sedan";
+  if(name.includes("2010"))return"2010 E90 M3 Sedan";
+  if(name.includes("2011"))return"2011 E90 M3 Sedan";
+  if(name.includes("2012"))return"2012 E90 M3 Sedan CRT";
+  return"2008 E90 M3 Sedan";
+}
+function parseCSVLine(line){const r=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i],n=line[i+1];if(ch==='"'){if(q&&n==='"'){c+='"';i++}else q=!q}else if(ch===","&&!q){r.push(c.trim());c=""}else c+=ch}r.push(c.trim());return r}
+function parseCSV(text){const lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(x=>x.trim());if(!lines.length)return[];const h=parseCSVLine(lines[0]).map(x=>x.trim());return lines.slice(1).map(line=>{const v=parseCSVLine(line),o={};h.forEach((k,i)=>o[k]=v[i]||"");o.__values=v;return o})}
+function getField(row,names){const keys=Object.keys(row);for(const n of names){const k=keys.find(x=>x.trim().toLowerCase()===n.trim().toLowerCase());if(k&&row[k])return row[k]}return""}
+function codeOf(v){return String(v||"").trim().split(" - ")[0].trim().toUpperCase()}
+function parseCodes(v){return String(v||"").split(/[,\s]+/).map(x=>x.trim()).filter(Boolean)}
+function money(n){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2}).format(Number(n)||0)}
+function numberFromMoney(v){const n=Number(String(v||"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:0}
+function priceFromText(v){const m=String(v||"").match(/\$([\d,]+(?:\.\d{2})?)/);return m?Number(m[1].replace(/,/g,"")):0}
+function available(v){const x=String(v||"").trim().toLowerCase();return!!x&&x!=="-"&&x!=="n/a"&&x!=="na"}
+function set(id,v){document.getElementById(id).textContent=v||"—"}
+function detail(label,value,full=false){const d=document.createElement("div");d.className="detail"+(full?" full":"");d.innerHTML=`<div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${escapeHtml(value||"—")}</div>`;return d}
+function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+function getComments(row){return row.__values&&row.__values.length>12?row.__values[12]:""}
+function getBaseFromCodes(codes,year){for(const c of codes){if(c.startsWith("MSRP")){const p=priceFromText(PACKAGE_TEXT[c]);if(p)return p}}return year==="2008"?53800:year==="2009"?54850:year==="2010"?55400:55900}
+function destinationForYear(y){return y==="2009"?825:875}
+function getPriceForCode(code,year){if(year==="2009"&&code==="655")return 595;return priceFromText(PACKAGE_TEXT[code]||"")}
+function descriptionFor(code,year){if(year==="2009"&&code==="655")return"Satellite Radio with 1-year subscription - $595.00";return PACKAGE_TEXT[code]||code}
+function buildConfiguratorUrl(mode,v){
+  const u=new URL(CONFIGURATOR_URL);u.searchParams.set("vin",v.vin);u.searchParams.set("auto",mode);u.searchParams.set("handoff","1");
+  if(v.codes.length)u.searchParams.set("packages",v.codes.join(","));if(v.year)u.searchParams.set("year",v.year);
+  if(v.year==="2009"&&v.codes.includes("655"))u.searchParams.set("option655Price","595");u.searchParams.set("_",Date.now());return u.toString()
+}
+function openConfigurator(mode,v){window.open(buildConfiguratorUrl(mode,v),"_blank","noopener,noreferrer")}
+function render(row){
+  const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
+  const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
+  const year=getField(row,["YEAR","Year","Model Year","MY"])||params.get("year")||"";
+  const vin=getField(row,["VIN","Vin","Full VIN","Full VIN Number"]).trim();
+  const model=getField(row,["MODEL","Model"])||"M3";
+  const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
+  const totalMsrpRaw=getField(row,["MSRP","msrp","Total MSRP","TOTAL MSRP","Retail Price","Vehicle MSRP"]);
+  const prod=getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
+  const oem=getField(row,["STICKER","Monroney","Window Sticker"]);
+  const invoice=getField(row,["INVOICE","Invoice"]);
+  const details=getField(row,["DETAILS","Details"]);
+  const rawCodes=getField(row,["Package Codes","PACKAGE CODES","PACKAGES","Packages"]);
+  const codes=passedPackages.length?passedPackages:parseCodes(rawCodes);
+  const exteriorCode=codeOf(exteriorRaw),interiorCode=codeOf(interiorRaw);
+  const color=COLORS[exteriorCode]||{rgb:"190,190,190",name:exteriorRaw||exteriorCode,image:""};
+  const interior=INTERIORS[interiorCode]||{image:"",name:interiorRaw||interiorCode};
+  const base=getBaseFromCodes(codes,year),destination=destinationForYear(year),gas=1300;
+  const optionCodes=codes.filter(c=>!c.startsWith("MSRP"));
+  const optionsTotal=optionCodes.reduce((s,c)=>s+getPriceForCode(c,year),0);
+  const calculated=base+optionsTotal+destination+gas;
+  const csvTotal=numberFromMoney(totalMsrpRaw);
+  const total=csvTotal||calculated;
+  const vehicle={vin,year,model,codes};
+
+  document.title=`${year} BMW M3 Sedan – ${vin}`;
+  set("topTitle",`${year} BMW M3 Sedan`);
+  set("topModel",`${model} • E90 M3 Sedan`);
+  set("topVin",`VIN: ${vin}`);
+  set("topDealer",dealer?`Current Dealer: ${dealer}`:"Dealer not listed");
+  set("basePrice",money(base));set("optionPrice",money(optionsTotal));set("destinationPrice",money(destination));set("gasPrice",money(gas));set("totalPrice",money(total));
+  set("exteriorText",`${exteriorCode}${color.name?` – ${color.name}`:""}`);set("interiorText",`${interiorCode}${interior.name?` – ${interior.name}`:""}`);
+  document.getElementById("exteriorSwatch").style.background=`rgb(${color.rgb})`;
+  const intEl=document.getElementById("interiorImage");if(interior.image)intEl.style.backgroundImage=`url("${interior.image}")`;else intEl.style.background="#222";
+  const car=document.getElementById("vehicleImage");if(color.image){car.src=color.image}else{car.style.display="none";car.parentElement.insertAdjacentHTML("beforeend","<div style='font-size:18px;color:#777'>Vehicle image not yet mapped for this paint code.</div>")}
+
+  const dg=document.getElementById("detailsGrid");
+  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Dataset",fileName],["Exterior Code",exteriorCode],["Interior Code",interiorCode],["Stored Details Link",details||"Not stored"]].forEach((x,i)=>dg.appendChild(detail(x[0],x[1],i===8)));
+  set("commentsText",getComments(row)||"No comments entered.");
+
+  const pricing=document.getElementById("pricingRows");
+  pricing.innerHTML=`<tr><td>Base MSRP</td><td>${money(base)}</td></tr>`;
+  let lastCategory="";
+  optionCodes.forEach(code=>{
+    const cat=PACKAGE_CODES.has(code)?"PACKAGES":"FACTORY INSTALLED";
+    if(cat!==lastCategory){pricing.insertAdjacentHTML("beforeend",`<tr class="category"><td colspan="2">${cat}</td></tr>`);lastCategory=cat}
+    pricing.insertAdjacentHTML("beforeend",`<tr><td><span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year).replace(/^.*? - /,""))}</td><td>${money(getPriceForCode(code,year))}</td></tr>`)
+  });
+  pricing.insertAdjacentHTML("beforeend",`<tr><td>Destination Charge</td><td>${money(destination)}</td></tr><tr><td>Gas-Guzzler Tax</td><td>${money(gas)}</td></tr><tr class="total"><td>Total MSRP</td><td>${money(total)}</td></tr>`);
+
+  const packs=document.getElementById("packageList"),opts=document.getElementById("optionList");
+  optionCodes.forEach(code=>{const el=document.createElement("div");el.className="pill";el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;(PACKAGE_CODES.has(code)?packs:opts).appendChild(el)});
+  if(!packs.children.length)packs.innerHTML="<div class='pill'>No package codes listed.</div>";
+  if(!opts.children.length)opts.innerHTML="<div class='pill'>No standalone options listed.</div>";
+
+  const dealerGrid=document.getElementById("dealerGrid");
+  [["Dealer Name",dealer],["Dataset",fileName],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===3)));
+
+  document.getElementById("specButton").onclick=()=>openConfigurator("spec",vehicle);
+  document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
+  const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
+  oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
+  oemBtn.onclick=()=>available(oem)&&window.open(oem,"_blank","noopener,noreferrer");
+  invBtn.onclick=()=>available(invoice)&&window.open(invoice,"_blank","noopener,noreferrer");
+
+  document.getElementById("loading").style.display="none";document.getElementById("content").style.display="block";
+}
+async function init(){
+  if(!wantedVin){showError("No VIN was supplied. Open this page from the Details button using ?vin=FULLVIN&file=YEAR%20E90%20M3%20Sedan.csv");return}
+  try{
+    const sheet=sheetNameFromFile(fileName);
+    const url=`${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheet)}&t=${Date.now()}`;
+    const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("Could not load Google Sheet CSV.");
+    const rows=parseCSV(await response.text());
+    const row=rows.find(r=>getField(r,["VIN","Vin","Full VIN","Full VIN Number"]).trim().toUpperCase()===wantedVin);
+    if(!row)throw new Error(`VIN ${wantedVin} was not found in ${sheet}.`);
+    render(row)
+  }catch(err){console.error(err);showError(err.message||String(err))}
+}
+function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");const h=t.dataset.tab==="history";document.getElementById("detailPanel").classList.toggle("hidden",h);document.getElementById("historyPanel").classList.toggle("active",h)});
+const sidebar=document.getElementById("sidebar");document.getElementById("mobileMenu").onclick=()=>sidebar.classList.toggle("open");document.querySelectorAll(".nav a").forEach(a=>a.onclick=()=>sidebar.classList.remove("open"));
+const links=[...document.querySelectorAll(".nav a")];const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);const obs=new IntersectionObserver(entries=>{const v=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v)links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+v.target.id))},{rootMargin:"-25% 0px -60% 0px",threshold:[.01,.2]});sections.forEach(s=>obs.observe(s));
+init();
+</script>
+</body>
+</html>
