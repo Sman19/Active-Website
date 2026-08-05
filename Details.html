@@ -390,7 +390,9 @@ function render(row){
   const model=getField(row,["MODEL","Model"])||"M3";
   const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
   const totalMsrpRaw=getField(row,["MSRP","msrp","Total MSRP","TOTAL MSRP","Retail Price","Vehicle MSRP"]);
-  const prod=getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
+  // Column K (11th column) is the authoritative production date.
+  const prod=((row.__COL_11||"").trim())||
+    getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
   const oem=getField(row,["STICKER","Monroney","Window Sticker"]);
   const invoice=getField(row,["INVOICE","Invoice"]);
   const details=getField(row,["DETAILS","Details"]);
