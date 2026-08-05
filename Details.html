@@ -390,10 +390,12 @@ function render(row){
   const model=getField(row,["MODEL","Model"])||"M3";
   const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
   const totalMsrpRaw=getField(row,["MSRP","msrp","Total MSRP","TOTAL MSRP","Retail Price","Vehicle MSRP"]);
-  // Column K is the 11th CSV column. Arrays are zero-indexed, so use index 10.
-  const prod=String(
-    (row.__values && row.__values.length > 10 ? row.__values[10] : "") || ""
-  ).trim() ||
+  // Prefer the production date passed directly from E90.html.
+  // Fallback to column K of the CSV loaded by this page.
+  const prod=String(params.get("prod")||"").trim() ||
+    String(
+      (row.__values && row.__values.length > 10 ? row.__values[10] : "") || ""
+    ).trim() ||
     getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
   const oem=getField(row,["STICKER","Monroney","Window Sticker"]);
   const invoice=getField(row,["INVOICE","Invoice"]);
