@@ -274,7 +274,7 @@ function render(row){
   const car=document.getElementById("vehicleImage");if(color.image){car.src=color.image}else{car.style.display="none";car.parentElement.insertAdjacentHTML("beforeend","<div style='font-size:18px;color:#777'>Vehicle image not yet mapped for this paint code.</div>")}
 
   const dg=document.getElementById("detailsGrid");
-  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Exterior Code",exteriorCode],["Interior Code",interiorCode]].forEach((x)=>dg.appendChild(detail(x[0],x[1])));
+  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Dataset",fileName],["Exterior Code",exteriorCode],["Interior Code",interiorCode],["Stored Details Link",details||"Not stored"]].forEach((x,i)=>dg.appendChild(detail(x[0],x[1],i===8)));
   set("commentsText",getComments(row)||"No comments entered.");
 
   const pricing=document.getElementById("pricingRows");
@@ -293,7 +293,7 @@ function render(row){
   if(!opts.children.length)opts.innerHTML="<div class='pill'>No standalone options listed.</div>";
 
   const dealerGrid=document.getElementById("dealerGrid");
-  [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
+  [["Dealer Name",dealer],["Dataset",fileName],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===3)));
 
   document.getElementById("specButton").onclick=()=>openConfigurator("spec",vehicle);
   document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
@@ -324,20 +324,17 @@ async function init(){
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
 
 function goBackToChart(){
-  // E90.html passes its chart URL as the "return" parameter.
-  // This works even though Details.html was opened with noopener/noreferrer.
-  const returnUrl=params.get("return");
-
-  if(returnUrl){
-    window.location.href=returnUrl;
-    return;
-  }
-
+  try{
+    if(window.opener && !window.opener.closed){
+      window.opener.focus();
+      window.close();
+      return;
+    }
+  }catch(error){}
   if(document.referrer){
     window.location.href=document.referrer;
     return;
   }
-
   history.back();
 }
 function toggleQuickActions(event){
