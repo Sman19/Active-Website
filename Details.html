@@ -14,7 +14,18 @@
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#fff}
     button{font:inherit}.topbar{height:var(--top-height);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line)}
     .back{border:0;background:transparent;font-size:31px;color:#555;cursor:pointer}.title{min-width:0;flex:1;display:flex;align-items:center;gap:18px}.title h1{margin:0;color:var(--red);font-size:20px;white-space:nowrap}.meta{display:flex;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-size:14px}.meta span{overflow:hidden;text-overflow:ellipsis}
-    .badge{background:var(--blue);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:.08em}.quick{border:0;border-radius:999px;padding:11px 21px;background:var(--red);color:#fff;font-weight:750;cursor:pointer}
+    .badge{background:var(--blue);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:.08em}
+    .quick-wrap{position:relative}
+    .quick{border:0;border-radius:999px;padding:11px 21px;background:var(--red);color:#fff;font-weight:750;cursor:pointer}
+    .quick-menu{display:none;position:absolute;right:0;top:calc(100% + 12px);width:360px;background:var(--red);box-shadow:0 16px 35px rgba(0,0,0,.22);border-radius:8px;overflow:hidden;z-index:220}
+    .quick-menu.open{display:grid;grid-template-columns:1fr 1fr}
+    .quick-item{min-height:112px;border:0;border-right:1px solid rgba(255,255,255,.17);border-bottom:1px solid rgba(255,255,255,.17);background:var(--red);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:750;cursor:pointer}
+    .quick-item:hover{background:var(--red2)}
+    .quick-item:nth-child(2n){border-right:0}
+    .quick-item.disabled{background:#7d7d7d;color:#ddd;cursor:not-allowed;position:relative}
+    .quick-item.disabled::after{content:"";position:absolute;width:72%;height:3px;background:rgba(255,255,255,.78);transform:rotate(-24deg);border-radius:999px}
+    .quick-icon{font-size:23px}
+    .quick-note{font-size:11px;font-weight:650;opacity:.88}
     .shell{display:grid;grid-template-columns:var(--sidebar-width) minmax(0,1fr)}aside{position:sticky;top:var(--top-height);height:calc(100vh - var(--top-height));overflow:auto;background:var(--sidebar);border-right:1px solid var(--line)}
     .jump-title{padding:22px 16px 17px;border-bottom:1px solid var(--line);font-weight:750;color:#4d5964}.nav{display:flex;flex-direction:column}.nav a{padding:17px 16px;border-left:4px solid transparent;color:#4d5964;text-decoration:none;font-weight:650}.nav a:hover,.nav a.active{background:#eceeef;border-left-color:var(--red);color:#222}
     main{min-width:0}.tabs{position:sticky;top:var(--top-height);z-index:90;height:61px;display:flex;gap:32px;align-items:end;padding:0 8%;background:#fff;border-bottom:1px solid var(--line)}
@@ -32,12 +43,12 @@
     .actions{display:flex;flex-wrap:wrap;gap:13px}.action{padding:12px 17px;border:1px solid #cfd5da;border-radius:7px;background:#fff;font-weight:750;cursor:pointer}.action.primary{background:var(--red);border-color:var(--red);color:#fff}.action:disabled{opacity:.45;cursor:not-allowed}
     .history{display:none;padding:45px 7%}.history.active{display:block}.detail-panel.hidden{display:none}.mobile-menu{display:none}
     @media(max-width:1000px){.meta{display:none}.two-col{grid-template-columns:1fr}.shell{grid-template-columns:190px minmax(0,1fr)}}
-    @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick{width:100%}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
+    @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick-wrap{width:100%}.quick{width:100%}.quick-menu{position:fixed;left:12px;right:12px;top:78px;width:auto}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
   </style>
 </head>
 <body>
 <header class="topbar">
-  <button class="back" onclick="history.back()" aria-label="Back">‹</button>
+  <button class="back" onclick="goBackToChart()" aria-label="Back to chart">‹</button>
   <div class="title">
     <h1 id="topTitle">E90 M3 Vehicle Details</h1>
     <div class="meta">
@@ -45,7 +56,16 @@
       <span class="badge">DATABASE</span><span id="topDealer">Dealer</span>
     </div>
   </div>
-  <button class="quick" onclick="document.getElementById('documents').scrollIntoView({behavior:'smooth'})">Quick Actions</button>
+  <div class="quick-wrap" id="quickWrap">
+    <button class="quick" type="button" onclick="toggleQuickActions(event)">Quick Actions</button>
+    <div class="quick-menu" id="quickMenu">
+      <button class="quick-item" type="button" onclick="goBackToChart()"><span class="quick-icon">⌂</span><span>Home</span><span class="quick-note">Back to chart</span></button>
+      <button class="quick-item" type="button" onclick="triggerDocument('specButton')"><span class="quick-icon">📋</span><span>BMW Spec Sheet</span></button>
+      <button class="quick-item" type="button" onclick="triggerDocument('stickerButton')"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
+      <button class="quick-item" id="quickOem" type="button" onclick="triggerDocument('oemButton')"><span class="quick-icon">🏷️</span><span>OEM Sticker</span></button>
+      <button class="quick-item" id="quickInvoice" type="button" onclick="triggerDocument('invoiceButton')"><span class="quick-icon">📄</span><span>Invoice</span></button>
+    </div>
+  </div>
 </header>
 <button class="mobile-menu" id="mobileMenu">☰ Jump to section</button>
 <div class="shell">
@@ -279,6 +299,11 @@ function render(row){
   document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
   const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
   oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
+  const quickOem=document.getElementById("quickOem"),quickInvoice=document.getElementById("quickInvoice");
+  quickOem.classList.toggle("disabled",!available(oem));
+  quickInvoice.classList.toggle("disabled",!available(invoice));
+  quickOem.disabled=!available(oem);
+  quickInvoice.disabled=!available(invoice);
   oemBtn.onclick=()=>available(oem)&&window.open(oem,"_blank","noopener,noreferrer");
   invBtn.onclick=()=>available(invoice)&&window.open(invoice,"_blank","noopener,noreferrer");
 
@@ -297,6 +322,37 @@ async function init(){
   }catch(err){console.error(err);showError(err.message||String(err))}
 }
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
+
+function goBackToChart(){
+  try{
+    if(window.opener && !window.opener.closed){
+      window.opener.focus();
+      window.close();
+      return;
+    }
+  }catch(error){}
+  if(document.referrer){
+    window.location.href=document.referrer;
+    return;
+  }
+  history.back();
+}
+function toggleQuickActions(event){
+  if(event)event.stopPropagation();
+  document.getElementById("quickMenu").classList.toggle("open");
+}
+function triggerDocument(buttonId){
+  const button=document.getElementById(buttonId);
+  if(button && !button.disabled)button.click();
+  document.getElementById("quickMenu").classList.remove("open");
+}
+document.addEventListener("click",event=>{
+  const wrap=document.getElementById("quickWrap");
+  if(wrap && !wrap.contains(event.target)){
+    document.getElementById("quickMenu").classList.remove("open");
+  }
+});
+
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");const h=t.dataset.tab==="history";document.getElementById("detailPanel").classList.toggle("hidden",h);document.getElementById("historyPanel").classList.toggle("active",h)});
 const sidebar=document.getElementById("sidebar");document.getElementById("mobileMenu").onclick=()=>sidebar.classList.toggle("open");document.querySelectorAll(".nav a").forEach(a=>a.onclick=()=>sidebar.classList.remove("open"));
 const links=[...document.querySelectorAll(".nav a")];const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);const obs=new IntersectionObserver(entries=>{const v=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v)links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+v.target.id))},{rootMargin:"-25% 0px -60% 0px",threshold:[.01,.2]});sections.forEach(s=>obs.observe(s));
