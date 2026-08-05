@@ -42,8 +42,20 @@
     .pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}.pill{padding:13px 15px;border:1px solid var(--line);border-radius:8px;background:#fafbfc}.code{font-weight:850;margin-right:6px}.price{float:right;font-weight:750}
     .actions{display:flex;flex-wrap:wrap;gap:13px}.action{padding:12px 17px;border:1px solid #cfd5da;border-radius:7px;background:#fff;font-weight:750;cursor:pointer}.action.primary{background:var(--red);border-color:var(--red);color:#fff}.action:disabled{opacity:.45;cursor:not-allowed}
     .history{display:none;padding:45px 7%}.history.active{display:block}.detail-panel.hidden{display:none}.mobile-menu{display:none}
+    .dealer-preview{margin-top:28px}
+    .dealer-map{width:100%;height:220px;border-radius:10px;background:#e9edf1;overflow:hidden;border:1px solid var(--line)}
+    .dealer-map-placeholder{height:100%;display:grid;place-items:center;padding:20px;text-align:center;color:#7b848d;font-size:14px}
+    .dealer-card-name{margin-top:18px;font-size:21px;font-weight:800;color:#252a31}
+    .dealer-card-code{margin-top:10px;padding-bottom:13px;border-bottom:1px solid var(--line);font-size:15px;color:#4d5660}
+    .dealer-contact-row{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;align-items:start;padding:15px 0;border-bottom:1px solid var(--line);color:#303840}
+    .dealer-contact-icon{font-size:19px;color:#7b848d;text-align:center}
+    .dealer-contact-value{font-size:15px;line-height:1.45;overflow-wrap:anywhere}
+    .dealer-card-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .dealer-map-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:7px;border:1px solid #cfd5da;background:#fff;color:#252a31;font-weight:750;text-decoration:none}
+    .dealer-map-link.primary{background:var(--red);border-color:var(--red);color:#fff}
+
     @media(max-width:1000px){.meta{display:none}.two-col{grid-template-columns:1fr}.shell{grid-template-columns:190px minmax(0,1fr)}}
-    @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick-wrap{width:100%}.quick{width:100%}.quick-menu{position:fixed;left:12px;right:12px;top:78px;width:auto}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
+    @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick-wrap{width:100%}.quick{width:100%}.quick-menu{position:fixed;left:12px;right:12px;top:78px;width:auto}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.dealer-map{height:200px}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
   </style>
 </head>
 <body>
@@ -116,6 +128,30 @@
             <div>
               <h2 class="heading">Details</h2>
               <div class="details-grid" id="detailsGrid"></div>
+
+              <div class="dealer-preview" id="dealerPreview">
+                <div class="dealer-map" id="dealerMap">
+                  <div class="dealer-map-placeholder">Loading dealer location…</div>
+                </div>
+                <div class="dealer-card-name" id="dealerCardName">Dealer information</div>
+                <div class="dealer-card-code" id="dealerCardCode">—</div>
+
+                <div class="dealer-contact-row">
+                  <div class="dealer-contact-icon">⌖</div>
+                  <div class="dealer-contact-value" id="dealerCardAddress">—</div>
+                </div>
+
+                <div class="dealer-contact-row">
+                  <div class="dealer-contact-icon">☎</div>
+                  <div class="dealer-contact-value" id="dealerCardPhone">—</div>
+                </div>
+
+                <div class="dealer-card-actions">
+                  <a class="dealer-map-link primary" id="dealerGoogleMapsLink" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
+                  <a class="dealer-map-link" id="dealerWebsiteLink" href="#" target="_blank" rel="noopener">Dealer Website</a>
+                  <a class="dealer-map-link" id="dealerFullMapLink" href="dealer.html" target="_blank" rel="noopener">View Dealer Map</a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -149,6 +185,11 @@
 <script>
 const GOOGLE_SHEET_CSV_URL="https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
 const CONFIGURATOR_URL="https://sman19.github.io/2011-E90-M3-Configurator/";
+const DEALER_CSV_URL="https://raw.githubusercontent.com/Sman19/DEALER-MAP/main/bmw_dealers.csv";
+let detailsGoogleMap=null;
+let detailsGoogleMarker=null;
+let pendingDealerMapRecord=null;
+
 const DOCUMENT_LIMIT_WEBHOOK_URL=GOOGLE_SHEET_CSV_URL;
 let detailsVehicle=null;
 let documentLimitReached=false;
@@ -562,6 +603,129 @@ function buildConfiguratorUrl(mode,v){
   if(v.year==="2009"&&v.codes.includes("655"))u.searchParams.set("option655Price","595");u.searchParams.set("_",Date.now());return u.toString()
 }
 function openConfigurator(mode,v){window.open(buildConfiguratorUrl(mode,v),"_blank","noopener,noreferrer")}
+
+function normalizeDealerName(value){
+  return String(value||"")
+    .toLowerCase()
+    .replace(/&/g,"and")
+    .replace(/\b(incorporated|inc|llc|ltd|limited|company|corp|corporation)\b/g,"")
+    .replace(/\bbmw center\b/g,"bmw")
+    .replace(/[^a-z0-9]+/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+function dealerRecordFromRow(row){
+  return {
+    name:getField(row,["name"]),
+    country:getField(row,["country"]),
+    state:getField(row,["state"]),
+    code:getField(row,["dealer_code"]),
+    phone:getField(row,["phone"]),
+    street:getField(row,["street"]),
+    city:getField(row,["city"]),
+    zip:getField(row,["zip"]),
+    lat:Number(getField(row,["lat"])),
+    lng:Number(getField(row,["lng"])),
+    url:getField(row,["url"])
+  };
+}
+async function loadDealerRecord(dealerName){
+  if(!available(dealerName))return null;
+
+  const response=await fetch(`${DEALER_CSV_URL}?t=${Date.now()}`,{cache:"no-store"});
+  if(!response.ok)throw new Error("Could not load dealer locations.");
+
+  const rows=parseCSV(await response.text());
+  const target=normalizeDealerName(dealerName);
+
+  let matched=rows.find(row=>normalizeDealerName(getField(row,["name"]))===target);
+
+  if(!matched){
+    matched=rows.find(row=>{
+      const candidate=normalizeDealerName(getField(row,["name"]));
+      return candidate && target && (candidate.includes(target)||target.includes(candidate));
+    });
+  }
+
+  return matched?dealerRecordFromRow(matched):null;
+}
+function renderDealerPreview(record,fallbackName){
+  set("dealerCardName",record&&record.name?record.name:(fallbackName||"Dealer information"));
+  set("dealerCardCode",record&&record.code?record.code:"Dealer code unavailable");
+
+  const address=record
+    ?[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join("\n")
+    :"Dealer address unavailable";
+  set("dealerCardAddress",address);
+  set("dealerCardPhone",record&&record.phone?record.phone:"Phone unavailable");
+
+  const website=document.getElementById("dealerWebsiteLink");
+  if(record&&available(record.url)){
+    website.href=record.url;
+    website.style.display="inline-flex";
+  }else{
+    website.style.display="none";
+  }
+
+  const mapsLink=document.getElementById("dealerGoogleMapsLink");
+  if(record&&Number.isFinite(record.lat)&&Number.isFinite(record.lng)){
+    mapsLink.href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(record.lat+","+record.lng)}`;
+    mapsLink.style.display="inline-flex";
+  }else{
+    mapsLink.style.display="none";
+  }
+
+  const fullMap=document.getElementById("dealerFullMapLink");
+  if(record&&record.name){
+    fullMap.href=`dealer.html?dealer=${encodeURIComponent(record.name)}`;
+  }
+
+  pendingDealerMapRecord=record;
+  initializeDealerMapIfReady();
+}
+function initializeDealerMapIfReady(){
+  const record=pendingDealerMapRecord;
+  const mapElement=document.getElementById("dealerMap");
+  if(!mapElement)return;
+
+  if(!record||!Number.isFinite(record.lat)||!Number.isFinite(record.lng)){
+    mapElement.innerHTML='<div class="dealer-map-placeholder">Dealer coordinates are not available.</div>';
+    return;
+  }
+
+  if(!(window.google&&google.maps)){
+    mapElement.innerHTML='<div class="dealer-map-placeholder">Loading Google Maps…</div>';
+    return;
+  }
+
+  const position={lat:record.lat,lng:record.lng};
+
+  detailsGoogleMap=new google.maps.Map(mapElement,{
+    center:position,
+    zoom:11,
+    mapTypeControl:false,
+    streetViewControl:false,
+    fullscreenControl:false,
+    zoomControl:true,
+    gestureHandling:"cooperative"
+  });
+
+  detailsGoogleMarker=new google.maps.Marker({
+    position,
+    map:detailsGoogleMap,
+    title:record.name
+  });
+
+  const infoWindow=new google.maps.InfoWindow({
+    content:`<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-width:190px"><strong>${escapeHtml(record.name)}</strong><br>${escapeHtml(record.street||"")}<br>${escapeHtml([record.city,record.state,record.zip].filter(Boolean).join(", "))}</div>`
+  });
+
+  detailsGoogleMarker.addListener("click",()=>infoWindow.open(detailsGoogleMap,detailsGoogleMarker));
+}
+window.initDetailsGoogleMaps=function(){
+  initializeDealerMapIfReady();
+};
+
 function render(row){
   const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
   const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
@@ -641,6 +805,28 @@ function render(row){
   const dealerGrid=document.getElementById("dealerGrid");
   [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
 
+  loadDealerRecord(dealer)
+    .then(record=>{
+      renderDealerPreview(record,dealer);
+
+      if(record){
+        dealerGrid.innerHTML="";
+        [
+          ["Dealer Name",record.name],
+          ["Dealer Code",record.code],
+          ["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],
+          ["Phone",record.phone],
+          ["Country",record.country],
+          ["Production Date",prod],
+          ["VIN",vin]
+        ].forEach((item,index)=>dealerGrid.appendChild(detail(item[0],item[1],index===6)));
+      }
+    })
+    .catch(error=>{
+      console.error(error);
+      renderDealerPreview(null,dealer);
+    });
+
   document.getElementById("specButton").onclick=handleBackgroundSpecSheet;
   document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
   const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
@@ -715,5 +901,6 @@ const sidebar=document.getElementById("sidebar");document.getElementById("mobile
 const links=[...document.querySelectorAll(".nav a")];const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);const obs=new IntersectionObserver(entries=>{const v=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v)links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+v.target.id))},{rootMargin:"-25% 0px -60% 0px",threshold:[.01,.2]});sections.forEach(s=>obs.observe(s));
 init();
 </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6wmsZHv6hoIzkt5eIcm5NVVqxQHoThcA&callback=initDetailsGoogleMaps"></script>
 </body>
 </html>
