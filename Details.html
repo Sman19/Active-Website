@@ -3,360 +3,3420 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E90 M3 Vehicle Details</title>
-  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
+
+  <title>E90 M3 Sedan Archiv</title>
+
+  <link 
+    id="favicon"
+    rel="icon"
+    type="image/png"
+    href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
+  />
+
+  <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
   <style>
-    :root{
-      --red:#dc2626;--red2:#b91c1c;--blue:#1769ff;--text:#252a31;--muted:#747d86;
-      --line:#e1e5e9;--panel:#eef1f4;--sidebar:#f6f7f8;--white:#fff;--green:#169b50;
-      --sidebar-width:225px;--top-height:70px
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #ffffff;
+      font-size: 13px;
+      color: #111827;
+      overflow-x: hidden;
     }
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#fff}
-    button{font:inherit}.topbar{height:var(--top-height);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;padding:0 22px;background:#fff;border-bottom:1px solid var(--line)}
-    .back{border:0;background:transparent;font-size:31px;color:#555;cursor:pointer}.title{min-width:0;flex:1;display:flex;align-items:center;gap:18px}.title h1{margin:0;color:var(--red);font-size:20px;white-space:nowrap}.meta{display:flex;gap:10px;min-width:0;overflow:hidden;white-space:nowrap;font-size:14px}.meta span{overflow:hidden;text-overflow:ellipsis}
-    .badge{background:var(--blue);color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:.08em}
-    .quick-wrap{position:relative}
-    .quick{border:0;border-radius:999px;padding:11px 21px;background:var(--red);color:#fff;font-weight:750;cursor:pointer}
-    .quick-menu{display:none;position:absolute;right:0;top:calc(100% + 12px);width:360px;background:var(--red);box-shadow:0 16px 35px rgba(0,0,0,.22);border-radius:8px;overflow:hidden;z-index:220}
-    .quick-menu.open{display:grid;grid-template-columns:1fr 1fr}
-    .quick-item{min-height:112px;border:0;border-right:1px solid rgba(255,255,255,.17);border-bottom:1px solid rgba(255,255,255,.17);background:var(--red);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:750;cursor:pointer}
-    .quick-item:hover{background:var(--red2)}
-    .quick-item:nth-child(2n){border-right:0}
-    .quick-item.disabled{background:#7d7d7d;color:#ddd;cursor:not-allowed;position:relative}
-    .quick-item.disabled::after{content:"";position:absolute;width:72%;height:3px;background:rgba(255,255,255,.78);transform:rotate(-24deg);border-radius:999px}
-    .quick-icon{font-size:23px}
-    .quick-note{font-size:11px;font-weight:650;opacity:.88}
-    .shell{display:grid;grid-template-columns:var(--sidebar-width) minmax(0,1fr)}aside{position:sticky;top:var(--top-height);height:calc(100vh - var(--top-height));overflow:auto;background:var(--sidebar);border-right:1px solid var(--line)}
-    .jump-title{padding:22px 16px 17px;border-bottom:1px solid var(--line);font-weight:750;color:#4d5964}.nav{display:flex;flex-direction:column}.nav a{padding:17px 16px;border-left:4px solid transparent;color:#4d5964;text-decoration:none;font-weight:650}.nav a:hover,.nav a.active{background:#eceeef;border-left-color:var(--red);color:#222}
-    main{min-width:0}.tabs{position:sticky;top:var(--top-height);z-index:90;height:61px;display:flex;gap:32px;align-items:end;padding:0 8%;background:#fff;border-bottom:1px solid var(--line)}
-    .tab{height:100%;padding:20px 0 14px;border:0;border-bottom:3px solid transparent;background:transparent;font-weight:750;cursor:pointer}.tab.active{color:var(--red);border-bottom-color:var(--red)}
-    .loading-page,.error-page{padding:70px 30px;text-align:center}.spinner{width:48px;height:48px;border:4px solid #e4e7eb;border-top-color:var(--red);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 18px}@keyframes spin{to{transform:rotate(360deg)}}
-    #content{display:none}.hero{position:relative;min-height:500px;display:flex;align-items:center;justify-content:center;padding:45px 80px 36px;background:#f2f4f5}.hero img{width:min(900px,78%);height:390px;object-fit:contain;filter:drop-shadow(0 18px 10px rgba(0,0,0,.13))}
-    .hero-note{position:absolute;right:20px;bottom:15px;color:#999;font-size:13px}.section{scroll-margin-top:145px;padding:38px 7% 48px;border-bottom:1px solid #edf0f2}.heading{margin:0 0 25px;font-size:24px;letter-spacing:.04em;font-weight:650}
-    .two-col{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,.85fr);gap:65px}.bar{padding:10px 16px;border-radius:5px;background:#eceff2;font-size:13px;font-weight:850;letter-spacing:.11em}
-    .summary-row{display:grid;grid-template-columns:1fr auto;gap:20px;padding:15px 16px;border-bottom:1px solid var(--line);color:#4a5561}.summary-row strong{font-weight:750}.summary-row.total{color:var(--red);font-weight:850}
-    .colors{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:27px 17px 0}.color-card{display:flex;align-items:center;gap:17px}.swatch,.interior{width:72px;height:72px;flex:0 0 72px;border-radius:10px;border:1px solid #cbd1d6;box-shadow:0 4px 7px rgba(0,0,0,.15);background-position:center;background-size:cover}.small-label{color:var(--muted);font-size:13px}.value{font-size:17px;font-weight:750}
-    .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}.detail{padding:13px 0;border-bottom:1px solid var(--line)}.detail.full{grid-column:1/-1}.detail-label{color:#7b848d;font-size:13px}.detail-value{font-size:16px;font-weight:650;overflow-wrap:anywhere}
-    .card{padding:21px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 5px 16px rgba(0,0,0,.04)}
-    .pricing{width:100%;border-collapse:collapse;table-layout:fixed}.pricing th{padding:13px 17px;background:#eceff2;text-align:left;font-size:13px;letter-spacing:.12em}.pricing th:last-child,.pricing td:last-child{text-align:right}.pricing td{padding:17px;border-bottom:1px solid var(--line);color:#4a5561}.pricing .category td{padding:11px 17px;background:#eceff2;color:var(--red);font-size:13px;font-weight:850;letter-spacing:.12em}.pricing .total td{font-size:18px;font-weight:900;color:var(--red)}
-    .pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}.pill{padding:13px 15px;border:1px solid var(--line);border-radius:8px;background:#fafbfc}.code{font-weight:850;margin-right:6px}.price{float:right;font-weight:750}
-    .actions{display:flex;flex-wrap:wrap;gap:13px}.action{padding:12px 17px;border:1px solid #cfd5da;border-radius:7px;background:#fff;font-weight:750;cursor:pointer}.action.primary{background:var(--red);border-color:var(--red);color:#fff}.action:disabled{opacity:.45;cursor:not-allowed}
-    .history{display:none;padding:45px 7%}.history.active{display:block}.detail-panel.hidden{display:none}.mobile-menu{display:none}
-    @media(max-width:1000px){.meta{display:none}.two-col{grid-template-columns:1fr}.shell{grid-template-columns:190px minmax(0,1fr)}}
-    @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick-wrap{width:100%}.quick{width:100%}.quick-menu{position:fixed;left:12px;right:12px;top:78px;width:auto}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
+
+    .app-shell { width: 100%; }
+
+    .top-nav {
+      height: 64px;
+      background: #3b3f46;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100vw;
+      z-index: 3000;
+    }
+
+    .top-nav-left,
+    .top-nav-center,
+    .top-nav-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-nav-left { flex: 1; }
+
+    .top-nav-center {
+      flex: 2;
+      justify-content: center;
+      gap: 8px;
+      font-size: 16px;
+    }
+
+    .top-nav-right {
+      flex: 1;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .top-nav-home,
+    .top-nav-home:visited {
+      font-size: 16px;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .top-nav-home:hover,
+    .top-nav-home:active {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .top-nav .divider { opacity: 0.7; }
+    .user-icon { font-size: 18px; }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-menu-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .user-menu-btn:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .user-menu-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 160px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      padding: 6px;
+      display: none;
+      z-index: 2000;
+    }
+
+    .user-menu-dropdown.open {
+      display: block;
+    }
+
+    .user-menu-link {
+      display: block;
+      text-decoration: none;
+      color: #111827;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .user-menu-link:hover {
+      background: #f3f4f6;
+    }
+
+    .owner-row {
+      display: flex;
+      align-items: center;
+      padding: 20px 32px 8px;
+      box-sizing: border-box;
+      gap: 12px;
+    }
+
+    .owner-pill {
+      width: 6px;
+      height: 40px;
+      border-radius: 999px;
+      background: #e11d21;
+    }
+
+    .owner-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .owner-main { font-size: 22px; }
+    .owner-sub { font-size: 22px; color: #e11d21; }
+
+    .page-layout {
+      display: flex;
+      width: 100%;
+      min-height: calc(100vh - 64px);
+    }
+
+    .left-sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: #f3f4f6;
+      border-right: 1px solid #d1d5db;
+      padding: 18px 14px;
+      position: sticky;
+      top: 64px;
+      align-self: flex-start;
+      height: calc(100vh - 64px);
+      max-height: calc(100vh - 64px);
+      z-index: 1500;
+      transition: width 0.25s ease, min-width 0.25s ease, padding 0.25s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+    }
+
+    .left-sidebar.collapsed {
+      width: 44px;
+      min-width: 44px;
+      padding: 18px 6px;
+      overflow: hidden;
+    }
+
+    .left-sidebar.collapsed .sidebar-content {
+      display: none;
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 14px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      z-index: 5;
+    }
+
+    .sidebar-toggle:hover {
+      background: #e5e7eb;
+    }
+
+    .sidebar-section {
+      margin-bottom: 18px;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 16px;
+    }
+
+    .sidebar-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #4b5563;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-select {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #111827;
+      font-size: 14px;
+      padding: 0 10px;
+      outline: none;
+    }
+
+    .sidebar-select:focus {
+      border-color: #2563eb;
+    }
+
+    .sidebar-chart-card {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .sidebar-chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 290px;
+    }
+
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .summary-row {
+      padding: 8px 32px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      box-sizing: border-box;
+    }
+
+    .summary-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .summary-checkbox { width: 16px; height: 16px; }
+    .summary-text { font-size: 18px; }
+
+    .active-filters-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-left: 4px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #111827;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .filter-chip-remove {
+      cursor: pointer;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    .filter-chip-remove:hover {
+      opacity: 1;
+    }
+
+    .clear-filters-btn {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #111827;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .clear-filters-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .grid-wrapper {
+      width: 100%;
+      max-width: calc(100vw - 320px);
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .grid-inner { min-width: 2250px; }
+    .left-sidebar.collapsed + .main-content .grid-wrapper {
+      max-width: calc(100vw - 44px);
+    }
+
+
+    .column-labels {
+      display: flex;
+      align-items: stretch;
+      background: #f3f4f6;
+      padding: 10px 8px 4px;
+      box-sizing: border-box;
+      border-bottom: 1px solid #d1d5db;
+    }
+
+    .header-cell {
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+      font-weight: 600;
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    .header-cell.sortable-header {
+      cursor: pointer;
+      user-select: none;
+      gap: 6px;
+    }
+
+    .header-cell.sortable-header:hover {
+      color: #111827;
+    }
+
+
+    .header-cell.draggable-column {
+      cursor: grab;
+    }
+
+    .header-cell.draggable-column:active {
+      cursor: grabbing;
+    }
+
+    .header-cell.column-dragging {
+      opacity: 0.45;
+    }
+
+    .header-cell.column-drop-target {
+      outline: 2px dashed #2563eb;
+      outline-offset: -2px;
+      background: #dbeafe;
+    }
+
+    .column-labels .header-cell {
+      position: relative;
+      border-right: 1px solid #cfd5dd;
+    }
+
+    .column-labels .header-cell:last-child,
+    .column-labels .header-checkbox {
+      border-right: none;
+    }
+
+    .column-labels .header-cell.draggable-column:hover {
+      background: rgba(37, 99, 235, 0.04);
+    }
+
+    .column-labels .header-cell.column-dragging {
+      border-right-color: #2563eb;
+    }
+
+    .column-drag-hint {
+      color: #6b7280;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .column-reset-btn {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #111827;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .column-reset-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .sort-indicator {
+      font-size: 11px;
+      color: #6b7280;
+      min-width: 12px;
+      display: inline-block;
+    }
+
+    .header-cell.sortable-header.active-sort .sort-indicator {
+      color: #2563eb;
+      font-weight: 800;
+    }
+
+    .header-status { width: 40px; }
+    .header-checkbox { width: 40px; }
+    .header-image { width: 100px; }
+    .header-model { width: 60px; }
+    .header-exterior { width: 220px; }
+    .header-interior { width: 240px; }
+    .header-year { width: 70px; }
+    .header-vin { width: 200px; }
+    .header-packages { width: 400px; }
+    .header-msrp { width: 120px; }
+    .header-dealer { width: 280px; }
+    .header-comments { width: 260px; }
+
+    .cell-status { width: 40px; }
+    .cell-checkbox { width: 40px; }
+    .cell-image { width: 100px; }
+    .cell-model { width: 60px; }
+    .cell-exterior { width: 220px; }
+    .cell-interior { width: 240px; }
+    .cell-year { width: 70px; }
+    .cell-vin { width: 200px; }
+    .cell-packages { width: 400px; }
+    .cell-msrp { width: 120px; }
+    .cell-dealer { width: 280px; }
+    .cell-comments { width: 260px; }
+
+    .comments-display {
+      width: 100%;
+      white-space: pre-wrap;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .comments-edit {
+      width: 100%;
+      min-height: 58px;
+      resize: vertical;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.35;
+      background: #ffffff;
+      color: #111827;
+      outline: none;
+    }
+
+    .comments-edit:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    .comments-edit.readonly {
+      background: transparent;
+      border-color: transparent;
+      resize: none;
+      cursor: default;
+    }
+
+    .admin-tools {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    body.is-admin .admin-tools { display: flex; }
+
+    .admin-save-btn {
+      border: 1px solid #111827;
+      background: #111827;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .admin-save-btn:hover { background: #374151; }
+
+    .admin-note {
+      font-size: 12px;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+
+    .side-panel {
+      position: fixed;
+      right: -400px;
+      top: 64px;
+      width: 400px;
+      height: calc(100vh - 64px);
+      background: white;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+      transition: right 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .side-panel.open { right: 0; }
+
+    .side-panel-header {
+      background: white;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .side-panel-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .side-panel-title { font-size: 13px; color: #6b7280; }
+
+    .side-panel-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 4px;
+    }
+
+    .side-panel-close:hover { color: #1f2937; }
+
+    .side-panel-vehicle-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+
+    .side-panel-vehicle-info { font-size: 13px; color: #6b7280; }
+
+    .side-panel-divider {
+      background: #dc2626;
+      padding: 8px 0;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .side-panel-divider-arrow { color: white; font-size: 14px; }
+
+    .side-panel-menu { background: #dc2626; padding: 0; }
+    .side-panel-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+
+    .side-panel-menu-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      background: #dc2626;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      min-height: 80px;
+    }
+
+    .side-panel-menu-item:nth-child(2n) { border-right: none; }
+    .side-panel-menu-item:hover { background: #b91c1c; }
+
+    .side-panel-menu-item.is-disabled {
+      background: #6b7280;
+      color: rgba(255,255,255,0.72);
+      cursor: not-allowed;
+      position: relative;
+      filter: grayscale(1);
+    }
+
+    .side-panel-menu-item.is-disabled:hover { background: #6b7280; }
+
+    .side-panel-menu-item.is-disabled::after {
+      content: "";
+      position: absolute;
+      width: 72%;
+      height: 3px;
+      background: rgba(255,255,255,0.78);
+      transform: rotate(-24deg);
+      border-radius: 999px;
+      top: 50%;
+      left: 14%;
+      pointer-events: none;
+    }
+
+    .side-panel-menu-item.is-disabled .side-panel-menu-text::after {
+      content: "Not available";
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .side-panel-menu-item.is-document-limit .side-panel-menu-text::after {
+      content: "Daily limit reached";
+    }
+
+    .side-panel-menu-icon { margin-bottom: 8px; font-size: 18px; }
+    .side-panel-menu-text { font-size: 14px; font-weight: 500; text-align: center; }
+
+    .selection-count {
+      position: fixed;
+      top: 72px;
+      right: 20px;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 999;
+      display: none;
+    }
+
+    .selection-count.visible { display: block; }
+
+    .cell-checkbox input[type="checkbox"]:checked { accent-color: #2563eb; }
+
+    .table-row.selected {
+      background: #dbeafe !important;
+      border-left: 3px solid #2563eb;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      background: #eceff1;
+      padding: 4px 8px;
+      border-bottom: 1px solid #d1d5db;
+    }
+
+    .filter-input {
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      height: 30px;
+      background: #ffffff;
+      color: #111827;
+      outline: none;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .filter-input:focus {
+      border-color: transparent;
+      background: linear-gradient(
+        135deg,
+        #0f0f10,
+        #1a1a1d,
+        #2a004f,
+        #7a00ff,
+        #00e0ff
+      );
+      background-size: 500% 500%;
+      animation: gradientFlow 18s ease infinite;
+      color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(0,224,255,0.18), 0 0 0 6px rgba(122,0,255,0.12);
+    }
+
+    .filter-input:focus::placeholder { color: rgba(255,255,255,0.75); }
+
+    @keyframes gradientFlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .status-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #10b981;
+      color: #ffffff;
+      text-align: center;
+      line-height: 24px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .cell-checkbox input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+
+    .table-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 8px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #ddd;
+      min-height: 50px;
+    }
+
+    .table-row:nth-child(even) { background: #eceff1; }
+
+    .cell {
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      line-height: 1.4;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+    }
+
+    .exterior-thumbnail {
+      width: 90px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #f3f4f6;
+    }
+
+    .model-code { font-weight: 600; color: #1e293b; font-size: 13px; }
+
+    .color-display { display: flex; align-items: center; gap: 8px; }
+
+    .color-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #999;
+      flex-shrink: 0;
+    }
+
+    .interior-display { display: flex; align-items: center; gap: 8px; }
+
+    .interior-square {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid #999;
+      flex-shrink: 0;
+      background-color: #d1d5db;
+    }
+
+    .cell-vin {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      gap: 6px;
+    }
+
+    .vin-text {
+      display: inline-block;
+      color: #111827;
+      padding: 0;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      font-size: 13px;
+    }
+
+    .cell-msrp { font-weight: 600; color: #059669; }
+
+    .packages-short {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 360px;
+      display: block;
+    }
+
+    .copy-btn {
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      border-radius: 4px;
+      font-size: 11px;
+      padding: 2px 5px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover { background: #e5e7eb; }
+
+    .copy-btn.copied {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #fff;
+    }
+
+    .tooltip { position: relative; }
+    .tooltiptext { display: none; position: absolute; z-index: 20; }
+    .tooltip:hover .tooltiptext { display: block; }
+
+    .tooltip-red-content {
+      background: #b91c1c;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.35;
+      top: 110%;
+      left: 0;
+      white-space: nowrap;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+
+    .tooltip-packages {
+      background: #b91c1c;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+      top: 110%;
+      left: 0;
+      min-width: 300px;
+      max-width: 450px;
+      white-space: normal;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+
+    .tooltip-packages div { margin: 4px 0; }
+
+    .loading { text-align: center; padding: 60px 20px; color: #64748b; }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1000px) {
+      .left-sidebar {
+        width: 280px;
+        min-width: 280px;
+      }
+
+      .grid-wrapper {
+        max-width: calc(100vw - 280px);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .top-nav {
+        padding: 0 16px;
+      }
+
+      .owner-row {
+        padding: 16px 16px 8px;
+      }
+
+      .summary-row {
+        padding: 8px 16px;
+      }
+
+      .left-sidebar {
+        width: 260px;
+        min-width: 260px;
+      }
+
+      .grid-wrapper {
+        max-width: calc(100vw - 260px);
+      }
+    }
   </style>
 </head>
+
 <body>
-<header class="topbar">
-  <button class="back" onclick="goBackToChart()" aria-label="Back to chart">‹</button>
-  <div class="title">
-    <h1 id="topTitle">E90 M3 Vehicle Details</h1>
-    <div class="meta">
-      <span id="topModel">BMW M3 Sedan</span><span>•</span><span id="topVin">VIN</span>
-      <span class="badge">DATABASE</span><span id="topDealer">Dealer</span>
-    </div>
-  </div>
-  <div class="quick-wrap" id="quickWrap">
-    <button class="quick" type="button" onclick="toggleQuickActions(event)">Quick Actions</button>
-    <div class="quick-menu" id="quickMenu">
-      <button class="quick-item" type="button" onclick="goBackToChart()"><span class="quick-icon">⌂</span><span>Home</span><span class="quick-note">Back to chart</span></button>
-      <button class="quick-item" type="button" onclick="triggerDocument('specButton')"><span class="quick-icon">📋</span><span>BMW Spec Sheet</span></button>
-      <button class="quick-item" type="button" onclick="triggerDocument('stickerButton')"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
-      <button class="quick-item" id="quickOem" type="button" onclick="triggerDocument('oemButton')"><span class="quick-icon">🏷️</span><span>OEM Sticker</span></button>
-      <button class="quick-item" id="quickInvoice" type="button" onclick="triggerDocument('invoiceButton')"><span class="quick-icon">📄</span><span>Invoice</span></button>
-    </div>
-  </div>
-</header>
-<button class="mobile-menu" id="mobileMenu">☰ Jump to section</button>
-<div class="shell">
-  <aside id="sidebar">
-    <div class="jump-title">Jump to</div>
-    <nav class="nav">
-      <a href="#basics" class="active">Basics</a>
-      <a href="#comments">Comments</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#packages">Packages</a>
-      <a href="#options">Standard Options</a>
-      <a href="#dealer">Dealer Information</a>
-      <a href="#documents">Documents</a>
-    </nav>
-  </aside>
-  <main>
-    <div class="tabs">
-      <button class="tab active" data-tab="detail">Detail</button>
-      <button class="tab" data-tab="history">History</button>
+  <div class="app-shell">
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <a class="top-nav-home" href="index.html">Home</a>
+      </div>
+      <div class="top-nav-center">
+        <span>E90 M3 Sedan</span>
+        <span class="divider">|</span>
+        <span>U.S/Canada</span>
+      </div>
+      <div class="top-nav-right">
+        <div class="user-menu" id="user-menu">
+          <button class="user-menu-btn" id="user-menu-btn" type="button" onclick="toggleUserMenu()">
+            <span id="auth-username">Member</span>
+            <span class="user-icon">👤</span>
+          </button>
+          <div class="user-menu-dropdown" id="user-menu-dropdown">
+            <a class="user-menu-link" href="https://www.authpro.com/auth/sman201/?action=logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="owner-row">
+      <div class="owner-pill"></div>
+      <div class="owner-labels">
+        <span class="owner-main">M ARCHIV</span>
+        <span class="owner-sub">E90 M3 Inventory</span>
+      </div>
     </div>
 
-    <div id="loading" class="loading-page"><div class="spinner"></div><div>Loading vehicle details…</div></div>
-    <div id="error" class="error-page" style="display:none"></div>
+    <div class="page-layout">
+      <aside class="left-sidebar" id="left-sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Hide filters">◀</button>
 
-    <div id="content">
-      <div class="detail-panel" id="detailPanel">
-        <section class="hero">
-          <img id="vehicleImage" alt="BMW M3">
-          <div class="hero-note">Image represents configured vehicle</div>
-        </section>
+        <div class="sidebar-content">
+          <div class="sidebar-title">Filter Inventory</div>
 
-        <section class="section" id="basics">
-          <div class="two-col">
-            <div>
-              <h2 class="heading">Basics</h2>
-              <div class="bar">PRICE</div>
-              <div class="summary-row"><span>Base MSRP</span><strong id="basePrice">—</strong></div>
-              <div class="summary-row"><span>Installed packages / options</span><strong id="optionPrice">—</strong></div>
-              <div class="summary-row"><span>Destination charge</span><strong id="destinationPrice">—</strong></div>
-              <div class="summary-row"><span>Gas-guzzler tax</span><strong id="gasPrice">—</strong></div>
-              <div class="summary-row total"><span>Total MSRP</span><strong id="totalPrice">—</strong></div>
-              <div class="bar" style="margin-top:22px">COLOR</div>
-              <div class="colors">
-                <div class="color-card"><div class="swatch" id="exteriorSwatch"></div><div><div class="small-label">Exterior color</div><div class="value" id="exteriorText">—</div></div></div>
-                <div class="color-card"><div class="interior" id="interiorImage"></div><div><div class="small-label">Interior color</div><div class="value" id="interiorText">—</div></div></div>
+          <div class="sidebar-section">
+            <label class="sidebar-label" for="dataset-select">Dataset</label>
+            <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
+              <option value="2008 E90 M3 Sedan.csv">2008 E90 M3 Sedan</option>
+              <option value="2009 E90 M3 Sedan.csv">2009 E90 M3 Sedan</option>
+              <option value="2010 E90 M3 Sedan.csv">2010 E90 M3 Sedan</option>
+              <option value="2011 E90 M3 Sedan.csv">2011 E90 M3 Sedan</option>
+              <option value="2012 E90 M3 Sedan CRT.csv">2012 E90 M3 Sedan CRT</option>
+            </select>
+          </div>
+
+          <div class="sidebar-section">
+            <label class="sidebar-label">Exterior Breakdown</label>
+            <div class="sidebar-chart-card">
+              <div class="sidebar-chart-wrap">
+                <canvas id="exteriorPieChart"></canvas>
               </div>
             </div>
-            <div>
-              <h2 class="heading">Details</h2>
-              <div class="details-grid" id="detailsGrid"></div>
+          </div>
+
+          <div class="sidebar-section">
+            <label class="sidebar-label">Interior Breakdown</label>
+            <div class="sidebar-chart-card">
+              <div class="sidebar-chart-wrap">
+                <canvas id="interiorPieChart"></canvas>
+              </div>
             </div>
           </div>
-        </section>
 
-        <section class="section" id="comments"><h2 class="heading">Comments</h2><div class="card" id="commentsText">—</div></section>
-
-        <section class="section" id="pricing">
-          <h2 class="heading">Pricing</h2>
-          <table class="pricing"><thead><tr><th style="width:76%">FACTORY ITEM</th><th>RETAIL</th></tr></thead><tbody id="pricingRows"></tbody></table>
-        </section>
-
-        <section class="section" id="packages"><h2 class="heading">Packages</h2><div class="pills" id="packageList"></div></section>
-        <section class="section" id="options"><h2 class="heading">Standard Options</h2><div class="pills" id="optionList"></div></section>
-        <section class="section" id="dealer"><h2 class="heading">Dealer Information</h2><div class="details-grid" id="dealerGrid"></div></section>
-
-        <section class="section" id="documents">
-          <h2 class="heading">Documents</h2>
-          <div class="actions">
-            <button class="action primary" id="specButton">BMW Spec Sheet</button>
-            <button class="action" id="stickerButton">Window Sticker</button>
-            <button class="action" id="oemButton">OEM Sticker</button>
-            <button class="action" id="invoiceButton">Invoice</button>
+          <div class="sidebar-section">
+            <label class="sidebar-label">Transmission Breakdown</label>
+            <div class="sidebar-chart-card">
+              <div class="sidebar-chart-wrap">
+                <canvas id="transmissionPieChart"></canvas>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <div class="summary-row">
+          <div class="summary-left">
+            <input type="checkbox" class="summary-checkbox" />
+            <span class="summary-text">
+              <span id="count">0</span> of <span id="total-count">0</span> Vehicle(s)
+            </span>
+            <div id="active-filters" class="active-filters-inline"></div>
+            <button class="column-reset-btn" type="button" onclick="resetColumnOrder()" title="Reset saved column order">Reset Columns</button>
+            <span class="column-drag-hint">Drag column headers to rearrange</span>
+            <div class="admin-tools" id="admin-tools">
+              <button class="admin-save-btn" type="button" onclick="saveUpdatedCsvToGitHub()">Save Comments</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-wrapper">
+          <div class="grid-inner">
+            <div class="column-labels">
+              <div class="header-cell header-checkbox"></div>
+              <div class="header-cell header-status">Cat.</div>
+              <div class="header-cell header-image">Image</div>
+              <div class="header-cell header-model">Model</div>
+              <div class="header-cell header-exterior sortable-header" data-sort-field="exterior" title="Click to sort A-Z / Z-A. Drag to move column.">Exterior <span class="sort-indicator" data-sort-indicator="exterior"></span></div>
+              <div class="header-cell header-interior sortable-header" data-sort-field="interior" title="Click to sort A-Z / Z-A. Drag to move column.">Interior <span class="sort-indicator" data-sort-indicator="interior"></span></div>
+              <div class="header-cell header-year" title="Drag to move column">Year</div>
+              <div class="header-cell header-vin" title="Drag to move column">VIN</div>
+              <div class="header-cell header-packages" id="packages-header" title="Drag to move column">Packages(Destination Charge: $875 | Gas Guzzler Tax: $1,300)</div>
+              <div class="header-cell header-msrp sortable-header" data-sort-field="msrp" title="Click to sort High-Low / Low-High. Drag to move column.">MSRP <span class="sort-indicator" data-sort-indicator="msrp"></span></div>
+              <div class="header-cell header-dealer" title="Drag to move column">Dealer Name</div>
+              <div class="header-cell header-comments" title="Drag to move column">Comments</div>
+            </div>
+
+            <div class="table-header">
+              <div class="header-cell header-checkbox"></div>
+              <div class="header-cell header-status"></div>
+              <div class="header-cell header-image"></div>
+
+              <div class="header-cell header-model">
+                <input class="filter-input" data-field="model" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-exterior">
+                <input class="filter-input" data-field="exterior" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-interior">
+                <input class="filter-input" data-field="interior" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-year">
+                <input class="filter-input" data-field="year" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-vin">
+                <input class="filter-input" data-field="vin" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-packages">
+                <input class="filter-input" data-field="packages" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-msrp">
+                <input class="filter-input" data-field="msrp" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-dealer">
+                <input class="filter-input" data-field="dealer" placeholder="Filter..." />
+              </div>
+              <div class="header-cell header-comments">
+                <input class="filter-input" data-field="comments" placeholder="Filter comments..." />
+              </div>
+            </div>
+
+            <div id="table-rows">
+              <div class="loading">
+                <div class="loading-spinner"></div>
+                <div>Loading vehicle data...</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <section class="history" id="historyPanel"><h2 class="heading">Vehicle History</h2><div class="card">No separate vehicle-history records are stored in the current E90 CSV.</div></section>
     </div>
-  </main>
-</div>
+  </div>
 
-<script>
-const GOOGLE_SHEET_CSV_URL="https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
-const CONFIGURATOR_URL="https://sman19.github.io/2011-E90-M3-Configurator/";
+  <div class="selection-count" id="selection-count">
+    <span id="selection-count-text">0 Selected</span>
+  </div>
 
-const COLORS={
-"300":{rgb:"244,244,236",name:"Alpine White",image:"https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true"},
-"668":{rgb:"0,0,0",name:"Jet Black",image:"https://github.com/Sman19/E90-ext.380x260px/blob/184a291efe57013d3e0607390ab5a2eb6bde6a2b/jet%20black%20-%20E90.png?raw=true"},
-"A29":{rgb:"205,223,244",name:"Silverstone Metallic II",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Silverstone%20-%20E90.png?raw=true"},
-"A30":{rgb:"30,53,138",name:"Interlagos Blue Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Interlogos%20Blue%20Metallic%20-%20E90.png?raw=true"},
-"A52":{rgb:"102,109,127",name:"Space Grey Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/9fd94093c78555c094f7399c638ce1736e2e8a88/Space%20Gray%20Metallic%20-%20E90.png?raw=true"},
-"A73":{rgb:"39,41,56",name:"Jerez Black Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Jerez%20black%20Metallic%20-%20E90.png?raw=true"},
-"A75":{rgb:"240,0,0",name:"Melbourne Red Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Melborune%20Red%20Metallic%20-%20E90.png?raw=true"},
-"381":{rgb:"17,93,176",name:"Le Mans Blue Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/LE%20Mans%20blue%20metallic%20-%20E90.png?raw=true"},
-"U94":{rgb:"224,92,32",name:"Fire Orange 2",image:"https://github.com/Sman19/E90-ext.380x260px/blob/ead4fd3fc308c2408f822f53805c4d722032b7f5/Fire%20Orange%202%20-%20E90.png?raw=true"},
-"X03":{rgb:"116,68,64",name:"Ruby Black Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/aacc8f31633be6c7567631c7af297e444ac2f08c/Ruby%20Black%20Metallic.png?raw=true"},
-"X04":{rgb:"204,200,197",name:"Moonstone Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/b7a0aa857a2cee27b9dfdefc58af4777aa91b6ae/Moonstone%20-%20E90.png?raw=true"},
-"U83":{rgb:"116,127,144",name:"Frozen Grey",image:"https://github.com/Sman19/E90-ext.380x260px/blob/aacc8f31633be6c7567631c7af297e444ac2f08c/Frozen%20Grey%20-%20E90.png?raw=true"},
-"U91":{rgb:"55,62,72",name:"Frozen Black Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/42d0f66d97e9b4f2a8a8f96ab19bfdeda8194cd0/Frozen%20Black%20-%20E90.png?raw=true"},
-"448":{rgb:"0,145,193",name:"Laguna Seca Blue",image:"https://github.com/Sman19/E90-ext.380x260px/blob/b9094b424abfef2586265286f36777848f8068b4/Laguna%20Seca%20Blue%20-%20E90.png?raw=true"},
-"W73":{rgb:"174,177,178",name:"Polar Silver Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/CRT.png?raw=true"}
-};
-const INTERIORS={
-"GEAT":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/ANTHRACITE%20Black%20Cloth.png",name:"Anthracite/Black Cloth & Leather"},
-"NCSW":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png",name:"Black Novillo Leather"},
-"NDSW":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png",name:"Black Extended Novillo Leather"},
-"NCH1":{image:"https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png",name:"Palladium/Silver Novillo Leather"},
-"NDH1":{image:"https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png",name:"Palladium Extended Novillo Leather"},
-"NCH2":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png",name:"Fox Red Novillo Leather"},
-"NDH2":{image:"https://raw.githubusercontent.com/Sman19/E9x-Interiors/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png",name:"Fox Red Extended Novillo Leather"},
-"NCH3":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png",name:"Bamboo Beige Novillo Leather"},
-"NDH3":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png",name:"Bamboo Beige Extended Novillo Leather"},
-"NCH4":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%3APadllaium%20Two-TOne.png",name:"Palladium/Black Novillo Leather"},
-"NCH5":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png",name:"Fox Red/Black Novillo Leather"},
-"NDH5":{image:"https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png",name:"Fox Red/Black Extended Novillo Leather"},
-"Z1XX1":{image:"https://github.com/Sman19/E9x-Interiors/raw/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Z1XX.1%20Amarone%20.png",name:"Amarone Extended Novillo Leather"},
-"ZAP2":{image:"https://raw.githubusercontent.com/Sman19/E9x-Interiors/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Rust%20Brown%20Ind%20Interior.png",name:"Rust Brown Extended Leather"}
-};
-const PACKAGE_TEXT={
-"MSRP.3":"MSRP - $53,800.00","MSRP.2":"MSRP - $54,850.00","MSRP.1":"MSRP - $55,400.00","MSRP":"MSRP - $55,900.00",
-"IND":"INDIVIDUAL PAINT - $5,000.00","ZCP":"Competition Package - $2,500.00","ZCV":"Convenience Package - $2,900.00",
-"ZCW":"Cold Weather Package - $1,000.00","ZPP":"Premium Package - $2,000.00","ZPP.1":"Premium Package - $2,000.00",
-"ZPP.2":"Premium Package - $2,000.00","ZPP.3":"Premium Package - $2,000.00","ZP2":"Premium Package 2 - $2,000.00",
-"ZP2.1":"Premium Package 2 - $2,500.00","ZP2.2":"Premium Package 2 - $2,500.00","ZP2.3":"Premium Package 2 - $2,500.00",
-"ZP3.1":"Premium Package 3 - $2,500.00","ZP3.2":"Premium Package 3 - $2,500.00","ZP3.3":"Premium Package 3 - $2,500.00",
-"ZTP":"Technology Package - $3,250.00","223":"Dynamic Damper Control - $1,000.00","2MK":"M Double-Clutch Transmission - $2,900.00",
-"2MT":"19-inch Alloy Wheels - $1,250.00","2MT.1":"19-inch Alloy Wheels - $1,200.00","302":"Anti-Theft Alarm System - $400.00",
-"403":"Moonroof - $1,050.00","417":"Rear Manual Side Window Shades - $575.00","465":"Split Fold-Down Rear Seat - $475.00",
-"494":"Heated Front Seats - $500.00","507":"Park Distance Control (rear) - $380.00","5AC":"Automatic High Beams - $250.00",
-"609":"Navigation System - $2,100.00","639":"BMW Assist with Bluetooth - $750.00","653":"High Definition Radio - $350.00",
-"655":"Satellite Radio with 1-year subscription - $350.00","6FL":"iPod & USB Adapter - $400.00","6NF":"Smartphone Integration - $150.00",
-"6NR":"BMW Apps - $250.00","752":"Enhanced Premium Sound - $1,900.00","771":"Titanium Shadow Trim - $0.00",
-"4MY":"Carbon Fiber Leather Trim - $500.00","4MX":"Blue-Gray Brushed Aluminum - $500.00","4MZ":"Sycamore Anthracite Trim - $0.00"
-};
-const PACKAGE_CODES=new Set(["ZCP","ZCV","ZCW","ZPP","ZPP.1","ZPP.2","ZPP.3","ZPP.5","ZP2","ZP2.1","ZP2.2","ZP2.3","ZP2.4","ZP2.5","ZP3.1","ZP3.2","ZP3.3","ZP3.4","ZP3.5","ZTP","IND"]);
+  <div class="side-panel" id="side-panel">
+    <div class="side-panel-header">
+      <div class="side-panel-header-top">
+        <div class="side-panel-title">1 Selected</div>
+        <button class="side-panel-close" onclick="closeSidePanel()">✕</button>
+      </div>
+      <div class="side-panel-vehicle-name" id="panel-vehicle-name">-</div>
+      <div class="side-panel-vehicle-info" id="panel-vehicle-info">-</div>
+    </div>
+    <div class="side-panel-divider">
+      <span class="side-panel-divider-arrow">▼</span>
+    </div>
+    <div class="side-panel-menu">
+      <div class="side-panel-menu-grid">
+        <div class="side-panel-menu-item" id="menu-details" onclick="handleDetailsClick()">
+          <span class="side-panel-menu-icon">☰</span>
+          <span class="side-panel-menu-text">Details</span>
+        </div>
+        <div class="side-panel-menu-item" id="menu-bmw-spec" onclick="handleVSpecClick()">
+          <span class="side-panel-menu-icon">📋</span>
+          <span class="side-panel-menu-text">BMW Spec Sheet</span>
+        </div>
+        <div class="side-panel-menu-item" id="menu-sticker" onclick="handleStickerClick()">
+          <span class="side-panel-menu-icon">🏷️</span>
+          <span class="side-panel-menu-text">Sticker</span>
+        </div>
+        <div class="side-panel-menu-item" id="menu-oem-sticker" onclick="handleOEMStickerClick()">
+          <span class="side-panel-menu-icon">🏷️</span>
+          <span class="side-panel-menu-text">OEM Sticker</span>
+        </div>
+        <div class="side-panel-menu-item" id="menu-invoice" onclick="handleInvoiceClick()">
+          <span class="side-panel-menu-icon">📄</span>
+          <span class="side-panel-menu-text">Invoice</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-const params=new URLSearchParams(location.search);
-const wantedVin=(params.get("vin")||"").trim().toUpperCase();
-const fileName=params.get("file")||`${params.get("year")||"2008"} E90 M3 Sedan.csv`;
-const passedPackages=(params.get("packages")||"").split(",").map(x=>x.trim()).filter(Boolean);
+  <script>
+    const colorLookup = {};
+    const interiorLookup = {};
+    const packageLookup = {};
+    let currentCsvFile = "2008 E90 M3 Sedan.csv";
+    let csvHeaders = [];
+    let csvRowsByVin = new Map();
+    let commentsHeaderName = "Notes";
 
-function sheetNameFromFile(name){
-  if(name.includes("2008"))return"2008 E90 M3 Sedan";
-  if(name.includes("2009"))return"2009 E90 M3 Sedan";
-  if(name.includes("2010"))return"2010 E90 M3 Sedan";
-  if(name.includes("2011"))return"2011 E90 M3 Sedan";
-  if(name.includes("2012"))return"2012 E90 M3 Sedan CRT";
-  return"2008 E90 M3 Sedan";
-}
-function parseCSVLine(line){const r=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i],n=line[i+1];if(ch==='"'){if(q&&n==='"'){c+='"';i++}else q=!q}else if(ch===","&&!q){r.push(c.trim());c=""}else c+=ch}r.push(c.trim());return r}
-function parseCSV(text){const lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(x=>x.trim());if(!lines.length)return[];const h=parseCSVLine(lines[0]).map(x=>x.trim());return lines.slice(1).map(line=>{const v=parseCSVLine(line),o={};h.forEach((k,i)=>o[k]=v[i]||"");o.__values=v;return o})}
-function getField(row,names){const keys=Object.keys(row);for(const n of names){const k=keys.find(x=>x.trim().toLowerCase()===n.trim().toLowerCase());if(k&&row[k])return row[k]}return""}
-function codeOf(v){return String(v||"").trim().split(" - ")[0].trim().toUpperCase()}
-function parseCodes(v){return String(v||"").split(/[,\s]+/).map(x=>x.trim()).filter(Boolean)}
-function money(n){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2}).format(Number(n)||0)}
-function numberFromMoney(v){const n=Number(String(v||"").replace(/[^0-9.-]/g,""));return Number.isFinite(n)?n:0}
-function priceFromText(v){const m=String(v||"").match(/\$([\d,]+(?:\.\d{2})?)/);return m?Number(m[1].replace(/,/g,"")):0}
-function available(v){const x=String(v||"").trim().toLowerCase();return!!x&&x!=="-"&&x!=="n/a"&&x!=="na"}
-function set(id,v){document.getElementById(id).textContent=v||"—"}
-function detail(label,value,full=false){const d=document.createElement("div");d.className="detail"+(full?" full":"");d.innerHTML=`<div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${escapeHtml(value||"—")}</div>`;return d}
-function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
-function getComments(row){return row.__values&&row.__values.length>12?row.__values[12]:""}
-function getBaseFromCodes(codes,year){for(const c of codes){if(c.startsWith("MSRP")){const p=priceFromText(PACKAGE_TEXT[c]);if(p)return p}}return year==="2008"?53800:year==="2009"?54850:year==="2010"?55400:55900}
-function destinationForYear(y){return y==="2009"?825:875}
-function getPriceForCode(code,year){if(year==="2009"&&code==="655")return 595;return priceFromText(PACKAGE_TEXT[code]||"")}
-function descriptionFor(code,year){if(year==="2009"&&code==="655")return"Satellite Radio with 1-year subscription - $595.00";return PACKAGE_TEXT[code]||code}
-function buildConfiguratorUrl(mode,v){
-  const u=new URL(CONFIGURATOR_URL);u.searchParams.set("vin",v.vin);u.searchParams.set("auto",mode);u.searchParams.set("handoff","1");
-  if(v.codes.length)u.searchParams.set("packages",v.codes.join(","));if(v.year)u.searchParams.set("year",v.year);
-  if(v.year==="2009"&&v.codes.includes("655"))u.searchParams.set("option655Price","595");u.searchParams.set("_",Date.now());return u.toString()
-}
-function openConfigurator(mode,v){window.open(buildConfiguratorUrl(mode,v),"_blank","noopener,noreferrer")}
-function render(row){
-  const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
-  const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
-  const year=getField(row,["YEAR","Year","Model Year","MY"])||params.get("year")||"";
-  const vin=getField(row,["VIN","Vin","Full VIN","Full VIN Number"]).trim();
-  const model=getField(row,["MODEL","Model"])||"M3";
-  const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
-  const totalMsrpRaw=getField(row,["MSRP","msrp","Total MSRP","TOTAL MSRP","Retail Price","Vehicle MSRP"]);
-  const prod=getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
-  const oem=getField(row,["STICKER","Monroney","Window Sticker"]);
-  const invoice=getField(row,["INVOICE","Invoice"]);
-  const details=getField(row,["DETAILS","Details"]);
-  const rawCodes=getField(row,["Package Codes","PACKAGE CODES","PACKAGES","Packages"]);
-  const codes=passedPackages.length?passedPackages:parseCodes(rawCodes);
-  const exteriorCode=codeOf(exteriorRaw),interiorCode=codeOf(interiorRaw);
-  const color=COLORS[exteriorCode]||{rgb:"190,190,190",name:exteriorRaw||exteriorCode,image:""};
-  const interior=INTERIORS[interiorCode]||{image:"",name:interiorRaw||interiorCode};
-  const base=getBaseFromCodes(codes,year),destination=destinationForYear(year),gas=1300;
-  const optionCodes=codes.filter(c=>!c.startsWith("MSRP"));
-  const optionsTotal=optionCodes.reduce((s,c)=>s+getPriceForCode(c,year),0);
-  const calculated=base+optionsTotal+destination+gas;
-  const csvTotal=numberFromMoney(totalMsrpRaw);
-  const total=csvTotal||calculated;
-  const vehicle={vin,year,model,codes};
+    // Google Apps Script Web App URL.
+    // GET = loads latest CSV from Google Sheets.
+    // POST = saves admin comments back to Google Sheets.
+    const GOOGLE_SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
+    const GITHUB_SAVE_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
+    const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
+    const ADMIN_USERS = ["admin"];
+    let vehicles = [];
+    let filteredVehicles = [];
+    let selectedVehicles = new Set();
+    let exteriorPieChart = null;
+    let interiorPieChart = null;
+    let transmissionPieChart = null;
+    let currentSort = { field: null, direction: null };
+    let documentLimitReached = false;
+    let lastDocumentLimitResult = null;
 
-  document.title=`${year} BMW M3 Sedan – ${vin}`;
-  set("topTitle",`${year} BMW M3 Sedan`);
-  set("topModel",`${model} • E90 M3 Sedan`);
-  set("topVin",`VIN: ${vin}`);
-  set("topDealer",dealer?`Current Dealer: ${dealer}`:"Dealer not listed");
-  set("basePrice",money(base));set("optionPrice",money(optionsTotal));set("destinationPrice",money(destination));set("gasPrice",money(gas));set("totalPrice",money(total));
-  set("exteriorText",`${exteriorCode}${color.name?` – ${color.name}`:""}`);set("interiorText",`${interiorCode}${interior.name?` – ${interior.name}`:""}`);
-  document.getElementById("exteriorSwatch").style.background=`rgb(${color.rgb})`;
-  const intEl=document.getElementById("interiorImage");if(interior.image)intEl.style.backgroundImage=`url("${interior.image}")`;else intEl.style.background="#222";
-  const car=document.getElementById("vehicleImage");if(color.image){car.src=color.image}else{car.style.display="none";car.parentElement.insertAdjacentHTML("beforeend","<div style='font-size:18px;color:#777'>Vehicle image not yet mapped for this paint code.</div>")}
+    const DEFAULT_COLUMN_ORDER = [
+      "checkbox",
+      "status",
+      "image",
+      "model",
+      "exterior",
+      "interior",
+      "year",
+      "vin",
+      "packages",
+      "msrp",
+      "dealer",
+      "comments"
+    ];
 
-  const dg=document.getElementById("detailsGrid");
-  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Dataset",fileName],["Exterior Code",exteriorCode],["Interior Code",interiorCode],["Stored Details Link",details||"Not stored"]].forEach((x,i)=>dg.appendChild(detail(x[0],x[1],i===8)));
-  set("commentsText",getComments(row)||"No comments entered.");
+    const COLUMN_CLASS_MAP = {
+      checkbox: ["header-checkbox", "cell-checkbox"],
+      status: ["header-status", "cell-status"],
+      image: ["header-image", "cell-image"],
+      model: ["header-model", "cell-model"],
+      exterior: ["header-exterior", "cell-exterior"],
+      interior: ["header-interior", "cell-interior"],
+      year: ["header-year", "cell-year"],
+      vin: ["header-vin", "cell-vin"],
+      packages: ["header-packages", "cell-packages"],
+      msrp: ["header-msrp", "cell-msrp"],
+      dealer: ["header-dealer", "cell-dealer"],
+      comments: ["header-comments", "cell-comments"]
+    };
 
-  const pricing=document.getElementById("pricingRows");
-  pricing.innerHTML=`<tr><td>Base MSRP</td><td>${money(base)}</td></tr>`;
-  let lastCategory="";
-  optionCodes.forEach(code=>{
-    const cat=PACKAGE_CODES.has(code)?"PACKAGES":"FACTORY INSTALLED";
-    if(cat!==lastCategory){pricing.insertAdjacentHTML("beforeend",`<tr class="category"><td colspan="2">${cat}</td></tr>`);lastCategory=cat}
-    pricing.insertAdjacentHTML("beforeend",`<tr><td><span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year).replace(/^.*? - /,""))}</td><td>${money(getPriceForCode(code,year))}</td></tr>`)
-  });
-  pricing.insertAdjacentHTML("beforeend",`<tr><td>Destination Charge</td><td>${money(destination)}</td></tr><tr><td>Gas-Guzzler Tax</td><td>${money(gas)}</td></tr><tr class="total"><td>Total MSRP</td><td>${money(total)}</td></tr>`);
+    let isColumnDragAction = false;
 
-  const packs=document.getElementById("packageList"),opts=document.getElementById("optionList");
-  optionCodes.forEach(code=>{const el=document.createElement("div");el.className="pill";el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;(PACKAGE_CODES.has(code)?packs:opts).appendChild(el)});
-  if(!packs.children.length)packs.innerHTML="<div class='pill'>No package codes listed.</div>";
-  if(!opts.children.length)opts.innerHTML="<div class='pill'>No standalone options listed.</div>";
+    const defaultColors = {
+      "300": { rgb: "244, 244, 236", name: "Alpine White", image: "https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true" },
+      "668": { rgb: "0, 0, 0", name: "Jet Black", image: "https://github.com/Sman19/E90-ext.380x260px/blob/184a291efe57013d3e0607390ab5a2eb6bde6a2b/jet%20black%20-%20E90.png?raw=true" },
+      "A29": { rgb: "205, 223, 244", name: "Silverstone Metallic II", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Silverstone%20-%20E90.png?raw=true" },
+      "A30": { rgb: "30, 53, 138", name: "Interlagos Blue Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Interlogos%20Blue%20Metallic%20-%20E90.png?raw=true" },
+      "A52": { rgb: "102, 109, 127", name: "Space Grey Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/9fd94093c78555c094f7399c638ce1736e2e8a88/Space%20Gray%20Metallic%20-%20E90.png?raw=true" },
+      "A73": { rgb: "39, 41, 56", name: "Jerez Black Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Jerez%20black%20Metallic%20-%20E90.png?raw=true" },
+      "A75": { rgb: "240, 0, 0", name: "Melbourne Red Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/Melborune%20Red%20Metallic%20-%20E90.png?raw=true" },
+      "381": { rgb: "17, 93, 176", name: "Le Mans Blue Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/c64544c1c445627d52ef9aebb7b49748cac3807c/LE%20Mans%20blue%20metallic%20-%20E90.png?raw=true" },
+      "SPACE GRAY": { rgb: "102, 109, 127", name: "Space Gray Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/9fd94093c78555c094f7399c638ce1736e2e8a88/Space%20Gray%20Metallic%20-%20E90.png?raw=true" },
+      "U94": { rgb: "224, 92, 32", name: "Fire Orange 2 | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/ead4fd3fc308c2408f822f53805c4d722032b7f5/Fire%20Orange%202%20-%20E90.png?raw=true" },
+      "X03": { rgb: "116,68,64", name: "Ruby Black Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/aacc8f31633be6c7567631c7af297e444ac2f08c/Ruby%20Black%20Metallic.png?raw=true" },
+      "X04": { rgb: "204, 200, 197", name: "Moonstone Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/b7a0aa857a2cee27b9dfdefc58af4777aa91b6ae/Moonstone%20-%20E90.png?raw=true" },
+      "A39": { rgb: "94,13,30", name: "Barbera Red Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/b9094b424abfef2586265286f36777848f8068b4/Barbera%20Red%20.png?raw=true" },
+      "U83": { rgb: "116,127,144", name: "Frozen Grey | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/aacc8f31633be6c7567631c7af297e444ac2f08c/Frozen%20Grey%20-%20E90.png?raw=true" },
+      "896": { rgb: "209, 240, 246", name: "Blue Water | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/bd09a02f3dc266a0c69fb2ec1a204f395b5b9cbf/Blue%20Water%20-%20E90.png?raw=true" },
+      "B05": { rgb: "5, 97, 191", name: "Monte Carlo Blue | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/f4553177449eb335d3cb088a4f584b4eb9b84151/Monte%20Carlo%20Blue%20-%20E90.png?raw=true" },
+      "S34": { rgb: "39, 63, 126", name: "Azurite Black Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/f4553177449eb335d3cb088a4f584b4eb9b84151/Azurite%20Black%20Metallic.png?raw=true" },
+      "S58": { rgb: "169,192,203", name: "Aventurine Silver Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/1c14c65a837384bc78f96bafb1e81d517de0dcc1/Aventurine%20Silver%20Metallic.png?raw=true" },
+      "U91": { rgb: "55, 62, 72", name: "Frozen Black Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/42d0f66d97e9b4f2a8a8f96ab19bfdeda8194cd0/Frozen%20Black%20-%20E90.png?raw=true" },
+      "B21": { rgb: "222, 196, 45", name: "Atacama Yellow | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/1068208e74430bef6d77411c65d4264a415c779c/Atacama%20Yellow%20-%20E90.png?raw=true" },
+      "448": { rgb: "0, 145, 193", name: "Laguna Seca Blue | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/b9094b424abfef2586265286f36777848f8068b4/Laguna%20Seca%20Blue%20-%20E90.png?raw=true" },
+      "A32": { rgb: "196, 180, 157", name: "Sepang Bronze Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/Sepang%20Bronze.png?raw=true" },
+      "A22": { rgb: "84, 104, 130", name: "Sparkling Graphite Metallic", image: "https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/Sparkling%20Graphite%20Metallic%20-%20E90.png?raw=true" },
+      "U21": { rgb: "243, 238, 231", name: "Brilliant White Metallic Tricoat | $5,000.00", image: " " },
+      "399": { rgb: "0, 172, 216", name: "Atlantis Blue Metallic | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/Atlantis%20Blue%20-%20E90.png?raw=true" },
+      "A85": { rgb: "117, 155, 184", name: "Neptune Blue | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/06f7d7c2e99ca263d2ff3954c0fad9a0bd6fd2fe/Neptune%20Blue.png?raw=true" },
+      "W32": { rgb: "53, 70, 100", name: "Black Blue | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/59aa384e7812e9f6abf350efa96873a49c24d443/W32%20Black%20Blue.png?raw=true" },
+      "W73": { rgb: "174, 177, 178", name: "Polar Silver Metallic w. Red Accents A75", image: "https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/CRT.png?raw=true" },
+      "337": { rgb: "238, 216, 96", name: "Dakar Yellow 2 | $5,000.00", image: "https://github.com/Sman19/E90-ext.380x260px/blob/184a291efe57013d3e0607390ab5a2eb6bde6a2b/dakar%20yellow%20-%20e90.png?raw=true" }
+    };
 
-  const dealerGrid=document.getElementById("dealerGrid");
-  [["Dealer Name",dealer],["Dataset",fileName],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===3)));
+    const defaultInteriors = {
+      "GEAT": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/ANTHRACITE%20Black%20Cloth.png", description: "Anthracite/Black Cloth & Leather" },
+      "NCSW": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png", description: "Black Novillo Leather" },
+      "NDSW": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png", description: "Black Extended Novillo Leather" },
+      "NCH1": { image: "https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png", description: "Palladium/Silver Novillo Leather" },
+      "NDH1": { image: "https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png", description: "Palladium Extended Novillo Leather" },
+      "NCH2": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png", description: "Fox Red Novillo Leather" },
+      "NDH2": { image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png",description: "Fox Red Extended Novillo Leather"},
+      "NCH3": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png", description: "Bamboo Beige Novillo Leather" },
+      "NDH3": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png", description: "Bamboo Beige Extended Novillo Leather" },
+      "NCH4": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%3APadllaium%20Two-TOne.png", description: "Palladium/Black Novillo Leather (Two-Tone)" },
+      "NCH5": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png", description: "Fox Red/Black Novillo Leather (Two-Tone)" },
+      "NDH5": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png", description: "Fox Red/Black Extended Novillo Leather (Two-Tone)" },
+      "FOX RED": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Fox%20Red%20Novillo%20Leather.png", description: "Fox Red Novillo Leather" },
+      "BLACK": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Black%20Novillo%20Leather.png", description: "Black Novillo Leather" },
+      "PALLADIUM": { image: "https://github.com/Sman19/E9x-Interiors/raw/05d770702ebbc9b3ba42808fbf60364a59a2bca1/Silver%20Novillo%20Leather.png", description: "Palladium/Silver Novillo Leather" },
+      "BAMBOO": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Bamboo%20Beige%20Novillo%20Leather.png", description: "Bamboo Beige Novillo Leather" },
+      "Z1XX1": { image: "https://github.com/Sman19/E9x-Interiors/raw/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Z1XX.1%20Amarone%20.png", description: "Amarone Ext. Novillo Leather" },
+      "Z1XX2": { image: "https://github.com/Sman19/E9x-Interiors/raw/c588c491108fbe4764bc1ff8c49809dc0991fa32/Two-Tone%20Fox%20Red%3ABlack%3ABlck.png", description: "Fox Red/Black Novillo Leather (IND)" },
+      "Z1XX.CRT": { image: "https://github.com/Sman19/E9x-Interiors/raw/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/CRT%20Intrerior.png", description: "Sahkir Orange Ext. Novillo Leather" },         
+      "ZAP2": { image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/8563d8f05179279b39bf1923f4a2b6ef385bbb2e/Rust%20Brown%20Ind%20Interior.png", description: "Rust Brown Extended Leather" }
+    };
 
-  document.getElementById("specButton").onclick=()=>openConfigurator("spec",vehicle);
-  document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
-  const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
-  oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
-  const quickOem=document.getElementById("quickOem"),quickInvoice=document.getElementById("quickInvoice");
-  quickOem.classList.toggle("disabled",!available(oem));
-  quickInvoice.classList.toggle("disabled",!available(invoice));
-  quickOem.disabled=!available(oem);
-  quickInvoice.disabled=!available(invoice);
-  oemBtn.onclick=()=>available(oem)&&window.open(oem,"_blank","noopener,noreferrer");
-  invBtn.onclick=()=>available(invoice)&&window.open(invoice,"_blank","noopener,noreferrer");
+    const defaultPackages = {
+      "MSRP.3": "MSRP - $53,800.00",
+      "MSRP.2": "MSRP - $54,850.00",
+      "MSRP.1": "MSRP - $55,400.00",
+      "MSRP": "MSRP - $55,900.00",
+      "IND": "INDIVIDUAL PAINT - $5,000.00",
+      "ZCP": "ZCP - Competition Package - $2,500.00",
+      "ZCV": "ZCV - Convenience Package - $2,900.00",
+      "ZCW": "ZCW - Cold Weather Package - $1,000.00",
+      "ZPP": "ZPP - Premium Package | 771 - Titanium Shadow Trim - $2,000.00",
+      "ZPP.1": "ZPP - Premium Package | 4MX - Blue Gray Brushed Aluminum - $2,000.00",
+      "ZPP.2": "ZPP - Premium Package | 4MZ - Sycamore Anthractite Wood Trim - $2,000.00",
+      "ZPP.3": "ZPP - Premium Package | 4MY - Carbon Leather Interior Trim - $2,000.00",
+      "ZPP.5": "ZPP - Premium Package | Ind.fine Wood Eukalyptus - $2,000.00",
+      "ZP2": "ZP2 - Premium Package | 771 - Titanium Shadow Trim - $2,000.00",
+      "ZP2.1": "ZP2 - Premium Package 2 | 4MX - Blue Gray Brushed Aluminum - $2,500.00",
+      "ZP2.2": "ZP2 - Premium Package 2 | 4MZ - Sycamore Anthractite Wood Trim - $2,500.00",
+      "ZP2.3": "ZP2 - Premium Package 2 | 4MY - Carbon Leather Interior Trim - $2,500.00",
+      "ZP2.4": "ZP2 - Premium Package 2 | XE8 - Black Piano Trim - $1,080.00",
+      "ZP2.5": "ZP2 - Premium Package 2 | XE2 - Maple WWood, Anthr Trim - $1,080.00",
+      "ZP3.1": "ZP3 - Premium Package 3 | 4MX - Blue Gray Brushed Aluminum - $2,500.00",
+      "ZP3.2": "ZP3 - Premium Package 3 | 4MZ - Sycamore Anthractite Wood Trim - $2,500.00",
+      "ZP3.3": "ZP3 - Premium Package 3 | 4MY - Carbon Leather Interior Trim - $2,500.00",
+      "ZP3.4": "ZP3 - Premium Package 3 | XE8 - Black Piano Trim - $1,080.00",
+      "ZP3.5": "ZP3 - Premium Package 3 | XE2 - Maple Wood, Anthr Trim - $1,080.00",
+      "ZTP": "ZTP - Technology Package | - $3,250.00",
+      "1CC": "1CC - Automatic Start/stop Function",
+      "223": "223 - Dynamic Damper Control - $1,000.00",
+      "2MK": "2MK - M Double-Clutch Transmission - $2,900.00",
+      "2MT.1": "2MT - 19\" Alloy Double-spoke wheels - $1,200.00",
+      "2MT": "2MT - 19\" Alloy Double-spoke wheels - $1,250.00",
+      "302": "302 - Anti-Theft Alarm System - $400.00",
+      "326": "326 - Rear Spoiler - $0.00",
+      "403": "403 - Moonroof - $1,050.00",
+      "417": "417 - Rear Manual Side Window Shades - $575.00",
+      "465": "465 - Split Fold-Down Rear Seat - $475.00",
+      "494": "494 - Heated Front Seats - $500.00",
+      "4MY": "4MY - Carbon Fiber Leather Trim - $500.00",
+      "4MX": "4MX - Blue-Gray Brushed Aluminum - $500.00",
+      "4MZ": "4MZ - Sycamore Anthractice Trim - $0.00",
+      "507": "507 - Park Distance Control (rear) - $380.00",
+      "5AC": "5AC - Automatic High Beams - $250.00",
+      "609": "609 - Navigation System - $2,100.00",
+      "639": "BMW Assist with Bluetooth - $750.00",
+      "653": "653 - High Definition Radio - $350.00",
+      "655": "655 - Satellite Radio w/ 1 year sub. - $350.00",
+      "6FL": "6FL - iPod & USB Adapter - $400.00",
+      "6NF": "6NF - Smartphone Integration - $150.00",
+      "6NR": "6NR - BMW Apps - $250.00",
+      "668": "668 - Harman Kardon",
+      "752": "752 - Enhanced Premium Sound - $1,900.00",
+      "863": "863 - Dealer List Europe",
+      "771": "771 - Titanium Shadow Trim - $0",
+      "XE8": "XE8 - Black Piano Trim - $1,080.00",
+      "XE2": "XE2 - Maple Wood, Anthr Trim - $1,080.00",
+    };
+        const packagePrices2009 = {
+      "MSRP.2": "MSRP - $54,850.00",
+      "ZPP": "ZPP - Premium Package | 771 - Titanium Shadow Trim - $2,000.00",
+      "ZPP.1": "ZPP - Premium Package | 4MX - Blue Gray Brushed Aluminum - $2,000.00",
+      "ZPP.2": "ZPP - Premium Package | 4MZ - Sycamore Anthractite Wood Trim - $2,000.00",
+      "ZPP.3": "ZPP - Premium Package | 4MY - Carbon Leather Interior Trim - $2,000.00",
+      "ZPP.5": "ZPP - Premium Package | Ind.fine Wood Eukalyptus - $2,000.00",
+      "ZP2": "ZP2 - Premium Package | 771 - Titanium Shadow Trim - $2,000.00",
+      "ZP2.1": "ZP2 - Premium Package 2 | 4MX - Blue Gray Brushed Aluminum - $2,500.00",
+      "ZP2.2": "ZP2 - Premium Package 2 | 4MZ - Sycamore Anthractite Wood Trim - $2,500.00",
+      "ZP2.3": "ZP2 - Premium Package 2 | 4MY - Carbon Leather Interior Trim - $2,500.00",
+      "ZP2.4": "ZP2 - Premium Package 2 | XE8 - Black Piano Trim - $1,080.00",
+      "ZP2.5": "ZP2 - Premium Package 2 | XE2 - Maple WWood, Anthr Trim - $1,080.00",
+      "ZP3.1": "ZP3 - Premium Package 3 | 4MX - Blue Gray Brushed Aluminum - $2,500.00",
+      "ZP3.2": "ZP3 - Premium Package 3 | 4MZ - Sycamore Anthractite Wood Trim - $2,500.00",
+      "ZP3.3": "ZP3 - Premium Package 3 | 4MY - Carbon Leather Interior Trim - $2,500.00",
+      "ZP3.4": "ZP3 - Premium Package 3 | XE8 - Black Piano Trim - $1,080.00",
+      "ZP3.5": "ZP3 - Premium Package 3 | XE2 - Maple Wood, Anthr Trim - $1,080.00",
+      "ZTP": "ZTP - Technology Package | - $3,250.00",
+      "1CC": "1CC - Automatic Start/stop Function",
+      "223": "223 - Dynamic Damper Control - $1,000.00",
+      "2MK": "2MK - M Double-Clutch Transmission - $2,900.00",
+      "2MT.1": "2MT - 19\" Alloy Double-spoke wheels - $1,200.00",
+      "2MT": "2MT - 19\" Alloy Double-spoke wheels - $1,250.00",
+      "302": "302 - Anti-Theft Alarm System - $400.00",
+      "326": "326 - Rear Spoiler - $0.00",
+      "403": "403 - Moonroof - $1,050.00",
+      "417": "417 - Rear Manual Side Window Shades - $575.00",
+      "465": "465 - Split Fold-Down Rear Seat - $475.00",
+      "494": "494 - Heated Front Seats - $500.00",
+      "4MY": "4MY - Carbon Fiber Leather Trim - $500.00",
+      "4MX": "4MX - Blue-Gray Brushed Aluminum - $500.00",
+      "4MZ": "4MZ - Sycamore Anthractice Trim - $0.00",
+      "507": "507 - Park Distance Control (rear) - $350.00",
+      "5AC": "5AC - Automatic High Beams - $250.00",
+      "609": "609 - Navigation System - $2,100.00",
+      "639": "BMW Assist with Bluetooth - $750.00",
+      "653": "653 - High Definition Radio - $350.00",
+      "655": "655 - Satellite Radio w/ 1 year sub. - $595.00",
+      "6FL": "6FL - iPod & USB Adapter - $400.00",
+      "6NF": "6NF - Smartphone Integration - $150.00",
+      "6NR": "6NR - BMW Apps - $250.00",
+      "668": "668 - Harman Kardon",
+      "752": "752 - Enhanced Premium Sound - $1,900.00",
+      "863": "863 - Dealer List Europe",
+    };
 
-  document.getElementById("loading").style.display="none";document.getElementById("content").style.display="block";
-}
-async function init(){
-  if(!wantedVin){showError("No VIN was supplied. Open this page from the Details button using ?vin=FULLVIN&file=YEAR%20E90%20M3%20Sedan.csv");return}
-  try{
-    const sheet=sheetNameFromFile(fileName);
-    const url=`${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheet)}&t=${Date.now()}`;
-    const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("Could not load Google Sheet CSV.");
-    const rows=parseCSV(await response.text());
-    const row=rows.find(r=>getField(r,["VIN","Vin","Full VIN","Full VIN Number"]).trim().toUpperCase()===wantedVin);
-    if(!row)throw new Error(`VIN ${wantedVin} was not found in ${sheet}.`);
-    render(row)
-  }catch(err){console.error(err);showError(err.message||String(err))}
-}
-function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
-
-function goBackToChart(){
-  try{
-    if(window.opener && !window.opener.closed){
-      window.opener.focus();
-      window.close();
-      return;
+    function normalize(text) {
+      return (text || "").toLowerCase().trim();
     }
-  }catch(error){}
-  if(document.referrer){
-    window.location.href=document.referrer;
-    return;
-  }
-  history.back();
-}
-function toggleQuickActions(event){
-  if(event)event.stopPropagation();
-  document.getElementById("quickMenu").classList.toggle("open");
-}
-function triggerDocument(buttonId){
-  const button=document.getElementById(buttonId);
-  if(button && !button.disabled)button.click();
-  document.getElementById("quickMenu").classList.remove("open");
-}
-document.addEventListener("click",event=>{
-  const wrap=document.getElementById("quickWrap");
-  if(wrap && !wrap.contains(event.target)){
-    document.getElementById("quickMenu").classList.remove("open");
-  }
-});
 
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");const h=t.dataset.tab==="history";document.getElementById("detailPanel").classList.toggle("hidden",h);document.getElementById("historyPanel").classList.toggle("active",h)});
-const sidebar=document.getElementById("sidebar");document.getElementById("mobileMenu").onclick=()=>sidebar.classList.toggle("open");document.querySelectorAll(".nav a").forEach(a=>a.onclick=()=>sidebar.classList.remove("open"));
-const links=[...document.querySelectorAll(".nav a")];const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);const obs=new IntersectionObserver(entries=>{const v=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v)links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+v.target.id))},{rootMargin:"-25% 0px -60% 0px",threshold:[.01,.2]});sections.forEach(s=>obs.observe(s));
-init();
-</script>
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatVin(vin) {
+      // Show the full VIN so comment saving can match the VIN stored in Column G of Google Sheets.
+      return String(vin || "").trim();
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    function getCsvFileFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("file") || "2008 E90 M3 Sedan.csv";
+    }
+
+    function syncDatasetDropdown() {
+      const select = document.getElementById("dataset-select");
+      if (select) select.value = currentCsvFile;
+
+      const packagesHeader = document.getElementById("packages-header");
+      if (packagesHeader) {
+        const destination = currentCsvFile.includes("2009") ? "$825" : "$875";
+        packagesHeader.textContent = `Packages(Destination Charge: ${destination} | Gas Guzzler Tax: $1,300)`;
+      }
+    }
+
+    function handleDatasetChange(fileName) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("file", fileName);
+      window.location.href = url.toString();
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("left-sidebar");
+      const toggle = document.getElementById("sidebar-toggle");
+
+      if (!sidebar || !toggle) return;
+
+      sidebar.classList.toggle("collapsed");
+
+      if (sidebar.classList.contains("collapsed")) {
+        toggle.textContent = "▶";
+        toggle.title = "Show filters";
+      } else {
+        toggle.textContent = "◀";
+        toggle.title = "Hide filters";
+      }
+    }
+
+    function updateAuthUser() {
+      const el = document.getElementById("auth-username");
+      if (!el) return;
+
+      if (typeof login !== "undefined" && login) {
+        el.textContent = login;
+      } else {
+        el.textContent = "Member";
+      }
+    }
+
+    function toggleUserMenu() {
+      const dropdown = document.getElementById("user-menu-dropdown");
+      if (!dropdown) return;
+      dropdown.classList.toggle("open");
+    }
+
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("user-menu");
+      const dropdown = document.getElementById("user-menu-dropdown");
+      if (!menu || !dropdown) return;
+
+      if (!menu.contains(event.target)) {
+        dropdown.classList.remove("open");
+      }
+    });
+
+    function getColumnOrderStorageKey() {
+      const user = (getCurrentLoginName() || "guest")
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]/g, "_");
+
+      return `e90_column_order_${user}`;
+    }
+
+    function getSavedColumnOrder() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(getColumnOrderStorageKey()) || "[]");
+        const validSaved = Array.isArray(saved)
+          ? saved.filter(column => DEFAULT_COLUMN_ORDER.includes(column))
+          : [];
+
+        return [
+          ...validSaved,
+          ...DEFAULT_COLUMN_ORDER.filter(column => !validSaved.includes(column))
+        ];
+      } catch (error) {
+        return [...DEFAULT_COLUMN_ORDER];
+      }
+    }
+
+    function saveColumnOrder(order) {
+      localStorage.setItem(getColumnOrderStorageKey(), JSON.stringify(order));
+    }
+
+    function resetColumnOrder() {
+      localStorage.removeItem(getColumnOrderStorageKey());
+      applyColumnOrder();
+    }
+
+    function setColumnDatasetAttributes() {
+      Object.entries(COLUMN_CLASS_MAP).forEach(([column, classNames]) => {
+        classNames.forEach(className => {
+          document.querySelectorAll(`.${className}`).forEach(element => {
+            element.dataset.column = column;
+          });
+        });
+      });
+    }
+
+    function applyColumnOrder() {
+      setColumnDatasetAttributes();
+      const order = getSavedColumnOrder();
+      const orderMap = new Map(order.map((column, index) => [column, index]));
+
+      document.querySelectorAll("[data-column]").forEach(element => {
+        const column = element.dataset.column;
+        element.style.order = orderMap.has(column) ? orderMap.get(column) : DEFAULT_COLUMN_ORDER.length;
+      });
+    }
+
+    function setupColumnDragAndDrop() {
+      setColumnDatasetAttributes();
+
+      document.querySelectorAll(".column-labels .header-cell[data-column]").forEach(header => {
+        header.draggable = true;
+        header.classList.add("draggable-column");
+        header.title = `${header.title || ""}${header.title ? " | " : ""}Drag to reorder columns`;
+
+        header.addEventListener("dragstart", event => {
+          const column = header.dataset.column;
+          if (!column) return;
+
+          isColumnDragAction = true;
+          header.classList.add("column-dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", column);
+        });
+
+        header.addEventListener("dragend", () => {
+          header.classList.remove("column-dragging");
+          document.querySelectorAll(".column-drop-target").forEach(el => el.classList.remove("column-drop-target"));
+
+          setTimeout(() => {
+            isColumnDragAction = false;
+          }, 0);
+        });
+
+        header.addEventListener("dragover", event => {
+          event.preventDefault();
+          header.classList.add("column-drop-target");
+          event.dataTransfer.dropEffect = "move";
+        });
+
+        header.addEventListener("dragleave", () => {
+          header.classList.remove("column-drop-target");
+        });
+
+        header.addEventListener("drop", event => {
+          event.preventDefault();
+          header.classList.remove("column-drop-target");
+
+          const fromColumn = event.dataTransfer.getData("text/plain");
+          const toColumn = header.dataset.column;
+          if (!fromColumn || !toColumn || fromColumn === toColumn) return;
+
+          const order = getSavedColumnOrder();
+          const fromIndex = order.indexOf(fromColumn);
+          const toIndex = order.indexOf(toColumn);
+          if (fromIndex === -1 || toIndex === -1) return;
+
+          order.splice(fromIndex, 1);
+          order.splice(toIndex, 0, fromColumn);
+
+          saveColumnOrder(order);
+          applyColumnOrder();
+        });
+      });
+
+      applyColumnOrder();
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          result.push(current.trim());
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current.trim());
+      return result;
+    }
+
+    function parseCSV(text) {
+      const lines = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .filter(line => line.trim() !== "");
+
+      if (!lines.length) return [];
+
+      csvHeaders = parseCSVLine(lines[0]).map(h => h.trim());
+
+      // Column M is the permanent Notes/Comments source.
+      // Zero-based index 12 = spreadsheet Column M.
+      const commentsColumnIndex = 12;
+
+      while (csvHeaders.length <= commentsColumnIndex) {
+        csvHeaders.push("");
+      }
+
+      commentsHeaderName = csvHeaders[commentsColumnIndex] || "Notes";
+      csvHeaders[commentsColumnIndex] = commentsHeaderName;
+
+      csvRowsByVin = new Map();
+
+      return lines.slice(1).map(line => {
+        const values = parseCSVLine(line);
+
+        while (values.length <= commentsColumnIndex) {
+          values.push("");
+        }
+
+        const row = {};
+        csvHeaders.forEach((header, index) => {
+          row[header] = values[index] || "";
+        });
+
+        // Always keep the visible Comments box tied directly to Column M.
+        row[commentsHeaderName] = values[commentsColumnIndex] || "";
+        row.__originalValues = values;
+        return row;
+      });
+    }
+
+    function getField(row, possibleNames) {
+      const keys = Object.keys(row);
+
+      for (const name of possibleNames) {
+        const foundKey = keys.find(key => key.toLowerCase().trim() === name.toLowerCase().trim());
+        if (foundKey && row[foundKey]) return row[foundKey];
+      }
+
+      return "";
+    }
+
+    function getCurrentLoginName() {
+      // AuthPro normally exposes login, but different embeds can expose user/userName/username.
+      const possibleGlobals = [
+        "login",
+        "username",
+        "userName",
+        "authpro_login",
+        "authpro_user"
+      ];
+
+      for (const key of possibleGlobals) {
+        try {
+          if (window[key]) return String(window[key]).trim();
+        } catch (error) {}
+      }
+
+      const authEl = document.getElementById("auth-username");
+      if (authEl && authEl.textContent && authEl.textContent.trim() !== "Member") {
+        return authEl.textContent.trim();
+      }
+
+      return "";
+    }
+
+    function isAdminUser() {
+      const currentLogin = getCurrentLoginName().toLowerCase();
+      return ADMIN_USERS.some(user => user.toLowerCase() === currentLogin);
+    }
+
+    function updateAdminMode() {
+      const admin = isAdminUser();
+      document.body.classList.toggle("is-admin", admin);
+
+      const adminTools = document.getElementById("admin-tools");
+      if (adminTools) {
+        adminTools.style.display = admin ? "flex" : "none";
+      }
+
+      document.querySelectorAll(".comments-edit").forEach(textarea => {
+        textarea.readOnly = !admin;
+        textarea.classList.toggle("readonly", !admin);
+        textarea.title = admin ? "Edit comment" : "";
+      });
+    }
+
+    function getCommentsFromRow(row) {
+      // Do not search other similarly named columns; comments must come from Column M only.
+      return row[commentsHeaderName] || "";
+    }
+
+    function setCommentForVehicle(vin, value) {
+      const vehicle = vehicles.find(item => item.vin === vin);
+      if (!vehicle) return;
+
+      vehicle.comments = value;
+      if (vehicle.csvRow) vehicle.csvRow[commentsHeaderName] = value;
+    }
+
+    function csvEscape(value) {
+      const text = String(value ?? "");
+      if (/[",\n\r]/.test(text)) {
+        return `"${text.replace(/"/g, '""')}"`;
+      }
+      return text;
+    }
+
+    function buildUpdatedCsvFromCurrentComments() {
+      document.querySelectorAll(".comments-edit").forEach(textarea => {
+        setCommentForVehicle(textarea.dataset.vin, textarea.value);
+      });
+
+      return [
+        csvHeaders.map(csvEscape).join(","),
+        ...vehicles.map(vehicle => {
+          const row = vehicle.csvRow || {};
+          row[commentsHeaderName] = vehicle.comments || "";
+          return csvHeaders.map(header => csvEscape(row[header] || "")).join(",");
+        })
+      ].join("\n");
+    }
+
+    async function saveUpdatedCsvToGitHub() {
+      if (!isAdminUser()) {
+        alert("Only the admin account can save updated comments.");
+        return;
+      }
+
+      if (!GITHUB_SAVE_WEBHOOK_URL || GITHUB_SAVE_WEBHOOK_URL.includes("PASTE_YOUR")) {
+        alert("Save endpoint is not configured yet. Paste your Google Apps Script Web App URL into GITHUB_SAVE_WEBHOOK_URL.");
+        return;
+      }
+
+      if (!COMMENTS_SAVE_TOKEN || COMMENTS_SAVE_TOKEN === "CHANGE_THIS_PASSWORD") {
+        alert("COMMENTS_SAVE_TOKEN is missing. It must match ADMIN_TOKEN in Apps Script.");
+        return;
+      }
+
+      const button = document.querySelector(".admin-save-btn");
+      const originalText = button ? button.textContent : "";
+
+      try {
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Saving...";
+        }
+
+        const updates = [];
+
+        document.querySelectorAll(".comments-edit").forEach(textarea => {
+          const originalComment = textarea.dataset.originalComment || "";
+          const currentComment = textarea.value || "";
+
+          if (currentComment !== originalComment) {
+            setCommentForVehicle(textarea.dataset.vin, currentComment);
+            updates.push({
+              vin: textarea.dataset.vin,
+              comment: currentComment
+            });
+          }
+        });
+
+        if (!updates.length) {
+          alert("No comment changes to save.");
+          return;
+        }
+
+        const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            token: COMMENTS_SAVE_TOKEN,
+            sheetName:
+            currentCsvFile.includes("2008")
+              ? "2008 E90 M3 Sedan"
+              : currentCsvFile.includes("2009")
+              ? "2009 E90 M3 Sedan"
+              : currentCsvFile.includes("2010")
+              ? "2010 E90 M3 Sedan"
+              : currentCsvFile.includes("2011")
+              ? "2011 E90 M3 Sedan"
+              : currentCsvFile.includes("2012")
+              ? "2012 E90 M3 Sedan CRT"
+              : "2008 E90 M3 Sedan",
+            updates: updates,
+            source: "E90 Admin Comments",
+            updatedBy: getCurrentLoginName() || "Admin",
+            updatedAt: new Date().toISOString()
+          })
+        });
+
+        const resultText = await response.text();
+        let result = {};
+        try { result = JSON.parse(resultText); } catch (e) {}
+
+        if (!response.ok || result.success === false || result.ok === false) {
+          const debugDetails = result && Object.keys(result).length
+            ? JSON.stringify(result, null, 2)
+            : resultText;
+          throw new Error(debugDetails || "Save failed.");
+        }
+
+        const savedCount = typeof result.saved === "number" ? result.saved : updates.length;
+        const missingCount = Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
+
+        document.querySelectorAll(".comments-edit").forEach(textarea => {
+          textarea.dataset.originalComment = textarea.value || "";
+        });
+
+        if (missingCount) {
+          alert(`Comments saved. ${savedCount} row(s) updated. ${missingCount} VIN(s) were not found in the sheet.`);
+        } else {
+          alert(`Save successful. ${savedCount} row(s) updated.`);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Save failed: " + (error && error.message ? error.message : error));
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalText || "Save comments";
+        }
+      }
+    }
+
+    function extractCode(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      return raw.split(" - ")[0].trim();
+    }
+
+    function cleanLabel(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "-";
+      return raw;
+    }
+
+    function getColorData(codeOrName) {
+      const raw = String(codeOrName || "").trim();
+      const code = extractCode(raw);
+
+      if (defaultColors[code]) return defaultColors[code];
+
+      const byName = Object.values(defaultColors).find(c => normalize(c.name) === normalize(raw));
+      if (byName) return byName;
+
+      const byCombinedName = Object.values(defaultColors).find(c => normalize(raw).includes(normalize(c.name)));
+      if (byCombinedName) return byCombinedName;
+
+      return null;
+    }
+
+    function getInteriorData(codeOrName) {
+      const raw = String(codeOrName || "").trim();
+      const code = extractCode(raw);
+
+      if (defaultInteriors[code]) return defaultInteriors[code];
+
+      const byDescription = Object.values(defaultInteriors).find(i => normalize(i.description) === normalize(raw));
+      if (byDescription) return byDescription;
+
+      const byCombinedDescription = Object.values(defaultInteriors).find(i => normalize(raw).includes(normalize(i.description)));
+      if (byCombinedDescription) return byCombinedDescription;
+
+      return null;
+    }
+
+    function getPackageDetail(code, vehicleYear = "") {
+      const normalizedCode = String(code || "").trim();
+      const normalizedYear = String(vehicleYear || "").trim();
+
+      // 2009-specific option pricing must take priority over the generic table.
+      if (
+        normalizedYear === "2009" ||
+        currentCsvFile.includes("2009")
+      ) {
+        return packageLookup[normalizedCode] ||
+          packagePrices2009[normalizedCode] ||
+          defaultPackages[normalizedCode] ||
+          normalizedCode;
+      }
+
+      return packageLookup[normalizedCode] ||
+        defaultPackages[normalizedCode] ||
+        normalizedCode;
+    }
+
+    function parsePackageCodes(value) {
+      return String(value || "")
+        .split(/[,\s]+/)
+        .map(v => v.trim())
+        .filter(Boolean);
+    }
+
+    function getExteriorChartColor(code) {
+      const cleanCode = String(code || "").trim().toUpperCase();
+      const colorData = defaultColors[cleanCode];
+      if (!colorData || !colorData.rgb) return "rgb(180, 180, 180)";
+      return `rgb(${colorData.rgb})`;
+    }
+
+    function buildVehicle(row) {
+      const exteriorRaw = getField(row, ["EXTERIOR", "Exterior", "Color", "Paint Code", "PAINT"]);
+      const interiorRaw = getField(row, ["INTERIOR", "Interior", "Trim", "Upholstery"]);
+      const year = getField(row, ["YEAR", "Year", "Model Year", "MY"]);
+      const vin = getField(row, ["VIN", "Vin", "Full VIN", "Full VIN Number"]).trim();
+
+      const msrp = getField(row, [
+        "MSRP",
+        "msrp",
+        "Total MSRP",
+        "TOTAL MSRP",
+        "Base MSRP",
+        "Retail Price",
+        "Vehicle MSRP"
+      ]);
+
+      const dealer = getField(row, [
+        "DEALER NAME",
+        "Dealer Name",
+        "Dealer",
+        "Selling Dealer",
+        "Dealer Name "
+      ]);
+
+      const comments = getCommentsFromRow(row);
+
+      const details = getField(row, ["DETAILS", "Details"]);
+      const vspec = getField(row, ["V-SPEC", "VSPEC", "VSpec"]);
+      const sticker = getField(row, ["STICKER", "Monroney", "Window Sticker"]);
+      const invoice = getField(row, ["INVOICE", "Invoice"]);
+      const model = getField(row, ["MODEL", "Model"]) || "M3";
+
+      const packageCodesRaw = getField(row, ["Package Codes", "PACKAGE CODES", "PACKAGES", "Packages"]);
+      const packageCodes = parsePackageCodes(packageCodesRaw);
+      const packageDetails = packageCodes.map(code => getPackageDetail(code, year));
+
+      const exteriorData = getColorData(exteriorRaw);
+      const interiorData = getInteriorData(interiorRaw);
+
+      return {
+        model: cleanLabel(model),
+        year: cleanLabel(year),
+        vin: cleanLabel(vin),
+        exterior: cleanLabel(exteriorRaw),
+        interior: cleanLabel(interiorRaw),
+        msrp: cleanLabel(msrp),
+        dealer: cleanLabel(dealer),
+        comments: String(comments || ""),
+        csvRow: row,
+        details,
+        vspec,
+        sticker,
+        invoice,
+        packageCodes,
+        packageDetails,
+        exteriorCode: extractCode(exteriorRaw),
+        interiorCode: extractCode(interiorRaw),
+        exteriorData: exteriorData || {},
+        interiorData: interiorData || {}
+      };
+    }
+
+    function getVehicleFieldText(vehicle, field) {
+      switch (field) {
+        case "model":
+          return vehicle.model || "";
+        case "exterior":
+          return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""}`;
+        case "interior":
+          return `${vehicle.interior || ""} ${vehicle.interiorCode || ""} ${vehicle.interiorData.description || ""}`;
+        case "year":
+          return vehicle.year || "";
+        case "vin":
+          return vehicle.vin || "";
+        case "packages":
+          return `
+            ${vehicle.packageCodes.join(" ")}
+            ${vehicle.packageDetails.join(" ")}
+            ${vehicle.details || ""}
+            ${vehicle.vspec || ""}
+          `;
+        case "msrp":
+          return vehicle.msrp || "";
+        case "dealer":
+          return vehicle.dealer || "";
+        case "comments":
+          return vehicle.comments || "";
+        default:
+          return "";
+      }
+    }
+
+    function matchesFilter(text, rawFilter) {
+      const cellText = normalize(text);
+      const parts = String(rawFilter || "")
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
+
+      for (const part of parts) {
+        if (/^-\s*/.test(part)) {
+          const excludeTerm = normalize(part.replace(/^-\s*/, ""));
+          if (excludeTerm && cellText.includes(excludeTerm)) return false;
+        } else {
+          const includeTerm = normalize(part);
+          if (includeTerm && !cellText.includes(includeTerm)) return false;
+        }
+      }
+
+      return true;
+    }
+
+    function getNormalizedPackageTokens(vehicle) {
+      return (vehicle.packageCodes || [])
+        .map(code => normalize(code))
+        .filter(Boolean);
+    }
+
+    function matchesPackageFilter(vehicle, rawFilter) {
+      // Search only the actual package codes stored for this vehicle.
+      // Do not search Details, V-Spec, exterior names, or package descriptions.
+      const packageTokens = getNormalizedPackageTokens(vehicle);
+
+      // Accept spaces, commas, or a mixture of both:
+      // IND -2MK
+      // IND, -2MK
+      // IND,-2MK
+      const parts = String(rawFilter || "")
+        .match(/-?[^\s,]+/g) || [];
+
+      for (const part of parts) {
+        if (part.startsWith("-")) {
+          const excludeTerm = normalize(part.slice(1));
+          if (!excludeTerm) continue;
+
+          // Excluded code must not be present.
+          if (packageTokens.includes(excludeTerm)) return false;
+        } else {
+          const includeTerm = normalize(part);
+          if (!includeTerm) continue;
+
+          // Every included code must be present.
+          if (!packageTokens.includes(includeTerm)) return false;
+        }
+      }
+
+      return true;
+    }
+
+    function getActiveFilters() {
+      const filters = {};
+      document.querySelectorAll(".filter-input").forEach(input => {
+        const value = input.value.trim();
+        if (value) filters[input.dataset.field] = value;
+      });
+      return filters;
+    }
+
+    function removeFilter(field) {
+      const input = document.querySelector(`.filter-input[data-field="${field}"]`);
+      if (input) input.value = "";
+      applyFilters();
+    }
+
+    function getSortLabel() {
+      if (!currentSort.field || !currentSort.direction) return "";
+
+      const fieldLabel = {
+        msrp: "MSRP",
+        exterior: "Exterior",
+        interior: "Interior"
+      }[currentSort.field] || currentSort.field;
+
+      const directionLabel = currentSort.field === "msrp"
+        ? (currentSort.direction === "desc" ? "High to Low" : "Low to High")
+        : (currentSort.direction === "asc" ? "A to Z" : "Z to A");
+
+      return `${fieldLabel}: ${directionLabel}`;
+    }
+
+    function resetSortOnly() {
+      currentSort.field = null;
+      currentSort.direction = null;
+      applyFilters();
+    }
+
+    function clearAllFilters() {
+      document.querySelectorAll(".filter-input").forEach(input => {
+        input.value = "";
+      });
+
+      currentSort.field = null;
+      currentSort.direction = null;
+
+      applyFilters();
+    }
+
+    function renderActiveFilterChips(filters) {
+      const activeFiltersContainer = document.getElementById("active-filters");
+      activeFiltersContainer.innerHTML = "";
+
+      const entries = Object.entries(filters);
+      const sortLabel = getSortLabel();
+
+      if (!entries.length && !sortLabel) return;
+
+      entries.forEach(([field, value]) => {
+        const chip = document.createElement("span");
+        chip.className = "filter-chip";
+        chip.innerHTML = `
+          <span>${escapeHtml(field)}: ${escapeHtml(value)}</span>
+          <span class="filter-chip-remove" data-field="${escapeHtml(field)}">×</span>
+        `;
+        activeFiltersContainer.appendChild(chip);
+      });
+
+      if (sortLabel) {
+        const sortChip = document.createElement("span");
+        sortChip.className = "filter-chip";
+        sortChip.innerHTML = `
+          <span>Sort: ${escapeHtml(sortLabel)}</span>
+          <span class="filter-chip-remove" data-sort-remove="true">×</span>
+        `;
+        activeFiltersContainer.appendChild(sortChip);
+      }
+
+      const clearBtn = document.createElement("button");
+      clearBtn.className = "clear-filters-btn";
+      clearBtn.textContent = "Reset";
+      clearBtn.addEventListener("click", clearAllFilters);
+      activeFiltersContainer.appendChild(clearBtn);
+
+      activeFiltersContainer.querySelectorAll(".filter-chip-remove[data-field]").forEach(btn => {
+        btn.addEventListener("click", () => removeFilter(btn.dataset.field));
+      });
+
+      activeFiltersContainer.querySelectorAll(".filter-chip-remove[data-sort-remove]").forEach(btn => {
+        btn.addEventListener("click", resetSortOnly);
+      });
+    }
+
+    function parseMoneyValue(value) {
+      const number = Number(String(value || "").replace(/[^0-9.-]/g, ""));
+      return Number.isFinite(number) ? number : 0;
+    }
+
+    function getExteriorSortValue(vehicle) {
+      const name = vehicle.exteriorData && vehicle.exteriorData.name
+        ? vehicle.exteriorData.name
+        : vehicle.exterior;
+      return normalize(String(name || vehicle.exteriorCode || ""));
+    }
+
+    function getInteriorSortValue(vehicle) {
+      const name = vehicle.interiorData && vehicle.interiorData.description
+        ? vehicle.interiorData.description
+        : vehicle.interior;
+      return normalize(String(name || vehicle.interiorCode || ""));
+    }
+
+    function getSortValue(vehicle, field) {
+      if (field === "msrp") return parseMoneyValue(vehicle.msrp);
+      if (field === "exterior") return getExteriorSortValue(vehicle);
+      if (field === "interior") return getInteriorSortValue(vehicle);
+      return "";
+    }
+
+    function applyCurrentSort(rows) {
+      if (!currentSort.field || !currentSort.direction) return rows;
+
+      const direction = currentSort.direction === "desc" ? -1 : 1;
+
+      return [...rows].sort((a, b) => {
+        const aValue = getSortValue(a, currentSort.field);
+        const bValue = getSortValue(b, currentSort.field);
+
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return (aValue - bValue) * direction;
+        }
+
+        const primary = String(aValue).localeCompare(String(bValue), undefined, {
+          numeric: true,
+          sensitivity: "base"
+        }) * direction;
+
+        if (primary !== 0) return primary;
+
+        // Stable secondary sort within matching exterior/interior groups.
+        return String(a.vin || "").localeCompare(String(b.vin || ""));
+      });
+    }
+
+    function updateSortIndicators() {
+      document.querySelectorAll(".sortable-header").forEach(header => {
+        const field = header.dataset.sortField;
+        const indicator = header.querySelector(".sort-indicator");
+        const active = currentSort.field === field && currentSort.direction;
+
+        header.classList.toggle("active-sort", Boolean(active));
+        if (!indicator) return;
+
+        if (!active) {
+          indicator.textContent = "↕";
+        } else if (currentSort.direction === "asc") {
+          indicator.textContent = "↑";
+        } else {
+          indicator.textContent = "↓";
+        }
+      });
+    }
+
+    function sortByField(field) {
+      if (currentSort.field !== field) {
+        currentSort.field = field;
+        currentSort.direction = field === "msrp" ? "desc" : "asc";
+      } else {
+        currentSort.direction = currentSort.direction === "desc" ? "asc" : "desc";
+      }
+
+      // Rebuild from the original CSV/VIN order every time, then apply the active sort.
+      // Use the Reset button in the active filter bar to return to the normal VIN order.
+      applyFilters();
+    }
+
+    function setupSortableHeaders() {
+      document.querySelectorAll(".sortable-header").forEach(header => {
+        header.addEventListener("click", () => {
+          if (isColumnDragAction) return;
+          sortByField(header.dataset.sortField);
+        });
+      });
+      updateSortIndicators();
+    }
+
+    function applyFilters() {
+      const filters = getActiveFilters();
+      renderActiveFilterChips(filters);
+
+      filteredVehicles = vehicles.filter(vehicle => {
+        for (const field in filters) {
+          if (field === "packages") {
+            if (!matchesPackageFilter(vehicle, filters[field])) return false;
+            continue;
+          }
+
+          const value = getVehicleFieldText(vehicle, field);
+          if (!matchesFilter(value, filters[field])) return false;
+        }
+        return true;
+      });
+
+      const selectedVin = [...selectedVehicles][0];
+      if (selectedVin && !filteredVehicles.some(vehicle => vehicle.vin === selectedVin)) {
+        selectedVehicles.clear();
+        closeSidePanel();
+      }
+
+      filteredVehicles = applyCurrentSort(filteredVehicles);
+
+      document.getElementById("count").textContent = filteredVehicles.length;
+      renderTable(filteredVehicles);
+      updateSelectionCount();
+      updateCharts();
+      updateSortIndicators();
+    }
+
+    function updateCharts() {
+      const exteriorCounts = {};
+      const interiorCounts = {};
+      const transmissionCounts = {
+        "2MK (DCT)": 0,
+        "6 Speed Manual": 0
+      };
+
+      filteredVehicles.forEach(vehicle => {
+        const exteriorCode = String(vehicle.exteriorCode || "Unknown").trim().toUpperCase();
+        const interiorCode = vehicle.interiorCode || "Unknown";
+
+        exteriorCounts[exteriorCode] = (exteriorCounts[exteriorCode] || 0) + 1;
+        interiorCounts[interiorCode] = (interiorCounts[interiorCode] || 0) + 1;
+
+        const hasDct = (vehicle.packageCodes || []).some(code => String(code).trim().toUpperCase() === "2MK");
+        if (hasDct) {
+          transmissionCounts["2MK (DCT)"] += 1;
+        } else {
+          transmissionCounts["6 Speed Manual"] += 1;
+        }
+      });
+
+      const exteriorLabels = Object.keys(exteriorCounts);
+      const exteriorData = Object.values(exteriorCounts);
+
+      const interiorLabels = Object.keys(interiorCounts);
+      const interiorData = Object.values(interiorCounts);
+
+      const transmissionLabels = Object.keys(transmissionCounts);
+      const transmissionData = Object.values(transmissionCounts);
+
+      const exteriorCanvas = document.getElementById("exteriorPieChart");
+      const interiorCanvas = document.getElementById("interiorPieChart");
+      const transmissionCanvas = document.getElementById("transmissionPieChart");
+
+      if (exteriorPieChart) exteriorPieChart.destroy();
+      if (interiorPieChart) interiorPieChart.destroy();
+      if (transmissionPieChart) transmissionPieChart.destroy();
+
+      const exteriorColors = exteriorLabels.length
+        ? exteriorLabels.map(code => getExteriorChartColor(code))
+        : ["rgb(180,180,180)"];
+
+      const interiorColors = interiorLabels.length
+        ? interiorLabels.map((label, i) => {
+            const palette = [
+              "#4aa3df", "#f76587", "#7c879f", "#b38b59",
+              "#5d7a5d", "#8f6bb3", "#d08770", "#6b7280",
+              "#c2410c", "#0f766e", "#b91c1c", "#2563eb"
+            ];
+            return palette[i % palette.length];
+          })
+        : ["rgb(180,180,180)"];
+
+      const transmissionColors = ["#2563eb", "#6b7280"];
+
+      exteriorPieChart = new Chart(exteriorCanvas, {
+        type: "pie",
+        data: {
+          labels: exteriorLabels.length ? exteriorLabels : ["No Results"],
+          datasets: [{
+            data: exteriorData.length ? exteriorData : [1],
+            backgroundColor: exteriorColors,
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
+
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
+
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            datalabels: {
+              color(context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return label === "300" ? "#111827" : "#ffffff";
+              },
+              font: {
+                weight: "700",
+                size: 11
+              },
+              formatter(value, context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return value > 0 ? label : "";
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+
+      interiorPieChart = new Chart(interiorCanvas, {
+        type: "pie",
+        data: {
+          labels: interiorLabels.length ? interiorLabels : ["No Results"],
+          datasets: [{
+            data: interiorData.length ? interiorData : [1],
+            backgroundColor: interiorColors,
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
+
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
+
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            datalabels: {
+              color: "#ffffff",
+              font: {
+                weight: "700",
+                size: 10
+              },
+              formatter(value, context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return value > 0 ? label : "";
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+
+      transmissionPieChart = new Chart(transmissionCanvas, {
+        type: "pie",
+        data: {
+          labels: transmissionLabels,
+          datasets: [{
+            data: transmissionData,
+            backgroundColor: transmissionColors,
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                boxWidth: 16,
+                boxHeight: 16,
+                padding: 12,
+                generateLabels(chart) {
+                  const labels = chart.data.labels || [];
+                  const dataset = chart.data.datasets[0];
+                  const total = (dataset.data || []).reduce((sum, value) => sum + value, 0);
+
+                  return labels.map((label, i) => {
+                    const value = dataset.data[i] || 0;
+                    const percent = total ? ((value / total) * 100).toFixed(1) : "0.0";
+
+                    return {
+                      text: `${percent}%  ${label}`,
+                      fillStyle: dataset.backgroundColor[i],
+                      strokeStyle: dataset.backgroundColor[i],
+                      lineWidth: 1,
+                      hidden: !chart.getDataVisibility(i),
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            datalabels: {
+              color: "#ffffff",
+              font: {
+                weight: "700",
+                size: 10
+              },
+              formatter(value, context) {
+                const label = context.chart.data.labels[context.dataIndex];
+                return value > 0 ? label : "";
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }
+
+    function setupFilterInputs() {
+      const debouncedApply = debounce(applyFilters, 120);
+      document.querySelectorAll(".filter-input").forEach(input => {
+        input.addEventListener("input", debouncedApply);
+      });
+    }
+
+    function initCopyButtons() {
+      document.querySelectorAll(".copy-btn").forEach(button => {
+        button.addEventListener("click", function () {
+          const targetId = this.getAttribute("data-copy-target");
+          const target = document.getElementById(targetId);
+          if (!target) return;
+
+          navigator.clipboard.writeText(target.textContent || "").then(() => {
+            const oldText = this.textContent;
+            this.textContent = "✓";
+            this.classList.add("copied");
+
+            setTimeout(() => {
+              this.textContent = oldText;
+              this.classList.remove("copied");
+            }, 1000);
+          });
+        });
+      });
+    }
+
+    function updateSelectionCount() {
+      const count = selectedVehicles.size;
+      const counter = document.getElementById("selection-count");
+      const text = document.getElementById("selection-count-text");
+
+      if (count > 0) {
+        text.textContent = count === 1 ? "1 Selected" : `${count} Selected`;
+        counter.classList.add("visible");
+      } else {
+        counter.classList.remove("visible");
+        closeSidePanel();
+      }
+    }
+
+    function clearAllVehicleSelections() {
+      selectedVehicles.clear();
+
+      document.querySelectorAll('.table-row').forEach(row => {
+        row.classList.remove('selected');
+      });
+
+      document.querySelectorAll('.cell-checkbox input[type="checkbox"]').forEach(input => {
+        input.checked = false;
+      });
+    }
+
+    function handleCheckboxChange(checkbox, vehicleInfo) {
+      const row = checkbox.closest(".table-row");
+
+      // Only one vehicle should ever be selected.
+      // When a new checkbox is selected, reset every previous row first so
+      // BMW Spec Sheet, Sticker, OEM Sticker, and Invoice always use the
+      // current vehicle, not the first VIN that was selected.
+      if (checkbox.checked) {
+        clearAllVehicleSelections();
+        selectedVehicles.add(vehicleInfo.vin);
+        checkbox.checked = true;
+        if (row) row.classList.add("selected");
+        openSidePanel(vehicleInfo);
+      } else {
+        selectedVehicles.delete(vehicleInfo.vin);
+        if (row) row.classList.remove("selected");
+      }
+
+      updateSelectionCount();
+    }
+
+    function isAvailableLink(value) {
+      const clean = String(value || "").trim();
+      return Boolean(clean && clean !== "-" && clean.toLowerCase() !== "n/a" && clean.toLowerCase() !== "na");
+    }
+
+    function setMenuItemAvailability(id, available, reason = "") {
+      const item = document.getElementById(id);
+      if (!item) return;
+
+      item.classList.toggle("is-disabled", !available);
+      item.classList.toggle("is-document-limit", !available && reason === "limit");
+      item.setAttribute("aria-disabled", available ? "false" : "true");
+
+      if (!available && reason === "limit") {
+        item.title = "Daily document limit reached. Your allowance refreshes automatically 24 hours after your oldest request.";
+      } else {
+        item.removeAttribute("title");
+      }
+    }
+
+    function isDocumentGenerationLocked() {
+      return documentLimitReached && !(lastDocumentLimitResult && lastDocumentLimitResult.admin);
+    }
+
+    function applyDocumentLimitState(result) {
+      if (result) lastDocumentLimitResult = result;
+
+      const remaining = Number(result && result.remaining);
+      documentLimitReached = Boolean(result && !result.admin && Number.isFinite(remaining) && remaining <= 0);
+
+      const vehicle = getSelectedVehicle && getSelectedVehicle();
+      if (vehicle) updateSidePanelMenuAvailability(vehicle);
+    }
+
+    function updateSidePanelMenuAvailability(vehicleInfo) {
+      const hasValidVin = isAvailableLink(vehicleInfo && vehicleInfo.vin);
+      const documentsAvailable = hasValidVin && !isDocumentGenerationLocked();
+      const documentReason = hasValidVin && isDocumentGenerationLocked() ? "limit" : "";
+
+      // The Details page is available for every vehicle with a valid VIN.
+      setMenuItemAvailability("menu-details", hasValidVin);
+      setMenuItemAvailability("menu-bmw-spec", documentsAvailable, documentReason);
+      setMenuItemAvailability("menu-sticker", documentsAvailable, documentReason);
+      setMenuItemAvailability("menu-oem-sticker", isAvailableLink(vehicleInfo && vehicleInfo.sticker));
+      setMenuItemAvailability("menu-invoice", isAvailableLink(vehicleInfo && vehicleInfo.invoice));
+    }
+
+    function openSidePanel(vehicleInfo) {
+      const panel = document.getElementById("side-panel");
+      const vehicleName = document.getElementById("panel-vehicle-name");
+      const vehicleInfoEl = document.getElementById("panel-vehicle-info");
+
+      let modelType = "E90";
+      if (vehicleInfo.model) {
+        if (vehicleInfo.model.startsWith("C5")) modelType = "E90";
+        else if (vehicleInfo.model.startsWith("C6")) modelType = "E92";
+        else if (vehicleInfo.model.startsWith("C7")) modelType = "E93";
+      }
+
+      vehicleName.textContent = `${modelType} M3`;
+      vehicleInfoEl.textContent = `${formatVin(vehicleInfo.vin) || "Unknown VIN"}`;
+      updateSidePanelMenuAvailability(vehicleInfo);
+      panel.classList.add("open");
+    }
+
+    function closeSidePanel() {
+      document.getElementById("side-panel").classList.remove("open");
+    }
+
+    const DETAILS_PAGE_URL = "Details.html";
+
+    function handleDetailsClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+
+      // Resolve Details.html relative to this E90 page so both files can live
+      // in the same GitHub Pages repository/folder.
+      const detailsUrl = new URL(DETAILS_PAGE_URL, window.location.href);
+      detailsUrl.searchParams.set("vin", vehicle.vin);
+      detailsUrl.searchParams.set("file", currentCsvFile);
+
+      // Give Details.html an explicit address to return to.
+      // This is required because the new tab is opened with "noopener,noreferrer".
+      detailsUrl.searchParams.set("return", window.location.href);
+
+      if (isAvailableLink(vehicle.year)) {
+        detailsUrl.searchParams.set("year", vehicle.year);
+      }
+
+      const packageCodes = Array.isArray(vehicle.packageCodes)
+        ? vehicle.packageCodes.filter(Boolean)
+        : [];
+
+      if (packageCodes.length) {
+        detailsUrl.searchParams.set("packages", packageCodes.join(","));
+      }
+
+      window.open(detailsUrl.toString(), "_blank", "noopener,noreferrer");
+    }
+
+    const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
+
+    // Easy PDF / Window Sticker pull alert.
+    // Replace this with your Google Apps Script Web App URL after you deploy it.
+    const PDF_ALERT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwr_S10LZqvDM9RI6Yg-Rwl30Go_ERDrx1Pne-HzSs9CZcWpau0Lep1kUiEn2X9HFS9/exec";
+    const PDF_ALERT_TO_EMAIL = "carboicreations@outlook.com";
+
+    function getAuthProUsername() {
+      if (typeof login !== "undefined" && login) return String(login);
+      const el = document.getElementById("auth-username");
+      return el && el.textContent ? el.textContent.trim() : "Member";
+    }
+
+    function getAuthProEmail() {
+      const possibleNames = ["email", "user_email", "member_email", "auth_email"];
+      for (const name of possibleNames) {
+        try {
+          if (typeof window[name] !== "undefined" && window[name]) return String(window[name]);
+        } catch (err) {}
+      }
+      return "";
+    }
+
+
+    function getDocumentLimitPopupHTML(title, message) {
+      return `<!DOCTYPE html><html><head><title>${escapeHtml(title)}</title><style>html,body{height:100%;margin:0}body{font-family:Arial,sans-serif;color:#111827;background:#f8fafc;display:flex;align-items:center;justify-content:center}.loader-card{background:white;border:1px solid #e5e7eb;border-radius:14px;padding:28px 34px;box-shadow:0 18px 45px rgba(15,23,42,.14);text-align:center;min-width:280px}.spinner{width:42px;height:42px;border:4px solid #e5e7eb;border-top-color:#dc2626;border-radius:999px;animation:spin .85s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}h2{font-size:18px;margin:0 0 8px}p{font-size:13px;color:#6b7280;margin:0}</style></head><body><div class="loader-card"><div class="spinner"></div><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p></div></body></html>`;
+    }
+
+    function writeToPopup(popupWindow, title, message) {
+      if (!popupWindow || popupWindow.closed) return;
+      popupWindow.document.open();
+      popupWindow.document.write(getDocumentLimitPopupHTML(title, message));
+      popupWindow.document.close();
+    }
+
+    function showDocumentLimitNotice(documentType, onContinue) {
+      const existing = document.getElementById("document-limit-modal");
+      if (existing) existing.remove();
+
+      const overlay = document.createElement("div");
+      overlay.id = "document-limit-modal";
+      overlay.style.position = "fixed";
+      overlay.style.inset = "0";
+      overlay.style.background = "rgba(17,24,39,.56)";
+      overlay.style.zIndex = "999999";
+      overlay.style.display = "flex";
+      overlay.style.alignItems = "center";
+      overlay.style.justifyContent = "center";
+      overlay.style.padding = "18px";
+
+      overlay.innerHTML = `
+        <div style="width:min(520px,100%);background:#fff;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,.32);overflow:hidden;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111827;">
+          <div style="background:#111827;color:#fff;padding:18px 22px;">
+            <div style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.72;font-weight:800;">M Arhiv</div>
+            <div style="font-size:22px;font-weight:800;margin-top:4px;">Document Request</div>
+          </div>
+          <div style="padding:22px;line-height:1.48;">
+            <p style="margin:0 0 14px;font-size:15px;"><strong>Thanks for following along and supporting the M Arhiv.</strong></p>
+            <p style="margin:0 0 14px;font-size:15px;">To help protect the information and keep this resource available for the community, we limit users to <strong>5 Spec Sheet and/or Window Sticker requests per 24 hours</strong>.</p>
+            <p style="margin:0 0 10px;font-size:14px;color:#4b5563;">This only applies to document generation. Browsing the database is not limited.</p>
+            <p style="margin:0 0 18px;font-size:14px;color:#4b5563;">After this request, your remaining count will show on screen.</p>
+            <div style="background:#f3f4f6;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;font-size:14px;color:#374151;">
+              Requested document: <strong>${escapeHtml(documentType)}</strong>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;">
+              <button type="button" id="document-limit-cancel" style="border:1px solid #d1d5db;background:#fff;color:#111827;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer;">Cancel</button>
+              <button type="button" id="document-limit-continue" style="border:1px solid #dc2626;background:#dc2626;color:#fff;border-radius:999px;padding:10px 18px;font-weight:900;cursor:pointer;">Continue</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      document.getElementById("document-limit-cancel").onclick = () => overlay.remove();
+      document.getElementById("document-limit-continue").onclick = () => {
+        overlay.remove();
+        onContinue();
+      };
+    }
+
+    function showDocumentLimitBlocked(result) {
+      const limitResult = result || { allowed: false, remaining: 0, limit: 5 };
+      applyDocumentLimitState(limitResult);
+      updateDocumentRemainingBadge(limitResult);
+
+      const message = result && result.message
+        ? result.message
+        : "You have reached the 5 document request limit in the last 24 hours. Please try again later.";
+
+      alert(`${message}\n\nThanks for helping protect the E9x M3 Database.`);
+    }
+
+    async function checkDocumentLimit(documentType, vehicle) {
+      const response = await fetch(GOOGLE_SHEET_CSV_URL, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+          action: "checkDocumentLimit",
+          username: getAuthProUsername(),
+          documentType: documentType,
+          vin: vehicle && vehicle.vin ? vehicle.vin : "",
+          source: "E90 Database",
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      const text = await response.text();
+      let result = {};
+      try { result = JSON.parse(text); } catch (err) {}
+
+      if (!response.ok || result.success === false) {
+        throw new Error(result.error || result.message || text || "Document limit check failed.");
+      }
+
+      return result;
+    }
+    function formatDocumentRemainingText(result) {
+      if (result && result.admin) return "Admin access: unlimited document requests";
+
+      const remaining = Number(result && result.remaining);
+      const limit = Number(result && result.limit) || 5;
+
+      if (Number.isFinite(remaining)) {
+        return `${remaining} of ${limit} document requests remaining`;
+      }
+
+      return `5 of 5 document requests remaining`;
+    }
+
+    function ensureDocumentRemainingBadge() {
+      let badge = document.getElementById("document-remaining-badge");
+      if (badge) return badge;
+
+      const target = document.getElementById("user-menu") || document.querySelector(".top-nav-right") || document.body;
+      badge = document.createElement("div");
+      badge.id = "document-remaining-badge";
+      badge.style.display = "none";
+      badge.style.marginRight = "10px";
+      badge.style.padding = "5px 9px";
+      badge.style.border = "1px solid rgba(255,255,255,.26)";
+      badge.style.borderRadius = "999px";
+      badge.style.background = "rgba(255,255,255,.10)";
+      badge.style.color = "#fff";
+      badge.style.fontSize = "11px";
+      badge.style.fontWeight = "800";
+      badge.style.whiteSpace = "nowrap";
+      badge.style.lineHeight = "1.15";
+      badge.title = "Document requests remaining in the rolling 24-hour period";
+
+      if (target && target.parentNode && target.id === "user-menu") {
+        target.parentNode.insertBefore(badge, target);
+      } else if (target && target.appendChild) {
+        target.appendChild(badge);
+      }
+
+      return badge;
+    }
+
+    function updateDocumentRemainingBadge(result) {
+      const badge = ensureDocumentRemainingBadge();
+      if (!badge) return;
+
+      applyDocumentLimitState(result);
+
+      const remaining = Number(result && result.remaining);
+      const isLocked = result && !result.admin && Number.isFinite(remaining) && remaining <= 0;
+
+      badge.style.display = "inline-flex";
+      badge.style.alignItems = "center";
+      badge.style.borderColor = isLocked ? "rgba(248,113,113,.85)" : "rgba(255,255,255,.26)";
+      badge.style.background = isLocked ? "rgba(127,29,29,.72)" : "rgba(255,255,255,.10)";
+      badge.textContent = result && result.admin
+        ? "Docs: Admin Unlimited"
+        : `Docs: ${Math.max(Number(result.remaining) || 0, 0)} / ${Number(result.limit) || 5} left`;
+    }
+
+    function showDocumentRemainingToast(result, documentType) {
+      updateDocumentRemainingBadge(result);
+
+      const oldToast = document.getElementById("document-remaining-toast");
+      if (oldToast) oldToast.remove();
+
+      const remaining = Number(result && result.remaining);
+      const limit = Number(result && result.limit) || 5;
+      const isFinalRequest = !result.admin && remaining === 0;
+
+      const toast = document.createElement("div");
+      toast.id = "document-remaining-toast";
+      toast.style.position = "fixed";
+      toast.style.right = "22px";
+      toast.style.bottom = "22px";
+      toast.style.zIndex = "999999";
+      toast.style.width = "min(360px, calc(100vw - 44px))";
+      toast.style.background = "#111827";
+      toast.style.color = "#fff";
+      toast.style.borderRadius = "14px";
+      toast.style.boxShadow = "0 18px 45px rgba(0,0,0,.28)";
+      toast.style.padding = "16px 18px";
+      toast.style.fontFamily = "system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
+      toast.style.lineHeight = "1.35";
+      toast.style.border = "1px solid rgba(255,255,255,.16)";
+
+      const remainingLine = result && result.admin
+        ? "Admin unlimited access — this request was not counted against a limit."
+        : `${Math.max(remaining, 0)} of ${limit} document requests remaining in the last 24 hours.`;
+
+      toast.innerHTML = `
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="font-size:22px;line-height:1;">${isFinalRequest ? "⚠️" : "✅"}</div>
+          <div style="min-width:0;">
+            <div style="font-size:14px;font-weight:900;margin-bottom:4px;">${escapeHtml(documentType)} approved</div>
+            <div style="font-size:13px;color:#d1d5db;">${escapeHtml(remainingLine)}</div>
+            ${isFinalRequest ? `<div style="font-size:12px;color:#facc15;margin-top:7px;font-weight:800;">This was your final request until one refreshes.</div>` : ""}
+          </div>
+          <button type="button" aria-label="Close" id="document-remaining-toast-close" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:18px;line-height:1;cursor:pointer;opacity:.75;">×</button>
+        </div>
+      `;
+
+      document.body.appendChild(toast);
+
+      const closeBtn = document.getElementById("document-remaining-toast-close");
+      if (closeBtn) closeBtn.onclick = () => toast.remove();
+
+      setTimeout(() => {
+        const currentToast = document.getElementById("document-remaining-toast");
+        if (currentToast) currentToast.remove();
+      }, 5200);
+    }
+
+
+    function sendPdfPullAlert(documentType, vehicle) {
+      if (!PDF_ALERT_WEBHOOK_URL || PDF_ALERT_WEBHOOK_URL.includes("PASTE_GOOGLE_APPS_SCRIPT")) {
+        console.warn("PDF alert skipped: add your Google Apps Script Web App URL to PDF_ALERT_WEBHOOK_URL.");
+        return;
+      }
+
+      const payload = {
+        alertTo: PDF_ALERT_TO_EMAIL,
+        username: getAuthProUsername(),
+        email: getAuthProEmail(),
+        vin: vehicle && vehicle.vin ? vehicle.vin : "",
+        year: vehicle && vehicle.year ? vehicle.year : "",
+        model: vehicle && vehicle.model ? vehicle.model : "",
+        documentType,
+        pulledAt: new Date().toLocaleString(),
+        pulledAtIso: new Date().toISOString(),
+        pageUrl: window.location.href
+      };
+
+      try {
+        fetch(PDF_ALERT_WEBHOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        }).catch(err => console.warn("PDF alert failed:", err));
+      } catch (err) {
+        console.warn("PDF alert failed:", err);
+      }
+    }
+
+    function getSelectedVehicle() {
+      const selectedVin = [...selectedVehicles][0];
+      return vehicles.find(v => v.vin === selectedVin) || null;
+    }
+
+    function buildConfiguratorAutoUrl(autoMode, vehicle) {
+      const url = new URL(CONFIGURATOR_URL);
+      url.searchParams.set("vin", vehicle.vin);
+      url.searchParams.set("auto", autoMode);
+      url.searchParams.set("handoff", "1");
+      url.searchParams.set("authuser", getAuthProUsername());
+      const authEmail = getAuthProEmail();
+      if (authEmail) url.searchParams.set("authemail", authEmail);
+
+      // Pass package codes from the selected database row so the hidden
+      // configurator generator can build the correct optioned document even
+      // if its CSV column order changes or the VIN lookup returns only base data.
+      const packageCodes = (vehicle.packageCodes || []).filter(Boolean).join(",");
+      if (packageCodes) url.searchParams.set("packages", packageCodes);
+
+      // Explicitly pass the model year to the configurator so its PDF pricing
+      // logic can select the correct year-specific option table.
+      if (vehicle.year && vehicle.year !== "-") {
+        url.searchParams.set("year", vehicle.year);
+      }
+
+      // Pass the corrected 2009 Satellite Radio price as an explicit override.
+      // The configurator should prioritize this value when generating documents.
+      if (String(vehicle.year).trim() === "2009" && (vehicle.packageCodes || []).includes("655")) {
+        url.searchParams.set("option655Price", "595");
+      }
+
+      url.searchParams.set("_", String(Date.now()));
+      return url.toString();
+    }
+
+    function removeExistingGeneratorFrame() {
+      const existing = document.getElementById("configurator-document-generator-frame");
+      if (existing) existing.remove();
+    }
+
+    function runConfiguratorInBackground(autoMode, popupWindow) {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !vehicle.vin || vehicle.vin === "-") {
+        alert("Please select a vehicle with a valid VIN first.");
+        if (popupWindow) popupWindow.close();
+        return;
+      }
+
+      removeExistingGeneratorFrame();
+
+      const iframe = document.createElement("iframe");
+      iframe.id = "configurator-document-generator-frame";
+      iframe.title = "Configurator document generator";
+      iframe.style.position = "fixed";
+      iframe.style.left = "-9999px";
+      iframe.style.top = "-9999px";
+      iframe.style.width = "1px";
+      iframe.style.height = "1px";
+      iframe.style.opacity = "0";
+      iframe.style.pointerEvents = "none";
+      iframe.style.border = "0";
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.src = buildConfiguratorAutoUrl(autoMode, vehicle);
+      document.body.appendChild(iframe);
+    }
+
+    window.addEventListener("message", function(event) {
+      if (event.origin !== "https://sman19.github.io") return;
+      const data = event.data || {};
+
+
+      if (data.type === "e90-pdf-data-url") {
+        sendPdfPullAlert("BMW Spec Sheet PDF", getSelectedVehicle());
+        const a = document.createElement("a");
+        a.href = data.dataUrl;
+        a.download = data.filename || "BMW-Spec-Sheet.pdf";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 1000);
+        removeExistingGeneratorFrame();
+      }
+
+      if (data.type === "e90-window-sticker-html") {
+        sendPdfPullAlert("Window Sticker", getSelectedVehicle());
+        const popup = window.__e90StickerPopup;
+        if (popup && !popup.closed) {
+          popup.document.open();
+          popup.document.write(data.html || "");
+          popup.document.close();
+          popup.focus();
+        } else {
+          const newPopup = window.open("", "_blank");
+          if (newPopup) {
+            newPopup.document.open();
+            newPopup.document.write(data.html || "");
+            newPopup.document.close();
+          } else {
+            alert("Window sticker generated, but popup was blocked. Please allow popups for this site.");
+          }
+        }
+        window.__e90StickerPopup = null;
+        removeExistingGeneratorFrame();
+      }
+
+      if (data.type === "e90-document-ready" || data.type === "e90-document-error") {
+        removeExistingGeneratorFrame();
+      }
+    });
+
+    function handleVSpecClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+
+      if (isDocumentGenerationLocked()) {
+        showDocumentLimitBlocked(lastDocumentLimitResult || { allowed: false, remaining: 0, limit: 5 });
+        return;
+      }
+
+      showDocumentLimitNotice("BMW Spec Sheet", async () => {
+        try {
+          const result = await checkDocumentLimit("BMW Spec Sheet", vehicle);
+          if (!result.allowed) {
+            showDocumentLimitBlocked(result);
+            return;
+          }
+          showDocumentRemainingToast(result, "BMW Spec Sheet");
+          runConfiguratorInBackground("spec");
+        } catch (error) {
+          console.error(error);
+          alert("Document request could not be verified. Please try again.");
+        }
+      });
+    }
+
+    function handleStickerClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+
+      if (isDocumentGenerationLocked()) {
+        showDocumentLimitBlocked(lastDocumentLimitResult || { allowed: false, remaining: 0, limit: 5 });
+        return;
+      }
+
+      showDocumentLimitNotice("Window Sticker", async () => {
+        window.__e90StickerPopup = window.open("", "_blank");
+        writeToPopup(window.__e90StickerPopup, "Checking Request", "Verifying your daily document limit...");
+
+        try {
+          const result = await checkDocumentLimit("Window Sticker", vehicle);
+          if (!result.allowed) {
+            if (window.__e90StickerPopup && !window.__e90StickerPopup.closed) {
+              window.__e90StickerPopup.close();
+            }
+            window.__e90StickerPopup = null;
+            showDocumentLimitBlocked(result);
+            return;
+          }
+
+          showDocumentRemainingToast(result, "Window Sticker");
+          writeToPopup(window.__e90StickerPopup, "Generating Window Sticker", "Loading final document...");
+          runConfiguratorInBackground("sticker", window.__e90StickerPopup);
+        } catch (error) {
+          console.error(error);
+          if (window.__e90StickerPopup && !window.__e90StickerPopup.closed) {
+            window.__e90StickerPopup.close();
+          }
+          window.__e90StickerPopup = null;
+          alert("Document request could not be verified. Please try again.");
+        }
+      });
+    }
+
+    function normalizePdfDownloadUrl(urlValue) {
+      const rawValue = String(urlValue || "").trim();
+      if (!rawValue) return "";
+
+      try {
+        const url = new URL(rawValue, window.location.href);
+
+        // GitHub "blob" links must become raw.githubusercontent links.
+        // IMPORTANT: do not encode an already-encoded path again.
+        // "%20" must stay "%20", not become "%2520", or GitHub returns 404.
+        if (url.hostname === "github.com") {
+          const parts = url.pathname.split("/").filter(Boolean);
+          const blobIndex = parts.indexOf("blob");
+          const rawIndex = parts.indexOf("raw");
+
+          if (parts.length >= 5 && blobIndex === 2) {
+            const owner = parts[0];
+            const repo = parts[1];
+            const ref = parts[3];
+            const filePath = parts.slice(4).join("/");
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
+          }
+
+          if (parts.length >= 5 && rawIndex === 2) {
+            const owner = parts[0];
+            const repo = parts[1];
+            const ref = parts[3];
+            const filePath = parts.slice(4).join("/");
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${filePath}`;
+          }
+        }
+
+        // If the CSV already has a raw.githubusercontent.com link, leave it alone.
+        if (url.hostname === "raw.githubusercontent.com") {
+          return rawValue;
+        }
+
+        url.searchParams.delete("raw");
+        return url.toString();
+      } catch (error) {
+        return rawValue;
+      }
+    }
+
+    function makeSafePdfFilename(vehicle, fallbackName) {
+      const vin = String(vehicle && vehicle.vin ? vehicle.vin : "").replace(/[^a-z0-9]/gi, "");
+      return `${vin || "E90-M3"}-${fallbackName}.pdf`;
+    }
+
+    async function downloadPdfDirectly(urlValue, filename) {
+      const downloadUrl = normalizePdfDownloadUrl(urlValue);
+      if (!downloadUrl) return;
+
+      try {
+        const response = await fetch(downloadUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = objectUrl;
+        a.download = filename || "document.pdf";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          URL.revokeObjectURL(objectUrl);
+          a.remove();
+        }, 1500);
+      } catch (error) {
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = filename || "document.pdf";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 1000);
+      }
+    }
+
+    function handleOEMStickerClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.sticker)) return;
+      downloadPdfDirectly(vehicle.sticker, makeSafePdfFilename(vehicle, "OEM-Sticker"));
+    }
+
+    function handleInvoiceClick() {
+      const vehicle = getSelectedVehicle();
+      if (!vehicle || !isAvailableLink(vehicle.invoice)) return;
+      window.open(vehicle.invoice, "_blank", "noopener,noreferrer");
+    }
+
+    function renderTable(rowsToRender) {
+      const table = document.getElementById("table-rows");
+      table.innerHTML = "";
+
+      rowsToRender.forEach((vehicle, index) => {
+        const row = document.createElement("div");
+        row.className = "table-row";
+        const isSelected = selectedVehicles.has(vehicle.vin);
+        if (isSelected) row.classList.add("selected");
+
+        const colorData = vehicle.exteriorData || {};
+        const interiorData = vehicle.interiorData || {};
+        const packageDisplay = vehicle.packageCodes.length ? vehicle.packageCodes.join(", ") : "-";
+        const packageDetails = vehicle.packageDetails.length
+          ? vehicle.packageDetails.map(item => escapeHtml(item)).join("<br>")
+          : "";
+
+        let modelCode = "E90";
+        if (vehicle.model) {
+          if (vehicle.model.startsWith("C5")) modelCode = "E90";
+          else if (vehicle.model.startsWith("C6")) modelCode = "E92";
+          else if (vehicle.model.startsWith("C7")) modelCode = "E93";
+        }
+
+        row.innerHTML = `
+          <div class="cell cell-checkbox">
+            <input type="checkbox" ${isSelected ? "checked" : ""} />
+          </div>
+
+          <div class="cell cell-status">
+            <div class="status-circle">G</div>
+          </div>
+
+          <div class="cell cell-image">
+            ${
+              colorData.image
+                ? `<img class="exterior-thumbnail" src="${colorData.image}" alt="${escapeHtml(colorData.name || vehicle.exterior || "-")}" />`
+                : `<div class="exterior-thumbnail"></div>`
+            }
+          </div>
+
+          <div class="cell cell-model">
+            <span class="model-code">${modelCode}</span>
+          </div>
+
+          <div class="cell cell-exterior">
+            <div class="color-display">
+              <div class="color-circle" style="background: rgb(${colorData.rgb || "128,128,128"});"></div>
+              <div class="tooltip">
+                <span>${escapeHtml(colorData.name || vehicle.exterior || "-")}</span>
+                <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.exterior || colorData.name || "-")}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cell cell-interior">
+            <div class="interior-display">
+              ${
+                interiorData.image
+                  ? `<div class="interior-square" style="background-image: url('${interiorData.image}');"></div>`
+                  : `<div class="interior-square"></div>`
+              }
+              <div class="tooltip">
+                <span>${escapeHtml(interiorData.description || vehicle.interior || "-")}</span>
+                <div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.interior || interiorData.description || "-")}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cell cell-year">${escapeHtml(vehicle.year || "-")}</div>
+
+          <div class="cell cell-vin">
+            <div class="tooltip">
+              <span class="vin-text" id="vin-${index}">${escapeHtml(formatVin(vehicle.vin))}</span>
+              <div class="tooltiptext tooltip-red-content">${escapeHtml(formatVin(vehicle.vin))}</div>
+            </div>
+            <button class="copy-btn" data-copy-target="vin-${index}" title="Copy VIN">⧉</button>
+          </div>
+
+          <div class="cell cell-packages">
+            <div class="tooltip">
+              <span class="packages-short">${escapeHtml(packageDisplay)}</span>
+              ${
+                packageDetails
+                  ? `<div class="tooltiptext tooltip-packages"><strong>Package Details:</strong><br>${packageDetails}</div>`
+                  : ""
+              }
+            </div>
+          </div>
+
+          <div class="cell cell-msrp">${escapeHtml(vehicle.msrp || "-")}</div>
+
+          <div class="cell cell-dealer">
+            <div class="tooltip">
+              <span>${escapeHtml(vehicle.dealer || "-")}</span>
+              ${vehicle.dealer ? `<div class="tooltiptext tooltip-red-content">${escapeHtml(vehicle.dealer)}</div>` : ""}
+            </div>
+          </div>
+
+          <div class="cell cell-comments">
+            <textarea class="comments-edit" data-vin="${escapeHtml(vehicle.vin)}" data-original-comment="${escapeHtml(vehicle.comments || "")}" placeholder="Add note/comment...">${escapeHtml(vehicle.comments || "")}</textarea>
+          </div>
+        `;
+
+        table.appendChild(row);
+
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener("change", function () {
+          handleCheckboxChange(this, vehicle);
+        });
+      });
+
+      table.querySelectorAll(".comments-edit").forEach(textarea => {
+        textarea.addEventListener("input", function () {
+          if (!isAdminUser()) return;
+          setCommentForVehicle(this.dataset.vin, this.value);
+        });
+      });
+
+      updateAdminMode();
+      initCopyButtons();
+      applyColumnOrder();
+    }
+
+    async function loadCSV() {
+      try {
+        currentCsvFile = getCsvFileFromUrl();
+        syncDatasetDropdown();
+
+        let sheetName;
+
+        if (currentCsvFile.includes("2008")) {
+          sheetName = "2008 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2009")) {
+          sheetName = "2009 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2010")) {
+          sheetName = "2010 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2011")) {
+          sheetName = "2011 E90 M3 Sedan";
+        } else if (currentCsvFile.includes("2012")) {
+          sheetName = "2012 E90 M3 Sedan CRT";
+        } else {
+          sheetName = "2008 E90 M3 Sedan";
+        }
+
+        const csvUrl =
+          `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
+        const response = await fetch(csvUrl, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Could not load Google Sheet CSV`);
+        }
+
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        vehicles = [];
+        let reachedEnd = false;
+
+        rows.forEach(row => {
+          const vehicle = buildVehicle(row);
+          const vin = String(vehicle.vin || "").trim().toUpperCase();
+
+          if (vin === "END_VEHICLES") {
+            reachedEnd = true;
+            return;
+          }
+
+          if (reachedEnd) return;
+
+          // Ignore placeholder rows
+          if (vin === "VIN SKIP") return;
+
+          // Only include real VINs
+          if (vin !== "" && vin !== "-" && vin.length >= 11) {
+            vehicles.push(vehicle);
+          }
+        });
+
+        filteredVehicles = applyCurrentSort([...vehicles]);
+
+        document.getElementById("total-count").textContent = vehicles.length;
+        document.getElementById("count").textContent = vehicles.length;
+
+        renderTable(filteredVehicles);
+        updateCharts();
+        updateSortIndicators();
+      } catch (err) {
+        console.error("Error loading CSV:", err);
+        document.getElementById("table-rows").innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #dc3545;">
+            <h3>⚠️ Error Loading Data</h3>
+            <p>${escapeHtml(err.message)}</p>
+            <p>Please confirm the Google Apps Script Web App is deployed and returning CSV from the Google Sheet.</p>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      updateAuthUser();
+      updateAdminMode();
+      setupFilterInputs();
+      setupSortableHeaders();
+      setupColumnDragAndDrop();
+      loadCSV();
+    });
+  </script>
 </body>
 </html>
