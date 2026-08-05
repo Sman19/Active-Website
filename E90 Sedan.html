@@ -2665,6 +2665,20 @@
         detailsUrl.searchParams.set("year", vehicle.year);
       }
 
+      // Column K is index 10 in the original CSV row.
+      // Pass it directly so Details.html does not depend on the Sheet export layout.
+      const productionDate = String(
+        vehicle.csvRow &&
+        Array.isArray(vehicle.csvRow.__originalValues) &&
+        vehicle.csvRow.__originalValues.length > 10
+          ? vehicle.csvRow.__originalValues[10]
+          : ""
+      ).trim();
+
+      if (productionDate) {
+        detailsUrl.searchParams.set("prod", productionDate);
+      }
+
       const packageCodes = Array.isArray(vehicle.packageCodes)
         ? vehicle.packageCodes.filter(Boolean)
         : [];
