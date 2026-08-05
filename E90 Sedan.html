@@ -2616,7 +2616,8 @@
       const documentsAvailable = hasValidVin && !isDocumentGenerationLocked();
       const documentReason = hasValidVin && isDocumentGenerationLocked() ? "limit" : "";
 
-      setMenuItemAvailability("menu-details", isAvailableLink(vehicleInfo && vehicleInfo.details));
+      // The Details page is available for every vehicle with a valid VIN.
+      setMenuItemAvailability("menu-details", hasValidVin);
       setMenuItemAvailability("menu-bmw-spec", documentsAvailable, documentReason);
       setMenuItemAvailability("menu-sticker", documentsAvailable, documentReason);
       setMenuItemAvailability("menu-oem-sticker", isAvailableLink(vehicleInfo && vehicleInfo.sticker));
@@ -2645,10 +2646,31 @@
       document.getElementById("side-panel").classList.remove("open");
     }
 
+    const DETAILS_PAGE_URL = "Details.html";
+
     function handleDetailsClick() {
       const vehicle = getSelectedVehicle();
-      if (!vehicle || !isAvailableLink(vehicle.details)) return;
-      window.open(vehicle.details, "_blank", "noopener,noreferrer");
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+
+      // Resolve Details.html relative to this E90 page so both files can live
+      // in the same GitHub Pages repository/folder.
+      const detailsUrl = new URL(DETAILS_PAGE_URL, window.location.href);
+      detailsUrl.searchParams.set("vin", vehicle.vin);
+      detailsUrl.searchParams.set("file", currentCsvFile);
+
+      if (isAvailableLink(vehicle.year)) {
+        detailsUrl.searchParams.set("year", vehicle.year);
+      }
+
+      const packageCodes = Array.isArray(vehicle.packageCodes)
+        ? vehicle.packageCodes.filter(Boolean)
+        : [];
+
+      if (packageCodes.length) {
+        detailsUrl.searchParams.set("packages", packageCodes.join(","));
+      }
+
+      window.open(detailsUrl.toString(), "_blank", "noopener,noreferrer");
     }
 
     const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
