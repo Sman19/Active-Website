@@ -2658,6 +2658,9 @@
       detailsUrl.searchParams.set("vin", vehicle.vin);
       detailsUrl.searchParams.set("file", currentCsvFile);
 
+      // Pass the exact E90 chart URL so Details.html can always return here.
+      detailsUrl.searchParams.set("return", window.location.href);
+
       if (isAvailableLink(vehicle.year)) {
         detailsUrl.searchParams.set("year", vehicle.year);
       }
