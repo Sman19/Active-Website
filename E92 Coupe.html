@@ -643,6 +643,27 @@
 
     .side-panel-menu-item.is-disabled:hover { background: #6b7280; }
 
+    /* Keep BMW Spec Sheet / Sticker slots blank until the E92 configurator is active. */
+    .side-panel-menu-item.is-configurator-inactive {
+      background: #dc2626;
+      cursor: default;
+      filter: none;
+      pointer-events: none;
+    }
+
+    .side-panel-menu-item.is-configurator-inactive:hover { background: #dc2626; }
+
+    .side-panel-menu-item.is-configurator-inactive .side-panel-menu-icon,
+    .side-panel-menu-item.is-configurator-inactive .side-panel-menu-text {
+      visibility: hidden;
+    }
+
+    .side-panel-menu-item.is-configurator-inactive::after,
+    .side-panel-menu-item.is-configurator-inactive .side-panel-menu-text::after {
+      display: none !important;
+      content: none !important;
+    }
+
     .side-panel-menu-item.is-disabled::after {
       content: "";
       position: absolute;
@@ -2613,14 +2634,20 @@
 
     function updateSidePanelMenuAvailability(vehicleInfo) {
       const hasValidVin = isAvailableLink(vehicleInfo && vehicleInfo.vin);
-      const documentsAvailable = hasValidVin && !isDocumentGenerationLocked();
-      const documentReason = hasValidVin && isDocumentGenerationLocked() ? "limit" : "";
+      const documentsAvailable = CONFIGURATOR_ACTIVE && hasValidVin && !isDocumentGenerationLocked();
+      const documentReason = CONFIGURATOR_ACTIVE && hasValidVin && isDocumentGenerationLocked() ? "limit" : "";
 
       setMenuItemAvailability("menu-details", isAvailableLink(vehicleInfo && vehicleInfo.details));
       setMenuItemAvailability("menu-bmw-spec", documentsAvailable, documentReason);
       setMenuItemAvailability("menu-sticker", documentsAvailable, documentReason);
       setMenuItemAvailability("menu-oem-sticker", isAvailableLink(vehicleInfo && vehicleInfo.sticker));
       setMenuItemAvailability("menu-invoice", isAvailableLink(vehicleInfo && vehicleInfo.invoice));
+
+      ["menu-bmw-spec", "menu-sticker"].forEach(id => {
+        const item = document.getElementById(id);
+        if (!item) return;
+        item.classList.toggle("is-configurator-inactive", !CONFIGURATOR_ACTIVE);
+      });
     }
 
     function openSidePanel(vehicleInfo) {
@@ -2651,7 +2678,10 @@
       window.open(vehicle.details, "_blank", "noopener,noreferrer");
     }
 
-    const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
+    // E92 document generation stays blank/inactive until the E92 configurator is ready.
+    // When ready: set CONFIGURATOR_ACTIVE to true and add the E92 configurator URL below.
+    const CONFIGURATOR_ACTIVE = false;
+    const CONFIGURATOR_URL = "";
 
     // Easy PDF / Window Sticker pull alert.
     // Replace this with your Google Apps Script Web App URL after you deploy it.
@@ -2922,6 +2952,7 @@
     }
 
     function buildConfiguratorAutoUrl(autoMode, vehicle) {
+      if (!CONFIGURATOR_ACTIVE || !CONFIGURATOR_URL) return "";
       const url = new URL(CONFIGURATOR_URL);
       url.searchParams.set("vin", vehicle.vin);
       url.searchParams.set("auto", autoMode);
@@ -2958,6 +2989,11 @@
     }
 
     function runConfiguratorInBackground(autoMode, popupWindow) {
+      if (!CONFIGURATOR_ACTIVE || !CONFIGURATOR_URL) {
+        if (popupWindow && !popupWindow.closed) popupWindow.close();
+        return;
+      }
+
       const vehicle = getSelectedVehicle();
       if (!vehicle || !vehicle.vin || vehicle.vin === "-") {
         alert("Please select a vehicle with a valid VIN first.");
@@ -3028,6 +3064,7 @@
     });
 
     function handleVSpecClick() {
+      if (!CONFIGURATOR_ACTIVE) return;
       const vehicle = getSelectedVehicle();
       if (!vehicle || !isAvailableLink(vehicle.vin)) return;
 
@@ -3053,6 +3090,7 @@
     }
 
     function handleStickerClick() {
+      if (!CONFIGURATOR_ACTIVE) return;
       const vehicle = getSelectedVehicle();
       if (!vehicle || !isAvailableLink(vehicle.vin)) return;
 
