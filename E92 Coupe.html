@@ -643,27 +643,6 @@
 
     .side-panel-menu-item.is-disabled:hover { background: #6b7280; }
 
-    /* Keep BMW Spec Sheet / Sticker slots blank until the E92 configurator is active. */
-    .side-panel-menu-item.is-configurator-inactive {
-      background: #dc2626;
-      cursor: default;
-      filter: none;
-      pointer-events: none;
-    }
-
-    .side-panel-menu-item.is-configurator-inactive:hover { background: #dc2626; }
-
-    .side-panel-menu-item.is-configurator-inactive .side-panel-menu-icon,
-    .side-panel-menu-item.is-configurator-inactive .side-panel-menu-text {
-      visibility: hidden;
-    }
-
-    .side-panel-menu-item.is-configurator-inactive::after,
-    .side-panel-menu-item.is-configurator-inactive .side-panel-menu-text::after {
-      display: none !important;
-      content: none !important;
-    }
-
     .side-panel-menu-item.is-disabled::after {
       content: "";
       position: absolute;
@@ -2643,11 +2622,6 @@
       setMenuItemAvailability("menu-oem-sticker", isAvailableLink(vehicleInfo && vehicleInfo.sticker));
       setMenuItemAvailability("menu-invoice", isAvailableLink(vehicleInfo && vehicleInfo.invoice));
 
-      ["menu-bmw-spec", "menu-sticker"].forEach(id => {
-        const item = document.getElementById(id);
-        if (!item) return;
-        item.classList.toggle("is-configurator-inactive", !CONFIGURATOR_ACTIVE);
-      });
     }
 
     function openSidePanel(vehicleInfo) {
