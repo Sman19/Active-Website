@@ -215,7 +215,6 @@
       <a href="#packages">Packages</a>
       <a href="#options">Standard Options</a>
       <a href="#dealer">Dealer Information</a>
-      <a href="#documents">Documents</a>
     </nav>
   </aside>
   <main>
@@ -291,15 +290,13 @@
         <section class="section" id="options"><h2 class="heading">Standard Options</h2><div class="pills" id="optionList"></div></section>
         <section class="section" id="dealer"><h2 class="heading">Dealer Information</h2><div class="details-grid" id="dealerGrid"></div></section>
 
-        <section class="section" id="documents">
-          <h2 class="heading">Documents</h2>
-          <div class="actions">
-            <button class="action primary" id="specButton">BMW Spec Sheet</button>
-            <button class="action" id="stickerButton">Window Sticker</button>
-            <button class="action" id="oemButton">OEM Sticker</button>
-            <button class="action" id="invoiceButton">Invoice</button>
-          </div>
-        </section>
+        <!-- Hidden document controls retained only so Quick Actions can trigger the existing handlers. -->
+        <div id="documentControls" hidden aria-hidden="true">
+          <button id="specButton" type="button">BMW Spec Sheet</button>
+          <button id="stickerButton" type="button">Window Sticker</button>
+          <button id="oemButton" type="button">OEM Sticker</button>
+          <button id="invoiceButton" type="button">Invoice</button>
+        </div>
       </div>
       <section class="history" id="historyPanel"><h2 class="heading">Vehicle History</h2><div class="card">No separate vehicle-history records are stored in the current E90 CSV.</div></section>
     </div>
@@ -974,9 +971,23 @@ function render(row){
   pricing.insertAdjacentHTML("beforeend",`<tr><td>Destination Charge</td><td>${money(destination)}</td></tr><tr><td>Gas-Guzzler Tax</td><td>${money(gas)}</td></tr><tr class="total"><td>Total MSRP</td><td>${money(total)}</td></tr>`);
 
   const packs=document.getElementById("packageList"),opts=document.getElementById("optionList");
-  optionCodes.forEach(code=>{const el=document.createElement("div");el.className="pill";el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;(PACKAGE_CODES.has(code)?packs:opts).appendChild(el)});
-  if(!packs.children.length)packs.innerHTML="<div class='pill'>No package codes listed.</div>";
-  if(!opts.children.length)opts.innerHTML="<div class='pill'>No standalone options listed.</div>";
+  packs.innerHTML="";
+  opts.innerHTML="";
+
+  // Anything carrying a retail cost belongs in Packages, even when it is a
+  // standalone factory option. Standard Options is reserved for no-cost /
+  // standard-equipment items so it can mirror the informational content used
+  // at the bottom of the BMW PDF.
+  optionCodes.forEach(code=>{
+    const el=document.createElement("div");
+    el.className="pill";
+    el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;
+    const hasCost=getPriceForCode(code,year)>0;
+    (hasCost?packs:opts).appendChild(el);
+  });
+
+  if(!packs.children.length)packs.innerHTML="<div class='pill'>No priced packages or options listed.</div>";
+  if(!opts.children.length)opts.innerHTML="<div class='pill'>Standard-equipment details will appear here when available.</div>";
 
   const dealerGrid=document.getElementById("dealerGrid");
   [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
