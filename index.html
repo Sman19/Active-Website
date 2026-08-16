@@ -415,6 +415,34 @@
       color: #555;
     }
 
+
+    .archive-summary {
+      margin: 4px 0 20px;
+      padding: 18px;
+      border: 1px solid #e1e5eb;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fbfcff 0%, #f6f8fb 100%);
+    }
+
+    .archive-summary-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .archive-summary-title { font-size: 17px; font-weight: 800; }
+    .archive-summary-total { color: #1f73ff; font-size: 15px; font-weight: 800; }
+    .archive-series-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .archive-series-card { background: #fff; border: 1px solid #e2e6ec; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.035); }
+    .archive-series-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+    .archive-series-name { font-size: 16px; font-weight: 800; }
+    .archive-series-count { font-size: 20px; font-weight: 800; color: #1f73ff; }
+    .archive-years { display: flex; flex-wrap: wrap; gap: 7px; }
+    .archive-year-chip { background: #f0f4fa; border: 1px solid #e0e6ef; border-radius: 999px; padding: 6px 9px; font-size: 13px; color: #4b5563; white-space: nowrap; }
+    .archive-year-chip strong { color: #202124; }
+
     .hidden {
       display: none !important;
     }
@@ -737,6 +765,8 @@
         width: 100%;
       }
 
+      .archive-series-grid { grid-template-columns: 1fr; }
+
       .filter-box {
         flex: 1 1 140px;
         min-width: 140px;
@@ -921,6 +951,13 @@
       <div class="divider"></div>
 
       <div class="subheading">BMW Search Results</div>
+      <div id="archiveSummary" class="archive-summary hidden">
+        <div class="archive-summary-top">
+          <div class="archive-summary-title">Archive Breakdown</div>
+          <div id="archiveSummaryTotal" class="archive-summary-total">0 vehicles</div>
+        </div>
+        <div id="archiveSeriesGrid" class="archive-series-grid"></div>
+      </div>
       <div id="loadingStatus" class="status">Loading CSV files...</div>
 
       <div id="emptyState" class="status hidden">
@@ -1516,6 +1553,48 @@
       });
     }
 
+    function renderArchiveSummary() {
+      const summary = {};
+
+      allRows.forEach(row => {
+        const source = String(row.__sourceFile || "");
+        let series = "Other BMW";
+        if (/F87\s*M2/i.test(source)) series = "F87 M2";
+        else if (/E90\s*M3/i.test(source)) series = "E90 M3";
+        else if (/E92\s*M3/i.test(source)) series = "E92 M3";
+
+        const yearMatch = source.match(/\b(19|20)\d{2}\b/);
+        const year = String(getBestYear(row) || (yearMatch ? yearMatch[0] : "Unknown")).trim();
+
+        if (!summary[series]) summary[series] = { total: 0, years: {} };
+        summary[series].total++;
+        summary[series].years[year] = (summary[series].years[year] || 0) + 1;
+      });
+
+      const order = ["F87 M2", "E90 M3", "E92 M3", "Other BMW"];
+      const grid = document.getElementById("archiveSeriesGrid");
+      const total = document.getElementById("archiveSummaryTotal");
+      const box = document.getElementById("archiveSummary");
+      if (!grid || !total || !box) return;
+
+      total.textContent = `${allRows.length.toLocaleString()} vehicles total`;
+      grid.innerHTML = order.filter(name => summary[name]).map(name => {
+        const item = summary[name];
+        const years = Object.keys(item.years).sort((a, b) => Number(a) - Number(b));
+        return `
+          <div class="archive-series-card">
+            <div class="archive-series-head">
+              <div class="archive-series-name">${escapeHtml(name)}</div>
+              <div class="archive-series-count">${item.total.toLocaleString()}</div>
+            </div>
+            <div class="archive-years">
+              ${years.map(year => `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`).join("")}
+            </div>
+          </div>`;
+      }).join("");
+      box.classList.remove("hidden");
+    }
+
     function runSearch() {
       const rawTerm = searchInput.value.trim();
       const term = rawTerm.toLowerCase();
@@ -1590,6 +1669,7 @@
         loadingStatus.classList.add("hidden");
         emptyState.classList.remove("hidden");
         emptyState.textContent = `Loaded ${allRows.length} VINs.`;
+        renderArchiveSummary();
       } catch (error) {
         loadingStatus.classList.remove("hidden");
         loadingStatus.textContent = "Error loading CSV files. Check the exact file names and make sure GitHub Pages is serving them.";
