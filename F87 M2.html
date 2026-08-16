@@ -16,6 +16,7 @@
   <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -126,6 +127,24 @@
     .user-menu-link:hover {
       background: #f3f4f6;
     }
+
+    .instagram-menu-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #111827;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font: inherit;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .instagram-menu-btn:hover { background: #f3f4f6; }
+    .instagram-menu-btn:disabled { opacity: .55; cursor: wait; }
+    .user-menu-separator { height: 1px; background: #e5e7eb; margin: 4px 6px; }
+
 
     .owner-row {
       display: flex;
@@ -744,6 +763,8 @@
             <span class="user-icon">👤</span>
           </button>
           <div class="user-menu-dropdown" id="user-menu-dropdown">
+            <button class="instagram-menu-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)">Instagram Story</button>
+            <div class="user-menu-separator"></div>
             <a class="user-menu-link" href="https://www.authpro.com/auth/sman201/?action=logout">Logout</a>
           </div>
         </div>
@@ -1001,6 +1022,53 @@
         el.textContent = login;
       } else {
         el.textContent = "Member";
+      }
+    }
+
+
+    async function downloadInstagramStory(event) {
+      if (event) event.stopPropagation();
+      const btn = document.getElementById("instagram-story-btn");
+      const dropdown = document.getElementById("user-menu-dropdown");
+      if (!window.html2canvas || !btn) return;
+
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Creating Story…";
+      if (dropdown) dropdown.classList.remove("open");
+
+      try {
+        await new Promise(resolve => setTimeout(resolve, 120));
+        const source = document.querySelector(".app-shell") || document.body;
+        const sourceWidth = Math.max(source.scrollWidth, document.documentElement.scrollWidth);
+        const sourceHeight = Math.max(source.scrollHeight, document.documentElement.scrollHeight);
+        const canvas = await html2canvas(source, {
+          useCORS: true, allowTaint: false, backgroundColor: "#ffffff", scale: 1,
+          width: sourceWidth, height: sourceHeight, windowWidth: sourceWidth, windowHeight: sourceHeight,
+          scrollX: 0, scrollY: 0
+        });
+
+        const story = document.createElement("canvas");
+        story.width = 1080; story.height = 1920;
+        const ctx = story.getContext("2d");
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, story.width, story.height);
+        const scale = Math.min(story.width / canvas.width, story.height / canvas.height);
+        const drawW = Math.round(canvas.width * scale);
+        const drawH = Math.round(canvas.height * scale);
+        const x = Math.round((story.width - drawW) / 2);
+        const y = Math.round((story.height - drawH) / 2);
+        ctx.drawImage(canvas, x, y, drawW, drawH);
+
+        const link = document.createElement("a");
+        link.download = "F87-M2-Database-Instagram-Story.png";
+        link.href = story.toDataURL("image/png");
+        link.click();
+      } catch (err) {
+        console.error("Instagram Story export failed:", err);
+        alert("Could not create the Instagram Story image. Please try again.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
       }
     }
 
