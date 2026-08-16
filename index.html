@@ -445,6 +445,9 @@
     .archive-series-count { font-size: 20px; font-weight: 800; color: #1f73ff; }
     .archive-years { display: flex; flex-wrap: wrap; gap: 7px; }
     .archive-year-chip { background: #f0f4fa; border: 1px solid #e0e6ef; border-radius: 999px; padding: 6px 9px; font-size: 13px; color: #4b5563; white-space: nowrap; }
+    .archive-year-chip.clickable { cursor: pointer; transition: background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+    .archive-year-chip.clickable:hover { background: #e8f0ff; border-color: #a9c4fb; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(31,115,255,.10); }
+    .archive-year-chip.clickable:focus { outline: 2px solid rgba(31,115,255,.30); outline-offset: 2px; }
     .archive-year-chip strong { color: #202124; }
 
     .hidden {
@@ -1604,11 +1607,33 @@
               <div class="archive-series-count">${item.total.toLocaleString()}</div>
             </div>
             <div class="archive-years">
-              ${years.map(year => `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`).join("")}
+              ${years.map(year => target
+                ? `<span class="archive-year-chip clickable" role="link" tabindex="0" data-year-link="${escapeHtml(target)}" data-year="${escapeHtml(year)}" data-series="${escapeHtml(name)}" aria-label="Open ${escapeHtml(year)} ${escapeHtml(name)} vehicles"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`
+                : `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`
+              ).join("")}
             </div>
             ${target ? `<div class="archive-series-linkhint">VIEW ${escapeHtml(name)} DATABASE →</div>` : ""}
           </div>`;
       }).join("");
+
+      grid.querySelectorAll("[data-year-link]").forEach(chip => {
+        const openYear = (event) => {
+          event.stopPropagation();
+          const target = chip.getAttribute("data-year-link");
+          const year = chip.getAttribute("data-year");
+          if (!target || !year) return;
+          const joiner = target.includes("?") ? "&" : "?";
+          window.location.href = `${target}${joiner}year=${encodeURIComponent(year)}`;
+        };
+
+        chip.addEventListener("click", openYear);
+        chip.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openYear(event);
+          }
+        });
+      });
 
       grid.querySelectorAll("[data-series-link]").forEach(card => {
         const openSeries = () => {
@@ -1700,8 +1725,7 @@
         responses.flat().forEach(row => allRows.push(row));
 
         loadingStatus.classList.add("hidden");
-        emptyState.classList.remove("hidden");
-        emptyState.textContent = `Loaded ${allRows.length} VINs.`;
+        emptyState.classList.add("hidden");
         renderArchiveSummary();
       } catch (error) {
         loadingStatus.classList.remove("hidden");
