@@ -1286,8 +1286,8 @@
         <button id="instagramExportBtn" class="profile-action-btn" type="button">
           <span class="profile-action-icon">↓</span>
           <span class="profile-action-text">
-            <span class="profile-action-title">Instagram Post</span>
-            <span class="profile-action-sub">Download 1080 × 1350 PNG</span>
+            <span class="profile-action-title">Instagram Story</span>
+            <span class="profile-action-sub">Exact page • 1080 × 1920 PNG</span>
           </span>
         </button>
         <div id="instagramExportStatus" class="profile-action-status"></div>
@@ -2253,70 +2253,160 @@
     }
 
     async function downloadInstagramPost() {
-      if (!instagramExportBtn || !instagramExportStage) return;
+      if (!instagramExportBtn) return;
 
       if (!window.html2canvas) {
-        alert("Instagram export library did not load. Refresh the page and try again.");
+        alert("Screenshot library did not load. Refresh the page and try again.");
         return;
       }
 
-      if (!allRows.length) {
-        alert("The vehicle database is still loading. Please wait a moment and try again.");
-        return;
-      }
+      const originalScrollX = window.scrollX;
+      const originalScrollY = window.scrollY;
+      const dropdownWasOpen = userDropdown && !userDropdown.classList.contains("hidden");
 
-      const originalText = instagramExportBtn.textContent;
       instagramExportBtn.disabled = true;
       instagramExportBtn.innerHTML = `
         <span class="profile-action-icon">…</span>
         <span class="profile-action-text">
-          <span class="profile-action-title">Creating image…</span>
-          <span class="profile-action-sub">1080 × 1350 PNG</span>
+          <span class="profile-action-title">Capturing page…</span>
+          <span class="profile-action-sub">Creating 1080 × 1920 story</span>
         </span>
       `;
-      if (instagramExportStatus) instagramExportStatus.textContent = "Preparing image…";
+      if (instagramExportStatus) instagramExportStatus.textContent = "Taking a full-page screenshot…";
 
       try {
-        instagramExportStage.innerHTML = buildInstagramExportMarkup();
+        // Hide only the profile dropdown that contains the download button.
+        // Everything else on the homepage is captured exactly as it currently exists.
+        if (userDropdown) userDropdown.classList.add("hidden");
 
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        window.scrollTo(0, 0);
+        await new Promise(resolve => setTimeout(resolve, 250));
 
-        const canvas = await html2canvas(instagramExportStage.firstElementChild, {
-          width: 1080,
-          height: 1350,
+        // Let web fonts/background images finish painting before the capture.
+        if (document.fonts && document.fonts.ready) {
+          try { await document.fonts.ready; } catch (_) {}
+        }
+
+        const doc = document.documentElement;
+        const body = document.body;
+
+        const pageWidth = Math.max(
+          body.scrollWidth,
+          body.offsetWidth,
+          doc.clientWidth,
+          doc.scrollWidth,
+          doc.offsetWidth
+        );
+
+        const pageHeight = Math.max(
+          body.scrollHeight,
+          body.offsetHeight,
+          doc.clientHeight,
+          doc.scrollHeight,
+          doc.offsetHeight
+        );
+
+        // This is the actual homepage DOM — not a recreated marketing layout.
+        const pageCanvas = await html2canvas(body, {
+          width: pageWidth,
+          height: pageHeight,
+          windowWidth: pageWidth,
+          windowHeight: pageHeight,
+          scrollX: 0,
+          scrollY: 0,
           scale: 1,
           backgroundColor: "#f3f3f3",
           useCORS: true,
-          logging: false
+          allowTaint: false,
+          logging: false,
+          imageTimeout: 15000,
+          onclone: clonedDoc => {
+            const cloneDropdown = clonedDoc.getElementById("userDropdown");
+            if (cloneDropdown) cloneDropdown.classList.add("hidden");
+
+            // Prevent the off-screen export staging node from affecting the screenshot.
+            const cloneStage = clonedDoc.getElementById("instagramExportStage");
+            if (cloneStage) cloneStage.style.display = "none";
+
+            // Disable animations during the screenshot so every element is crisp.
+            const style = clonedDoc.createElement("style");
+            style.textContent = `
+              *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                caret-color: transparent !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
+          }
         });
 
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+        // Instagram Story canvas.
+        const storyWidth = 1080;
+        const storyHeight = 1920;
+        const storyCanvas = document.createElement("canvas");
+        storyCanvas.width = storyWidth;
+        storyCanvas.height = storyHeight;
+
+        const ctx = storyCanvas.getContext("2d");
+        ctx.fillStyle = "#f3f3f3";
+        ctx.fillRect(0, 0, storyWidth, storyHeight);
+
+        // Fit the ENTIRE exact page inside the 9:16 story without cropping.
+        const fitScale = Math.min(
+          storyWidth / pageCanvas.width,
+          storyHeight / pageCanvas.height
+        );
+
+        const drawWidth = Math.round(pageCanvas.width * fitScale);
+        const drawHeight = Math.round(pageCanvas.height * fitScale);
+        const drawX = Math.round((storyWidth - drawWidth) / 2);
+        const drawY = Math.round((storyHeight - drawHeight) / 2);
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(
+          pageCanvas,
+          0, 0, pageCanvas.width, pageCanvas.height,
+          drawX, drawY, drawWidth, drawHeight
+        );
+
+        const blob = await new Promise(resolve =>
+          storyCanvas.toBlob(resolve, "image/png")
+        );
         if (!blob) throw new Error("PNG could not be created.");
 
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = "M-ARCHIV-Instagram-1080x1350.png";
+        link.download = "M-ARCHIV-Exact-Page-Instagram-Story-1080x1920.png";
         document.body.appendChild(link);
         link.click();
         link.remove();
 
         setTimeout(() => URL.revokeObjectURL(url), 1500);
-        if (instagramExportStatus) instagramExportStatus.textContent = "Downloaded.";
+        if (instagramExportStatus) instagramExportStatus.textContent = "Story downloaded.";
       } catch (error) {
-        console.error("Instagram export failed:", error);
-        if (instagramExportStatus) instagramExportStatus.textContent = "Export failed.";
-        alert("The Instagram image could not be created. Please refresh and try again.");
+        console.error("Instagram Story screenshot failed:", error);
+        if (instagramExportStatus) instagramExportStatus.textContent = "Capture failed.";
+        alert("The full-page Instagram Story screenshot could not be created. Refresh the page and try again.");
       } finally {
-        instagramExportStage.innerHTML = "";
+        window.scrollTo(originalScrollX, originalScrollY);
+
+        if (userDropdown && dropdownWasOpen) {
+          // Leave it closed after download so the downloaded screenshot/menu doesn't immediately cover the page.
+          userDropdown.classList.add("hidden");
+        }
+
         instagramExportBtn.disabled = false;
         instagramExportBtn.innerHTML = `
           <span class="profile-action-icon">↓</span>
           <span class="profile-action-text">
-            <span class="profile-action-title">Instagram Post</span>
-            <span class="profile-action-sub">Download 1080 × 1350 PNG</span>
+            <span class="profile-action-title">Instagram Story</span>
+            <span class="profile-action-sub">Exact page • 1080 × 1920 PNG</span>
           </span>
         `;
+
         setTimeout(() => {
           if (instagramExportStatus) instagramExportStatus.textContent = "";
         }, 3000);
