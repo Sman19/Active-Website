@@ -170,10 +170,13 @@
     .dealer-card-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
     .dealer-map-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:7px;border:1px solid #cfd5da;background:#fff;color:#252a31;font-weight:750;text-decoration:none}
     .dealer-map-link.primary{background:var(--red);border-color:var(--red);color:#fff}
+    .quick-item.exporting{opacity:.68;cursor:wait}
+    #detailsInstagramStage{position:fixed;left:-20000px;top:0;width:1080px;height:1920px;background:#fff;overflow:hidden;z-index:-1;pointer-events:none}
 
     @media(max-width:1000px){.meta{display:none}.two-col{grid-template-columns:1fr}.shell{grid-template-columns:190px minmax(0,1fr)}}
     @media(max-width:720px){.topbar{position:relative;height:auto;min-height:68px;flex-wrap:wrap;padding:10px 12px}.title h1{font-size:17px;white-space:normal}.quick-wrap{width:100%}.quick{width:100%}.quick-menu{position:fixed;left:12px;right:12px;top:78px;width:auto}.shell{display:block}.mobile-menu{display:block;position:sticky;top:0;z-index:95;width:100%;padding:12px;border:0;background:#eef1f4;text-align:left;font-weight:800}aside{display:none;position:fixed;top:0;left:0;z-index:150;width:min(290px,88vw);height:100vh;box-shadow:0 10px 30px rgba(0,0,0,.2)}aside.open{display:block}.tabs{top:0;padding:0 20px}.hero{min-height:330px;padding:30px 42px}.hero img{width:100%;height:250px}.section{padding:30px 20px 38px}.colors,.details-grid,.pills{grid-template-columns:1fr}.dealer-map{height:200px}.pricing{font-size:13px}.pricing th,.pricing td{padding-left:9px!important;padding-right:9px!important}}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <header class="topbar">
@@ -201,6 +204,7 @@
       <button class="quick-item" type="button" onclick="triggerDocument('stickerButton')"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
       <button class="quick-item" id="quickOem" type="button" onclick="triggerDocument('oemButton')"><span class="quick-icon">🏷️</span><span>OEM Sticker</span></button>
       <button class="quick-item" id="quickInvoice" type="button" onclick="triggerDocument('invoiceButton')"><span class="quick-icon">📄</span><span>Invoice</span></button>
+      <button class="quick-item" id="quickInstagram" type="button" onclick="exportDetailsInstagram()"><span class="quick-icon">↓</span><span>Instagram Story</span><span class="quick-note">1080 × 1920 PNG</span></button>
     </div>
   </div>
 </header>
@@ -303,6 +307,8 @@
   </main>
 </div>
 
+<div id="detailsInstagramStage" aria-hidden="true"></div>
+
 <script>
 const GOOGLE_SHEET_CSV_URL="https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
 const CONFIGURATOR_URL="https://sman19.github.io/2011-E90-M3-Configurator/";
@@ -316,6 +322,103 @@ let detailsVehicle=null;
 let documentLimitReached=false;
 let lastDocumentLimitResult=null;
 
+
+function waitForDetailsImages(root){
+  const images=Array.from(root.querySelectorAll('img')).filter(img=>!img.complete);
+  return Promise.all(images.map(img=>new Promise(resolve=>{
+    img.addEventListener('load',resolve,{once:true});
+    img.addEventListener('error',resolve,{once:true});
+    setTimeout(resolve,2500);
+  })));
+}
+
+async function exportDetailsInstagram(){
+  const button=document.getElementById('quickInstagram');
+  const menu=document.getElementById('quickMenu');
+  if(menu)menu.classList.remove('open');
+  if(button)button.classList.add('exporting');
+
+  try{
+    if(typeof html2canvas!=='function')throw new Error('Screenshot library unavailable.');
+    const source=document.querySelector('.app-shell')||document.body;
+    const clone=source.cloneNode(true);
+    clone.querySelectorAll('.quick-menu').forEach(el=>el.classList.remove('open'));
+    clone.querySelectorAll('.quick-wrap').forEach(el=>el.remove());
+    clone.querySelectorAll('.back').forEach(el=>el.remove());
+    clone.querySelectorAll('.mobile-menu').forEach(el=>el.remove());
+    clone.querySelectorAll('aside').forEach(el=>el.remove());
+    clone.querySelectorAll('.tabs').forEach(el=>el.remove());
+    clone.querySelectorAll('.history').forEach(el=>el.remove());
+    clone.querySelectorAll('#loading,#error').forEach(el=>el.remove());
+
+    const shell=clone.querySelector('.shell');
+    if(shell){shell.style.display='block';shell.style.gridTemplateColumns='1fr';}
+    const main=clone.querySelector('main');
+    if(main){main.style.width='100%';main.style.minWidth='0';}
+    const topbar=clone.querySelector('.topbar');
+    if(topbar){topbar.style.position='relative';topbar.style.top='auto';}
+    const content=clone.querySelector('#content');
+    if(content)content.style.display='block';
+    const detailPanel=clone.querySelector('#detailPanel');
+    if(detailPanel)detailPanel.classList.remove('hidden');
+
+    const stage=document.getElementById('detailsInstagramStage');
+    stage.innerHTML='';
+    const frame=document.createElement('div');
+    frame.style.width='1080px';
+    frame.style.minHeight='1920px';
+    frame.style.background='#ffffff';
+    frame.style.overflow='hidden';
+    frame.appendChild(clone);
+    stage.appendChild(frame);
+
+    await waitForDetailsImages(frame);
+    await new Promise(resolve=>setTimeout(resolve,200));
+
+    const naturalHeight=Math.max(frame.scrollHeight,1080);
+    const scale=Math.min(1,1920/naturalHeight);
+    const renderedWidth=Math.round(1080*scale);
+    const renderedHeight=Math.round(naturalHeight*scale);
+    const offsetX=Math.max(0,Math.floor((1080-renderedWidth)/2));
+    const offsetY=Math.max(0,Math.floor((1920-renderedHeight)/2));
+
+    const fullCanvas=await html2canvas(frame,{
+      backgroundColor:'#ffffff',
+      scale:2,
+      useCORS:true,
+      allowTaint:false,
+      logging:false,
+      width:1080,
+      height:naturalHeight,
+      windowWidth:1080,
+      windowHeight:naturalHeight,
+      scrollX:0,
+      scrollY:0
+    });
+
+    const out=document.createElement('canvas');
+    out.width=1080;
+    out.height=1920;
+    const ctx=out.getContext('2d');
+    ctx.fillStyle='#ffffff';
+    ctx.fillRect(0,0,out.width,out.height);
+    ctx.drawImage(fullCanvas,0,0,fullCanvas.width,fullCanvas.height,offsetX,offsetY,renderedWidth,renderedHeight);
+
+    const vin=(detailsVehicle&&detailsVehicle.vin?detailsVehicle.vin:'vehicle').replace(/[^A-Za-z0-9_-]/g,'');
+    const a=document.createElement('a');
+    a.href=out.toDataURL('image/png');
+    a.download=`E90-M3-${vin}-Instagram-Story.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    stage.innerHTML='';
+  }catch(error){
+    console.error(error);
+    alert('Instagram Story export could not be created. Please try again.');
+  }finally{
+    if(button)button.classList.remove('exporting');
+  }
+}
 
 const COLORS={
 "300":{rgb:"244,244,236",name:"Alpine White",image:"https://github.com/Sman19/E90-ext.380x260px/blob/88d5599e9c5abc6da52cfffe7488fc47056127ac/Alpine%20White%20-%20E90%20.png?raw=true"},
