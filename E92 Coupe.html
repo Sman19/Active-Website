@@ -1247,10 +1247,6 @@
     };
 
     const defaultPackages = {
-      "MSRP.3": "MSRP - $56,500.00",
-      "MSRP.2": "MSRP - $54,850.00",
-      "MSRP.1": "MSRP - $55,400.00",
-      "MSRP": "MSRP - $55,900.00",
       "IND": "INDIVIDUAL PAINT - $5,000.00",
       "ZCP": "ZCP - Competition Package - $2,500.00",
       "ZCV": "ZCV - Convenience Package - $2,900.00",
@@ -1303,8 +1299,29 @@
       "XE8": "XE8 - Black Piano Trim - $1,080.00",
       "XE2": "XE2 - Maple Wood, Anthr Trim - $1,080.00",
     };
-        const packagePrices2009 = {
-      "MSRP.2": "MSRP - $54,850.00",
+
+    // Base MSRP is selected by Column D / model year first,
+    // then by the MSRP marker stored in the package codes.
+    const baseMSRPByYear = {
+      "2008": {
+        "MSRP": "MSRP - $56,500.00",
+        "MSRP.1": null
+      },
+      "2009": {
+        "MSRP": "MSRP - $57,500.00",
+        "MSRP.1": "MSRP - $57,850.00"
+      },
+      "2010": {
+        "MSRP": "MSRP - $53,800.00",
+        "MSRP.1": "MSRP - $54,400.00"
+      },
+      "2011": {
+        "MSRP": "MSRP - $58,400.00",
+        "MSRP.1": "MSRP - $58,900.00"
+      }
+    };
+
+    const packagePrices2009 = {
       "ZPP": "ZPP - Premium Package | 771 - Titanium Shadow Trim - $2,000.00",
       "ZPP.1": "ZPP - Premium Package | 4MX - Blue Gray Brushed Aluminum - $2,000.00",
       "ZPP.2": "ZPP - Premium Package | 4MZ - Sycamore Anthractite Wood Trim - $2,000.00",
@@ -1869,10 +1886,28 @@
     }
 
     function getPackageDetail(code, vehicleYear = "") {
-      const normalizedCode = String(code || "").trim();
+      const normalizedCode = String(code || "").trim().toUpperCase();
       const normalizedYear = String(vehicleYear || "").trim();
 
-      // 2009-specific option pricing must take priority over the generic table.
+      // MSRP / MSRP.1 are year-specific.
+      // Column D (the vehicle year passed into this function) chooses
+      // the correct year's pricing before the MSRP marker is evaluated.
+      if (normalizedCode === "MSRP" || normalizedCode === "MSRP.1") {
+        const yearPricing = baseMSRPByYear[normalizedYear];
+
+        if (
+          yearPricing &&
+          Object.prototype.hasOwnProperty.call(yearPricing, normalizedCode) &&
+          yearPricing[normalizedCode]
+        ) {
+          return yearPricing[normalizedCode];
+        }
+
+        // Example: 2008 currently has no MSRP.1 value.
+        return normalizedCode;
+      }
+
+      // Keep the existing 2009-specific pricing for non-MSRP options.
       if (
         normalizedYear === "2009" ||
         currentCsvFile.includes("2009")
