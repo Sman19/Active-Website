@@ -436,6 +436,10 @@
     .archive-summary-total { color: #1f73ff; font-size: 15px; font-weight: 800; }
     .archive-series-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
     .archive-series-card { background: #fff; border: 1px solid #e2e6ec; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.035); }
+    .archive-series-card.clickable { cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .archive-series-card.clickable:hover { transform: translateY(-2px); border-color: #b9cff9; box-shadow: 0 8px 20px rgba(31,115,255,.12); }
+    .archive-series-card.clickable:focus { outline: 3px solid rgba(31,115,255,.22); outline-offset: 2px; }
+    .archive-series-linkhint { margin-top: 11px; font-size: 12px; font-weight: 800; color: #1f73ff; letter-spacing: .02em; }
     .archive-series-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
     .archive-series-name { font-size: 16px; font-weight: 800; }
     .archive-series-count { font-size: 20px; font-weight: 800; color: #1f73ff; }
@@ -1578,11 +1582,23 @@
       if (!grid || !total || !box) return;
 
       total.textContent = `${allRows.length.toLocaleString()} vehicles total`;
+      const seriesLinks = {
+        "F87 M2": "F87%20M2.html",
+        "E90 M3": "E90%20Sedan.html",
+        "E92 M3": "E92%20Coupe.html"
+      };
+
       grid.innerHTML = order.filter(name => summary[name]).map(name => {
         const item = summary[name];
         const years = Object.keys(item.years).sort((a, b) => Number(a) - Number(b));
+        const target = seriesLinks[name] || "";
+        const clickable = target ? " clickable" : "";
+        const attrs = target
+          ? ` role="link" tabindex="0" data-series-link="${escapeHtml(target)}" aria-label="Open ${escapeHtml(name)} database"`
+          : "";
+
         return `
-          <div class="archive-series-card">
+          <div class="archive-series-card${clickable}"${attrs}>
             <div class="archive-series-head">
               <div class="archive-series-name">${escapeHtml(name)}</div>
               <div class="archive-series-count">${item.total.toLocaleString()}</div>
@@ -1590,8 +1606,25 @@
             <div class="archive-years">
               ${years.map(year => `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`).join("")}
             </div>
+            ${target ? `<div class="archive-series-linkhint">VIEW ${escapeHtml(name)} DATABASE →</div>` : ""}
           </div>`;
       }).join("");
+
+      grid.querySelectorAll("[data-series-link]").forEach(card => {
+        const openSeries = () => {
+          const target = card.getAttribute("data-series-link");
+          if (target) window.location.href = target;
+        };
+
+        card.addEventListener("click", openSeries);
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openSeries();
+          }
+        });
+      });
+
       box.classList.remove("hidden");
     }
 
