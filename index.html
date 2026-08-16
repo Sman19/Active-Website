@@ -1607,10 +1607,36 @@
               <div class="archive-series-count">${item.total.toLocaleString()}</div>
             </div>
             <div class="archive-years">
-              ${years.map(year => target
-                ? `<span class="archive-year-chip clickable" role="link" tabindex="0" data-year-link="${escapeHtml(target)}" data-year="${escapeHtml(year)}" data-series="${escapeHtml(name)}" aria-label="Open ${escapeHtml(year)} ${escapeHtml(name)} vehicles"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`
-                : `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`
-              ).join("")}
+              ${years.map(year => {
+                const datasetFiles = {
+                  "F87 M2": {
+                    "2016": "2016 F87 M2.csv",
+                    "2017": "2017 F87 M2.csv",
+                    "2018": "2018 F87 M2.csv"
+                  },
+                  "E90 M3": {
+                    "2008": "2008 E90 M3 Sedan.csv",
+                    "2009": "2009 E90 M3 Sedan.csv",
+                    "2010": "2010 E90 M3 Sedan.csv",
+                    "2011": "2011 E90 M3 Sedan.csv",
+                    "2012": "2012 E90 M3 Sedan CRT.csv"
+                  },
+                  "E92 M3": {
+                    "2008": "2008 E92 M3 Coupe.csv",
+                    "2009": "2009 E92 M3 Coupe.csv",
+                    "2010": "2010 E92 M3 Coupe.csv",
+                    "2011": "2011 E92 M3 Coupe.csv"
+                  }
+                };
+
+                const datasetFile = datasetFiles[name] && datasetFiles[name][year]
+                  ? datasetFiles[name][year]
+                  : "";
+
+                return target && datasetFile
+                  ? `<span class="archive-year-chip clickable" role="link" tabindex="0" data-year-link="${escapeHtml(target)}" data-dataset-file="${escapeHtml(datasetFile)}" data-year="${escapeHtml(year)}" data-series="${escapeHtml(name)}" aria-label="Open ${escapeHtml(year)} ${escapeHtml(name)} vehicles"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`
+                  : `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`;
+              }).join("")}
             </div>
             ${target ? `<div class="archive-series-linkhint">VIEW ${escapeHtml(name)} DATABASE →</div>` : ""}
           </div>`;
@@ -1620,10 +1646,12 @@
         const openYear = (event) => {
           event.stopPropagation();
           const target = chip.getAttribute("data-year-link");
-          const year = chip.getAttribute("data-year");
-          if (!target || !year) return;
-          const joiner = target.includes("?") ? "&" : "?";
-          window.location.href = `${target}${joiner}year=${encodeURIComponent(year)}`;
+          const datasetFile = chip.getAttribute("data-dataset-file");
+          if (!target || !datasetFile) return;
+
+          const url = new URL(target, window.location.href);
+          url.searchParams.set("file", datasetFile);
+          window.location.href = url.toString();
         };
 
         chip.addEventListener("click", openYear);
