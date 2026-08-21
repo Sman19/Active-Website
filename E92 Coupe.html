@@ -3473,6 +3473,7 @@
 
         vehicles = [];
         let reachedEnd = false;
+        const seenVins = new Set();
 
         rows.forEach(row => {
           const vehicle = buildVehicle(row);
@@ -3485,13 +3486,18 @@
 
           if (reachedEnd) return;
 
-          // Ignore placeholder rows
-          if (vin === "VIN SKIP") return;
+          // Only include legitimate 17-character VINs.
+          // VINs never contain the letters I, O, or Q.
+          const isValidVin = /^[A-HJ-NPR-Z0-9]{17}$/.test(vin);
+          if (!isValidVin) return;
 
-          // Only include real VINs
-          if (vin !== "" && vin !== "-" && vin.length >= 11) {
-            vehicles.push(vehicle);
-          }
+          // Prevent duplicate VINs from being counted/displayed twice.
+          if (seenVins.has(vin)) return;
+          seenVins.add(vin);
+
+          // Keep a normalized VIN value for display, filtering, and document actions.
+          vehicle.vin = vin;
+          vehicles.push(vehicle);
         });
 
         filteredVehicles = applyCurrentSort([...vehicles]);
