@@ -1997,12 +1997,33 @@
           ? ` role="link" tabindex="0" data-series-link="${escapeHtml(target)}" aria-label="Open ${escapeHtml(name)} database"`
           : "";
 
-        const preLciTotal = name === "E92 M3"
-          ? ["2008", "2009", "2010"].reduce((sum, year) => sum + (item.years[year] || 0), 0)
-          : 0;
-        const lciTotal = name === "E92 M3"
-          ? ["2011", "2012", "2013"].reduce((sum, year) => sum + (item.years[year] || 0), 0)
-          : 0;
+        let preLciTotal = 0;
+        let lciTotal = 0;
+        let preLciYearsLabel = "";
+        let lciYearsLabel = "";
+
+        if (name === "E90 M3") {
+          // E90 Sedan: 2008 is Pre-LCI. 2009–2011 are LCI.
+          // 2012 CRT remains in the overall E90 total/year pills, but is excluded from the LCI total.
+          preLciTotal = item.years["2008"] || 0;
+          lciTotal = ["2009", "2010", "2011"].reduce(
+            (sum, year) => sum + (item.years[year] || 0),
+            0
+          );
+          preLciYearsLabel = "2008";
+          lciYearsLabel = "2009–2011";
+        } else if (name === "E92 M3") {
+          preLciTotal = ["2008", "2009", "2010"].reduce(
+            (sum, year) => sum + (item.years[year] || 0),
+            0
+          );
+          lciTotal = ["2011", "2012", "2013"].reduce(
+            (sum, year) => sum + (item.years[year] || 0),
+            0
+          );
+          preLciYearsLabel = "2008–2010";
+          lciYearsLabel = "2011–2013";
+        }
 
         return `
           <div class="archive-series-card${clickable}"${attrs}>
@@ -2044,19 +2065,19 @@
                   : `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`;
               }).join("")}
             </div>
-            ${name === "E92 M3" ? `
+            ${(name === "E90 M3" || name === "E92 M3") ? `
               <div class="archive-era-breakdown">
                 <div class="archive-era-box">
                   <div class="archive-era-info">
                     <div class="archive-era-title">Pre-LCI</div>
-                    <div class="archive-era-years">2008–2010</div>
+                    <div class="archive-era-years">${preLciYearsLabel}</div>
                   </div>
                   <div class="archive-era-total">${preLciTotal.toLocaleString()}</div>
                 </div>
                 <div class="archive-era-box lci">
                   <div class="archive-era-info">
                     <div class="archive-era-title">LCI</div>
-                    <div class="archive-era-years">2011–2013</div>
+                    <div class="archive-era-years">${lciYearsLabel}</div>
                   </div>
                   <div class="archive-era-total">${lciTotal.toLocaleString()}</div>
                 </div>
