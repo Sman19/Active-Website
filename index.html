@@ -555,6 +555,17 @@
     .archive-year-chip.clickable:focus { outline: 2px solid rgba(31,115,255,.30); outline-offset: 2px; }
     .archive-year-chip strong { color: #202124; }
 
+    /* E92 PRE-LCI / LCI BREAKDOWN */
+    .archive-era-breakdown { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .archive-era-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 10px 12px; border: 1px solid #dde4ee; border-radius: 11px; background: linear-gradient(180deg, #fbfcfe 0%, #f3f6fa 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.85); }
+    .archive-era-box.lci { border-color: #cbdcfc; background: linear-gradient(180deg, #f8fbff 0%, #edf4ff 100%); }
+    .archive-era-info { min-width: 0; }
+    .archive-era-title { font-size: 10px; line-height: 1; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #667085; margin-bottom: 5px; }
+    .archive-era-box.lci .archive-era-title { color: #1f73ff; }
+    .archive-era-years { font-size: 10px; line-height: 1; font-weight: 700; color: #98a1ae; }
+    .archive-era-total { font-size: 19px; line-height: 1; font-weight: 900; color: #202124; white-space: nowrap; }
+    .archive-era-box.lci .archive-era-total { color: #1f73ff; }
+
 
     .instagram-export-btn {
       border: none;
@@ -1986,6 +1997,13 @@
           ? ` role="link" tabindex="0" data-series-link="${escapeHtml(target)}" aria-label="Open ${escapeHtml(name)} database"`
           : "";
 
+        const preLciTotal = name === "E92 M3"
+          ? ["2008", "2009", "2010"].reduce((sum, year) => sum + (item.years[year] || 0), 0)
+          : 0;
+        const lciTotal = name === "E92 M3"
+          ? ["2011", "2012", "2013"].reduce((sum, year) => sum + (item.years[year] || 0), 0)
+          : 0;
+
         return `
           <div class="archive-series-card${clickable}"${attrs}>
             <div class="archive-series-head">
@@ -2026,6 +2044,24 @@
                   : `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`;
               }).join("")}
             </div>
+            ${name === "E92 M3" ? `
+              <div class="archive-era-breakdown">
+                <div class="archive-era-box">
+                  <div class="archive-era-info">
+                    <div class="archive-era-title">Pre-LCI</div>
+                    <div class="archive-era-years">2008–2010</div>
+                  </div>
+                  <div class="archive-era-total">${preLciTotal.toLocaleString()}</div>
+                </div>
+                <div class="archive-era-box lci">
+                  <div class="archive-era-info">
+                    <div class="archive-era-title">LCI</div>
+                    <div class="archive-era-years">2011–2013</div>
+                  </div>
+                  <div class="archive-era-total">${lciTotal.toLocaleString()}</div>
+                </div>
+              </div>
+            ` : ""}
             ${target ? `<div class="archive-series-linkhint">VIEW ${escapeHtml(name)} DATABASE →</div>` : ""}
           </div>`;
       }).join("");
@@ -2128,7 +2164,8 @@
 
               if (reachedEnd) return;
 
-              if (vin !== "" && vin !== "-" && vin.length >= 11) {
+              const cleanVin = vin.toUpperCase();
+              if (/^[A-HJ-NPR-Z0-9]{17}$/.test(cleanVin)) {
                 filteredRows.push(row);
               }
             });
@@ -2138,7 +2175,14 @@
         );
 
         allRows.length = 0;
-        responses.flat().forEach(row => allRows.push(row));
+        const seenVins = new Set();
+        responses.flat().forEach(row => {
+          const vin = String(getBestVin(row) || "").trim().toUpperCase();
+          if (!seenVins.has(vin)) {
+            seenVins.add(vin);
+            allRows.push(row);
+          }
+        });
 
         loadingStatus.classList.add("hidden");
         emptyState.classList.add("hidden");
