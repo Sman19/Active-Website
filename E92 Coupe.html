@@ -995,6 +995,10 @@
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
+              <option value="ALL_E92">All E92 M3 Coupes (2008–2013)</option>
+              <option value="PRE_LCI">Pre-LCI E92 (2008–2010)</option>
+              <option value="LCI">LCI E92 (2011–2013)</option>
+              <option disabled>──────────</option>
               <option value="2008 E92 M3 Coupe.csv">2008 E92 M3 Coupe</option>
               <option value="2009 E92 M3 Coupe.csv">2009 E92 M3 Coupe</option>
               <option value="2010 E92 M3 Coupe.csv">2010 E92 M3 Coupe</option>
@@ -1158,7 +1162,7 @@
     const colorLookup = {};
     const interiorLookup = {};
     const packageLookup = {};
-    let currentCsvFile = "2008 E92 M3 Coupe.csv";
+    let currentCsvFile = "ALL_E92";
     let csvHeaders = [];
     let csvRowsByVin = new Map();
     let commentsHeaderName = "Notes";
@@ -1428,7 +1432,25 @@
 
     function getCsvFileFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      return params.get("file") || "2008 E92 M3 Coupe.csv";
+      return params.get("file") || "ALL_E92";
+    }
+
+    const E92_SHEETS = [
+      "2008 E92 M3 Coupe",
+      "2009 E92 M3 Coupe",
+      "2010 E92 M3 Coupe",
+      "2011 E92 M3 Coupe",
+      "2012 E92 M3 Coupe",
+      "2013 E92 M3 Coupe"
+    ];
+
+    function getSheetNamesForDataset(dataset) {
+      if (dataset === "ALL_E92") return [...E92_SHEETS];
+      if (dataset === "PRE_LCI") return E92_SHEETS.slice(0, 3); // 2008–2010
+      if (dataset === "LCI") return E92_SHEETS.slice(3);       // 2011–2013
+
+      const matched = E92_SHEETS.find(name => dataset.includes(name.slice(0, 4)));
+      return [matched || E92_SHEETS[0]];
     }
 
     function syncDatasetDropdown() {
@@ -1841,77 +1863,68 @@
           button.textContent = "Saving...";
         }
 
-        const updates = [];
+        const updatesBySheet = new Map();
 
         document.querySelectorAll(".comments-edit").forEach(textarea => {
           const originalComment = textarea.dataset.originalComment || "";
           const currentComment = textarea.value || "";
+          if (currentComment === originalComment) return;
 
-          if (currentComment !== originalComment) {
-            setCommentForVehicle(textarea.dataset.vin, currentComment);
-            updates.push({
-              vin: textarea.dataset.vin,
-              comment: currentComment
-            });
-          }
+          const vin = textarea.dataset.vin;
+          setCommentForVehicle(vin, currentComment);
+          const vehicle = vehicles.find(item => item.vin === vin);
+          const sheetName = (vehicle && vehicle.sourceSheet) || getSheetNamesForDataset(currentCsvFile)[0];
+
+          if (!updatesBySheet.has(sheetName)) updatesBySheet.set(sheetName, []);
+          updatesBySheet.get(sheetName).push({ vin, comment: currentComment });
         });
 
-        if (!updates.length) {
+        if (!updatesBySheet.size) {
           alert("No comment changes to save.");
           return;
         }
 
-        const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify({
-            token: COMMENTS_SAVE_TOKEN,
-            sheetName:
-            currentCsvFile.includes("2008")
-              ? "2008 E92 M3 Coupe"
-              : currentCsvFile.includes("2009")
-              ? "2009 E92 M3 Coupe"
-              : currentCsvFile.includes("2010")
-              ? "2010 E92 M3 Coupe"
-              : currentCsvFile.includes("2011")
-              ? "2011 E92 M3 Coupe"
-              : currentCsvFile.includes("2012")
-              ? "2012 E92 M3 Coupe"
-              : currentCsvFile.includes("2013")
-              ? "2013 E92 M3 Coupe"
-              : "2008 E92 M3 Coupe",
-            updates: updates,
-            source: "E92 Admin Comments",
-            updatedBy: getCurrentLoginName() || "Admin",
-            updatedAt: new Date().toISOString()
-          })
-        });
+        let totalSaved = 0;
+        let totalMissing = 0;
 
-        const resultText = await response.text();
-        let result = {};
-        try { result = JSON.parse(resultText); } catch (e) {}
+        for (const [sheetName, updates] of updatesBySheet.entries()) {
+          const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              token: COMMENTS_SAVE_TOKEN,
+              sheetName,
+              updates,
+              source: "E92 Admin Comments",
+              updatedBy: getCurrentLoginName() || "Admin",
+              updatedAt: new Date().toISOString()
+            })
+          });
 
-        if (!response.ok || result.success === false || result.ok === false) {
-          const debugDetails = result && Object.keys(result).length
-            ? JSON.stringify(result, null, 2)
-            : resultText;
-          throw new Error(debugDetails || "Save failed.");
+          const resultText = await response.text();
+          let result = {};
+          try { result = JSON.parse(resultText); } catch (e) {}
+
+          if (!response.ok || result.success === false || result.ok === false) {
+            const debugDetails = result && Object.keys(result).length
+              ? JSON.stringify(result, null, 2)
+              : resultText;
+            throw new Error(`${sheetName}: ${debugDetails || "Save failed."}`);
+          }
+
+          totalSaved += typeof result.saved === "number" ? result.saved : updates.length;
+          totalMissing += Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
         }
-
-        const savedCount = typeof result.saved === "number" ? result.saved : updates.length;
-        const missingCount = Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
 
         document.querySelectorAll(".comments-edit").forEach(textarea => {
           textarea.dataset.originalComment = textarea.value || "";
         });
 
-        if (missingCount) {
-          alert(`Comments saved. ${savedCount} row(s) updated. ${missingCount} VIN(s) were not found in the sheet.`);
+        if (totalMissing) {
+          alert(`Comments saved. ${totalSaved} row(s) updated. ${totalMissing} VIN(s) were not found in the sheet.`);
         } else {
-          alert(`Save successful. ${savedCount} row(s) updated.`);
+          alert(`Save successful. ${totalSaved} row(s) updated.`);
         }
       } catch (error) {
         console.error(error);
@@ -1919,7 +1932,7 @@
       } finally {
         if (button) {
           button.disabled = false;
-          button.textContent = originalText || "Save comments";
+          button.textContent = originalText || "Save Comments";
         }
       }
     }
@@ -2076,7 +2089,8 @@
         exteriorCode: extractCode(exteriorRaw),
         interiorCode: extractCode(interiorRaw),
         exteriorData: exteriorData || {},
-        interiorData: interiorData || {}
+        interiorData: interiorData || {},
+        sourceSheet: row.__sourceSheet || ""
       };
     }
 
@@ -3443,64 +3457,48 @@
         currentCsvFile = getCsvFileFromUrl();
         syncDatasetDropdown();
 
-        let sheetName;
+        const sheetNames = getSheetNamesForDataset(currentCsvFile);
+        const cacheBust = Date.now();
 
-        if (currentCsvFile.includes("2008")) {
-          sheetName = "2008 E92 M3 Coupe";
-        } else if (currentCsvFile.includes("2009")) {
-          sheetName = "2009 E92 M3 Coupe";
-        } else if (currentCsvFile.includes("2010")) {
-          sheetName = "2010 E92 M3 Coupe";
-        } else if (currentCsvFile.includes("2011")) {
-          sheetName = "2011 E92 M3 Coupe";
-        } else if (currentCsvFile.includes("2012")) {
-          sheetName = "2012 E92 M3 Coupe";
-        } else if (currentCsvFile.includes("2013")) {
-          sheetName = "2013 E92 M3 Coupe";
-        } else {
-          sheetName = "2008 E92 M3 Coupe";
-        }
-
-        const csvUrl =
-          `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
-        const response = await fetch(csvUrl, { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`Could not load Google Sheet CSV`);
-        }
-
-        const text = await response.text();
-        const rows = parseCSV(text);
+        const sheetResponses = await Promise.all(
+          sheetNames.map(async sheetName => {
+            const csvUrl = `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${cacheBust}`;
+            const response = await fetch(csvUrl, { cache: "no-store" });
+            if (!response.ok) throw new Error(`Could not load ${sheetName}`);
+            return { sheetName, text: await response.text() };
+          })
+        );
 
         vehicles = [];
-        let reachedEnd = false;
         const seenVins = new Set();
 
-        rows.forEach(row => {
-          const vehicle = buildVehicle(row);
-          const vin = String(vehicle.vin || "").trim().toUpperCase();
+        sheetResponses.forEach(({ sheetName, text }) => {
+          const rows = parseCSV(text);
+          let reachedEnd = false;
 
-          if (vin === "END_VEHICLES") {
-            reachedEnd = true;
-            return;
-          }
+          rows.forEach(row => {
+            row.__sourceSheet = sheetName;
+            const vehicle = buildVehicle(row);
+            const vin = String(vehicle.vin || "").trim().toUpperCase();
 
-          if (reachedEnd) return;
+            if (vin === "END_VEHICLES") {
+              reachedEnd = true;
+              return;
+            }
+            if (reachedEnd) return;
 
-          // Only include legitimate 17-character VINs.
-          // VINs never contain the letters I, O, or Q.
-          const isValidVin = /^[A-HJ-NPR-Z0-9]{17}$/.test(vin);
-          if (!isValidVin) return;
+            // Only include legitimate 17-character VINs. VINs never contain I, O, or Q.
+            if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) return;
+            if (seenVins.has(vin)) return;
 
-          // Prevent duplicate VINs from being counted/displayed twice.
-          if (seenVins.has(vin)) return;
-          seenVins.add(vin);
-
-          // Keep a normalized VIN value for display, filtering, and document actions.
-          vehicle.vin = vin;
-          vehicles.push(vehicle);
+            seenVins.add(vin);
+            vehicle.vin = vin;
+            vehicles.push(vehicle);
+          });
         });
 
         filteredVehicles = applyCurrentSort([...vehicles]);
+        selectedVehicles.clear();
 
         document.getElementById("total-count").textContent = vehicles.length;
         document.getElementById("count").textContent = vehicles.length;
