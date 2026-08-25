@@ -2164,7 +2164,10 @@
       try {
         const responses = await Promise.all(
           CSV_FILES.map(async file => {
-            const response = await fetch(encodeURI(file));
+            const response = await fetch(
+              encodeURI(file) + "?v=" + Date.now(),
+              { cache: "no-store" }
+            );
             if (!response.ok) {
               throw new Error(`Could not load ${file}`);
             }
