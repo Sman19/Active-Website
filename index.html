@@ -539,7 +539,7 @@
 
     .archive-summary-title { font-size: 17px; font-weight: 800; }
     .archive-summary-total { color: #1f73ff; font-size: 15px; font-weight: 800; }
-    .archive-series-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .archive-series-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
     .archive-series-card { background: #fff; border: 1px solid #e2e6ec; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.035); display: flex; flex-direction: column; }
     .archive-series-card.clickable { cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
     .archive-series-card.clickable:hover { transform: translateY(-2px); border-color: #b9cff9; box-shadow: 0 8px 20px rgba(31,115,255,.12); }
@@ -723,7 +723,7 @@
 
     .ig-series-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 14px;
     }
 
@@ -1403,6 +1403,17 @@
       </div>
 
       <div class="series-row">
+        <div class="series-main">E82 1M</div>
+        <div class="series-cell" data-label="Generation">E82</div>
+        <div class="series-cell" data-label="Body Style">Coupe</div>
+        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="E82%201M%20Coupe.html">Open</a>
+        </div>
+        <div class="series-cell"></div>
+      </div>
+
+      <div class="series-row">
         <div class="series-main">E90 M3</div>
         <div class="series-cell" data-label="Generation">E90</div>
         <div class="series-cell" data-label="Body Style">Sedan</div>
@@ -1965,6 +1976,7 @@
         const source = String(row.__sourceFile || "");
         let series = "Other BMW";
         if (/F87\s*M2/i.test(source)) series = "F87 M2";
+        else if (/E82\s*1M/i.test(source)) series = "E82 1M";
         else if (/E90\s*M3/i.test(source)) series = "E90 M3";
         else if (/E92\s*M3/i.test(source)) series = "E92 M3";
 
@@ -1976,7 +1988,7 @@
         summary[series].years[year] = (summary[series].years[year] || 0) + 1;
       });
 
-      const order = ["F87 M2", "E90 M3", "E92 M3", "Other BMW"];
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "Other BMW"];
       const grid = document.getElementById("archiveSeriesGrid");
       const total = document.getElementById("archiveSummaryTotal");
       const box = document.getElementById("archiveSummary");
@@ -1985,6 +1997,7 @@
       total.textContent = `${allRows.length.toLocaleString()} vehicles total`;
       const seriesLinks = {
         "F87 M2": "F87%20M2.html",
+        "E82 1M": "E82%201M%20Coupe.html",
         "E90 M3": "E90%20Sedan.html",
         "E92 M3": "E92%20Coupe.html"
       };
@@ -2039,6 +2052,9 @@
                     "2016": "2016 F87 M2.csv",
                     "2017": "2017 F87 M2.csv",
                     "2018": "2018 F87 M2.csv"
+                  },
+                  "E82 1M": {
+                    "2011": "2011 E82 1M Coupe.csv"
                   },
                   "E90 M3": {
                     "2008": "2008 E90 M3 Sedan.csv",
@@ -2228,6 +2244,7 @@
         let series = "Other BMW";
 
         if (/F87\s*M2/i.test(source)) series = "F87 M2";
+        else if (/E82\s*1M/i.test(source)) series = "E82 1M";
         else if (/E90\s*M3/i.test(source)) series = "E90 M3";
         else if (/E92\s*M3/i.test(source)) series = "E92 M3";
 
@@ -2246,7 +2263,7 @@
 
     function buildInstagramExportMarkup() {
       const summary = buildInstagramSummaryData();
-      const order = ["F87 M2", "E90 M3", "E92 M3"];
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3"];
 
       const cards = order.map(name => {
         const item = summary[name] || { total: 0, years: {} };
@@ -2302,6 +2319,12 @@
               <div class="ig-launcher-row">
                 <div class="ig-series-main">F87 M2</div>
                 <div>F87</div>
+                <div>Coupe</div>
+                <div class="ig-active">ACTIVE</div>
+              </div>
+              <div class="ig-launcher-row">
+                <div class="ig-series-main">E82 1M</div>
+                <div>E82</div>
                 <div>Coupe</div>
                 <div class="ig-active">ACTIVE</div>
               </div>
