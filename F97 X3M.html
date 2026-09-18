@@ -1153,7 +1153,7 @@
     const colorLookup = {};
     const interiorLookup = {};
     const packageLookup = {};
-    let currentCsvFile = "2020 X3M.csv";
+    let currentCsvFile = "2020 F97 X3M.csv";
     let csvHeaders = [];
     let csvRowsByVin = new Map();
     let commentsHeaderName = "Notes";
@@ -1268,11 +1268,11 @@
 
     function getCsvFileFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      return params.get("file") || "2020 X3M.csv";
+      return params.get("file") || "2020 F97 X3M.csv";
     }
 
     const F97_X3M_SHEETS = [
-      "2020 X3M"
+      "2020 F97 X3M"
     ];
 
     function getSheetNamesForDataset(dataset) {
