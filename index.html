@@ -1989,11 +1989,12 @@
 
       allRows.forEach(row => {
         const source = String(row.__sourceFile || "");
-        let series = "F97 X3M";
+        let series = "Other BMW";
         if (/F87\s*M2/i.test(source)) series = "F87 M2";
         else if (/E82\s*1M/i.test(source)) series = "E82 1M";
         else if (/E90\s*M3/i.test(source)) series = "E90 M3";
         else if (/E92\s*M3/i.test(source)) series = "E92 M3";
+        else if (/F97\s*X3M/i.test(source)) series = "F97 X3M";
 
         const yearMatch = source.match(/\b(19|20)\d{2}\b/);
         const year = String(getBestYear(row) || (yearMatch ? yearMatch[0] : "Unknown")).trim();
@@ -2003,7 +2004,7 @@
         summary[series].years[year] = (summary[series].years[year] || 0) + 1;
       });
 
-      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "Other BMW"];
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "Other BMW"];
       const grid = document.getElementById("archiveSeriesGrid");
       const total = document.getElementById("archiveSummaryTotal");
       const box = document.getElementById("archiveSummary");
@@ -2014,7 +2015,8 @@
         "F87 M2": "F87%20M2.html",
         "E82 1M": "E821MCoupe.html",
         "E90 M3": "E90%20Sedan.html",
-        "E92 M3": "E92%20Coupe.html"
+        "E92 M3": "E92%20Coupe.html",
+        "F97 X3M": "F97%20X3M.html"
       };
 
       grid.innerHTML = order.filter(name => summary[name]).map(name => {
@@ -2086,8 +2088,8 @@
                     "2012": "2012 E92 M3 Coupe.csv",
                     "2013": "2013 E92 M3 Coupe.csv"
                   },
-                    "F97 X3M": {
-                      "2020": "2020 F97 X3M.csv"
+                  "F97 X3M": {
+                    "2020": "2020 F97 X3M.csv"
                   }
                 };
 
