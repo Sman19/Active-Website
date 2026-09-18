@@ -1838,7 +1838,7 @@
 
       // Also detect a known upholstery code anywhere in the CSV value.
       const matchedCode = Object.keys(defaultInteriors).find(code => {
-        const escaped = code.replace(/[.*+?^${}()|[\]\]/g, "\$&");
+        const escaped = code.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         return new RegExp(`(^|[^A-Z0-9])${escaped}([^A-Z0-9]|$)`, "i").test(upperRaw);
       });
 
