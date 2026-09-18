@@ -1163,7 +1163,7 @@
     // POST = saves admin comments back to Google Sheets.
     const GOOGLE_SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
     const GITHUB_SAVE_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
-    const COMMENTS_SAVE_TOKEN = "E92M3COMMENTS2026";
+    const COMMENTS_SAVE_TOKEN = "F97X3MCOMMENTS2026";
     const ADMIN_USERS = ["admin"];
     let vehicles = [];
     let filteredVehicles = [];
@@ -1207,37 +1207,35 @@
 
     let isColumnDragAction = false;
 
+    // F97 X3 M color references. Images can be added later without falling back to 1M assets.
     const defaultColors = {
-      "300": { rgb: "232, 234, 237", name: "Alpine White", image: "https://github.com/Sman19/E82-1M---380px-x-260px/blob/ad366c351e68968c45c22640e414da188b51ca00/1M%20Alpine%20White.png?raw=true" },
-      "475": { rgb: "8, 10, 12", name: "Black Sapphire Metallic - $550.00", image: "https://github.com/Sman19/E82-1M---380px-x-260px/blob/ad366c351e68968c45c22640e414da188b51ca00/1M%20Black%20Sapphire%20Metallic.png?raw=true" },
-      "B44": { rgb: "243, 81, 63", name: "Valencia Orange Metallic - $550.00", image: "https://github.com/Sman19/E82-1M---380px-x-260px/blob/ad366c351e68968c45c22640e414da188b51ca00/1M%20Valencia%20Orange.png?raw=true" }
+      "300": { rgb: "232, 234, 237", name: "Alpine White" },
+      "475": { rgb: "8, 10, 12", name: "Black Sapphire Metallic" },
+      "C28": { rgb: "92, 94, 96", name: "Donington Grey Metallic" },
+      "A90": { rgb: "65, 68, 72", name: "Dark Graphite Metallic" },
+      "C1N": { rgb: "181, 174, 155", name: "Sunstone Metallic" },
+      "C3G": { rgb: "184, 27, 35", name: "Toronto Red Metallic" },
+      "C1M": { rgb: "42, 82, 121", name: "Phytonic Blue Metallic" },
+      "000": { rgb: "180, 180, 180", name: "Unknown Paint Code" },
+      "A96": { rgb: "180, 180, 180", name: "Unknown Paint Code" }
     };
 
+    // F97 X3 M interior references from the 2020 dataset.
     const defaultInteriors = {
-      "LWNZ": { image: "https://github.com/Sman19/E82-1M---380px-x-260px/blob/7c69f8c16fe8309beca6e9b52cdd09a9d5018c5c/1M%20Interior.png?raw=true", description: "Black Boston Leather" }
+      "LKSW": { description: "Black Extended Merino Leather" },
+      "LKDA": { description: "Sakhir Orange Extended Merino Leather" },
+      "HDJA": { description: "Black/Midrand Beige Two-Tone Merino Leather / Alcantara" },
+      "VAEW": { description: "BMW Individual Ivory White Extended Merino Leather" },
+      "VATQ": { description: "BMW Individual Tartufo Extended Merino Leather" },
+      "MAH7": { description: "Black Vernasca Leather" },
+      "LKHV": { description: "Adelaide Grey Extended Merino Leather" },
+      "MAOQ": { description: "Oyster Vernasca Leather" }
     };
 
-    const defaultPackages = {
-      "MSRP": "MSRP - $46,135.00",
-      "ZCV": "ZCV - Convenience Package - $2,700.00",
-      "ZPP": "ZPP - Premium Package - $2,400.00",
-      "494": "494 - Heated Front Seats - $500.00",
-      "639": "639 - BMW Assist w/enhanced Bluetooth & USB - $750.00",
-      "655": "655 - Satellite Radio w/ 1 year subscription - $350.00",
-      "688": "688 - Harman/Kardon Surround Sound System - $875.00",
-      "6FL": "6FL - Hands-free Bluetooth and USB - $400.00",
-      "6NR": "6NR - BMW Apps - $250.00"
-    };
-
-    // Base MSRP is selected by Column D / model year first,
-    // then by the MSRP marker stored in the package codes.
-    const baseMSRPByYear = {
-      "2011": {
-        "MSRP": "MSRP - $46,135.00",
-        "MSRP.1": null
-      }
-    };
-
+    // Package descriptions/prices can be added as F97 data is verified.
+    // Unknown codes are displayed exactly as they appear in the dataset.
+    const defaultPackages = {};
+    const baseMSRPByYear = {};
     const packagePrices2009 = {};
 
     function normalize(text) {
@@ -1728,7 +1726,7 @@
               token: COMMENTS_SAVE_TOKEN,
               sheetName,
               updates,
-              source: "E92 Admin Comments",
+              source: "F97 X3M Admin Comments",
               updatedBy: getCurrentLoginName() || "Admin",
               updatedAt: new Date().toISOString()
             })
@@ -1814,9 +1812,6 @@
     function getPackageDetail(code, vehicleYear = "") {
       const normalizedCode = String(code || "").trim().toUpperCase();
 
-      if (normalizedCode === "MSRP") return "MSRP - $46,135.00";
-      if (normalizedCode === "MSRP.1") return "MSRP.1";
-
       return packageLookup[normalizedCode] ||
         defaultPackages[normalizedCode] ||
         normalizedCode;
@@ -1837,7 +1832,7 @@
     }
 
     function buildVehicle(row) {
-      // Use named columns first, then fall back to the known E92 sheet positions.
+      // Use named columns first, then fall back to the known F97 CSV positions.
       // This prevents a malformed/hidden header from blanking the 2009 exterior.
       const originalValues = Array.isArray(row.__originalValues) ? row.__originalValues : [];
 
@@ -1882,7 +1877,7 @@
       const vspec = getField(row, ["V-SPEC", "VSPEC", "VSpec"]);
       const sticker = getField(row, ["STICKER", "Monroney", "Window Sticker"]);
       const invoice = getField(row, ["INVOICE", "Invoice"]);
-      const model = getField(row, ["MODEL", "Model"]) || "1M";
+      const model = getField(row, ["MODEL", "Model", "Development code", "DEVELOPMENT CODE"]) || "F97";
 
       const packageCodesRaw = getField(row, ["Package Codes", "PACKAGE CODES", "PACKAGES", "Packages"]);
       const packageCodes = parsePackageCodes(packageCodesRaw);
@@ -2581,8 +2576,8 @@
       const vehicleName = document.getElementById("panel-vehicle-name");
       const vehicleInfoEl = document.getElementById("panel-vehicle-info");
 
-      const modelType = "E82";
-      vehicleName.textContent = `${modelType} 1M`;
+      const modelType = "F97";
+      vehicleName.textContent = `${modelType} X3 M`;
       vehicleInfoEl.textContent = `${formatVin(vehicleInfo.vin) || "Unknown VIN"}`;
       updateSidePanelMenuAvailability(vehicleInfo);
       panel.classList.add("open");
@@ -2598,8 +2593,8 @@
       window.open(vehicle.details, "_blank", "noopener,noreferrer");
     }
 
-    // E92 document generation stays blank/inactive until the E92 configurator is ready.
-    // When ready: set CONFIGURATOR_ACTIVE to true and add the E92 configurator URL below.
+    // F97 document generation stays blank/inactive until the F97 configurator is ready.
+    // When ready: set CONFIGURATOR_ACTIVE to true and add the F97 configurator URL below.
     const CONFIGURATOR_ACTIVE = false;
     const CONFIGURATOR_URL = "";
 
@@ -2691,7 +2686,7 @@
         ? result.message
         : "You have reached the 5 document request limit in the last 24 hours. Please try again later.";
 
-      alert(`${message}\n\nThanks for helping protect the BMW 1M Database.`);
+      alert(`${message}\n\nThanks for helping protect the BMW F97 X3 M Database.`);
     }
 
     async function checkDocumentLimit(documentType, vehicle) {
@@ -2706,7 +2701,7 @@
           username: getAuthProUsername(),
           documentType: documentType,
           vin: vehicle && vehicle.vin ? vehicle.vin : "",
-          source: "E82 1M Database",
+          source: "F97 X3 M Database",
           timestamp: new Date().toISOString()
         })
       });
@@ -2944,7 +2939,7 @@
       const data = event.data || {};
 
 
-      if (data.type === "e90-pdf-data-url") {
+      if (data.type === "f97-pdf-data-url") {
         sendPdfPullAlert("BMW Spec Sheet PDF", getSelectedVehicle());
         const a = document.createElement("a");
         a.href = data.dataUrl;
@@ -2956,9 +2951,9 @@
         removeExistingGeneratorFrame();
       }
 
-      if (data.type === "e90-window-sticker-html") {
+      if (data.type === "f97-window-sticker-html") {
         sendPdfPullAlert("Window Sticker", getSelectedVehicle());
-        const popup = window.__e90StickerPopup;
+        const popup = window.__f97StickerPopup;
         if (popup && !popup.closed) {
           popup.document.open();
           popup.document.write(data.html || "");
@@ -2974,11 +2969,11 @@
             alert("Window sticker generated, but popup was blocked. Please allow popups for this site.");
           }
         }
-        window.__e90StickerPopup = null;
+        window.__f97StickerPopup = null;
         removeExistingGeneratorFrame();
       }
 
-      if (data.type === "e90-document-ready" || data.type === "e90-document-error") {
+      if (data.type === "f97-document-ready" || data.type === "f97-document-error") {
         removeExistingGeneratorFrame();
       }
     });
@@ -3020,29 +3015,29 @@
       }
 
       showDocumentLimitNotice("Window Sticker", async () => {
-        window.__e90StickerPopup = window.open("", "_blank");
-        writeToPopup(window.__e90StickerPopup, "Checking Request", "Verifying your daily document limit...");
+        window.__f97StickerPopup = window.open("", "_blank");
+        writeToPopup(window.__f97StickerPopup, "Checking Request", "Verifying your daily document limit...");
 
         try {
           const result = await checkDocumentLimit("Window Sticker", vehicle);
           if (!result.allowed) {
-            if (window.__e90StickerPopup && !window.__e90StickerPopup.closed) {
-              window.__e90StickerPopup.close();
+            if (window.__f97StickerPopup && !window.__f97StickerPopup.closed) {
+              window.__f97StickerPopup.close();
             }
-            window.__e90StickerPopup = null;
+            window.__f97StickerPopup = null;
             showDocumentLimitBlocked(result);
             return;
           }
 
           showDocumentRemainingToast(result, "Window Sticker");
-          writeToPopup(window.__e90StickerPopup, "Generating Window Sticker", "Loading final document...");
-          runConfiguratorInBackground("sticker", window.__e90StickerPopup);
+          writeToPopup(window.__f97StickerPopup, "Generating Window Sticker", "Loading final document...");
+          runConfiguratorInBackground("sticker", window.__f97StickerPopup);
         } catch (error) {
           console.error(error);
-          if (window.__e90StickerPopup && !window.__e90StickerPopup.closed) {
-            window.__e90StickerPopup.close();
+          if (window.__f97StickerPopup && !window.__f97StickerPopup.closed) {
+            window.__f97StickerPopup.close();
           }
-          window.__e90StickerPopup = null;
+          window.__f97StickerPopup = null;
           alert("Document request could not be verified. Please try again.");
         }
       });
@@ -3094,7 +3089,7 @@
 
     function makeSafePdfFilename(vehicle, fallbackName) {
       const vin = String(vehicle && vehicle.vin ? vehicle.vin : "").replace(/[^a-z0-9]/gi, "");
-      return `${vin || "E92-M3"}-${fallbackName}.pdf`;
+      return `${vin || "F97-X3M"}-${fallbackName}.pdf`;
     }
 
     async function downloadPdfDirectly(urlValue, filename) {
@@ -3160,12 +3155,7 @@
           ? vehicle.packageDetails.map(item => escapeHtml(item)).join("<br>")
           : "";
 
-        let modelCode = "E92";
-        if (vehicle.model) {
-          if (vehicle.model.startsWith("C5")) modelCode = "E90";
-          else if (vehicle.model.startsWith("C6")) modelCode = "E92";
-          else if (vehicle.model.startsWith("C7")) modelCode = "E93";
-        }
+        const modelCode = "F97";
 
         row.innerHTML = `
           <div class="cell cell-checkbox">
@@ -3275,14 +3265,24 @@
         const sheetNames = getSheetNamesForDataset(currentCsvFile);
         const cacheBust = Date.now();
 
-        const sheetResponses = await Promise.all(
-          sheetNames.map(async sheetName => {
-            const csvUrl = `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${cacheBust}`;
-            const response = await fetch(csvUrl, { cache: "no-store" });
-            if (!response.ok) throw new Error(`Could not load ${sheetName}`);
-            return { sheetName, text: await response.text() };
-          })
-        );
+        let sheetResponses;
+        try {
+          sheetResponses = await Promise.all(
+            sheetNames.map(async sheetName => {
+              const csvUrl = `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${cacheBust}`;
+              const response = await fetch(csvUrl, { cache: "no-store" });
+              if (!response.ok) throw new Error(`Could not load ${sheetName}`);
+              const text = await response.text();
+              if (!text || !/VIN/i.test(text)) throw new Error(`Invalid CSV returned for ${sheetName}`);
+              return { sheetName, text };
+            })
+          );
+        } catch (sheetError) {
+          console.warn("Google Sheet load failed; trying the repository CSV instead:", sheetError);
+          const localResponse = await fetch(encodeURI(currentCsvFile) + `?t=${cacheBust}`, { cache: "no-store" });
+          if (!localResponse.ok) throw new Error(`Could not load ${currentCsvFile}`);
+          sheetResponses = [{ sheetName: F97_X3M_SHEETS[0], text: await localResponse.text() }];
+        }
 
         vehicles = [];
         const seenVins = new Set();
