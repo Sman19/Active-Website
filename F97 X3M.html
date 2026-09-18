@@ -1221,46 +1221,46 @@
 
     // F97 X3 M interior references from the 2020 dataset.
     const defaultInteriors = {
-  "LKSW": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Black%20Merion.png",
-    description: "Black Extended Merino Leather"
-  },
+      "LKSW": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Black%20Merion.png?raw=true",
+        description: "Black Extended Merino Leather"
+      },
 
-  "LKDA": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/e0e7b2e3a074f39dbd7d9618c1bcf8eee92ed533/Sahkir%20Red.png",
-    description: "Sakhir Orange Extended Merino Leather"
-  },
+      "LKDA": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/e0e7b2e3a074f39dbd7d9618c1bcf8eee92ed533/Sahkir%20Red.png?raw=true",
+        description: "Sakhir Orange Extended Merino Leather"
+      },
 
-  "HDJA": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Medriand%20Beige.png",
-    description: "Black/Midrand Beige Two-Tone Merino Leather / Alcantara"
-  },
+      "HDJA": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Medriand%20Beige.png?raw=true",
+        description: "Black/Midrand Beige Two-Tone Merino Leather / Alcantara"
+      },
 
-  "VAEW": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Black%20Merion.png",
-    description: "BMW Individual Ivory White Extended Merino Leather"
-  },
+      "VAEW": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Black%20Merion.png?raw=true",
+        description: "BMW Individual Ivory White Extended Merino Leather"
+      },
 
-  "VATQ": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Tartufo.png",
-    description: "BMW Individual Tartufo Extended Merino Leather"
-  },
+      "VATQ": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Tartufo.png?raw=true",
+        description: "BMW Individual Tartufo Extended Merino Leather"
+      },
 
-  "MAH7": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/e0e7b2e3a074f39dbd7d9618c1bcf8eee92ed533/Black%20Vernasca.png",
-    description: "Black Vernasca Leather"
-  },
+      "MAH7": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/e0e7b2e3a074f39dbd7d9618c1bcf8eee92ed533/Black%20Vernasca.png?raw=true",
+        description: "Black Vernasca Leather"
+      },
 
-  "LKHV": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/e0e7b2e3a074f39dbd7d9618c1bcf8eee92ed533/Adrenaline%20Gray%20w.%20Red.png",
-    description: "Adelaide Grey Extended Merino Leather"
-  },
+      "LKHV": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/e0e7b2e3a074f39dbd7d9618c1bcf8eee92ed533/Adrenaline%20Gray%20w.%20Red.png?raw=true",
+        description: "Adelaide Grey Extended Merino Leather"
+      },
 
-  "MAOQ": {
-    image: "https://raw.githubusercontent.com/Sman19/E9x-Interiors/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Black%20Merion.png",
-    description: "Oyster Vernasca Leather"
-  }
-};
+      "MAOQ": {
+        image: "https://github.com/Sman19/E9x-Interiors/blob/28a8e445cfbc96d0d869819bbc6f6615e57b5f36/Black%20Merion.png?raw=true",
+        description: "Oyster Vernasca Leather"
+      }
+    };
 
     // Package descriptions/prices can be added as F97 data is verified.
     // Unknown codes are displayed exactly as they appear in the dataset.
@@ -1826,14 +1826,36 @@
 
     function getInteriorData(codeOrName) {
       const raw = String(codeOrName || "").trim();
-      const code = extractCode(raw);
+      if (!raw) return null;
 
-      if (defaultInteriors[code]) return defaultInteriors[code];
+      const upperRaw = raw.toUpperCase();
+      const extractedCode = String(extractCode(raw) || "").trim().toUpperCase();
 
-      const byDescription = Object.values(defaultInteriors).find(i => normalize(i.description) === normalize(raw));
+      // Exact code at the beginning of a "CODE - Description" value.
+      if (defaultInteriors[extractedCode]) {
+        return defaultInteriors[extractedCode];
+      }
+
+      // Also detect a known upholstery code anywhere in the CSV value.
+      const matchedCode = Object.keys(defaultInteriors).find(code => {
+        const escaped = code.replace(/[.*+?^${}()|[\]\]/g, "\$&");
+        return new RegExp(`(^|[^A-Z0-9])${escaped}([^A-Z0-9]|$)`, "i").test(upperRaw);
+      });
+
+      if (matchedCode) {
+        return defaultInteriors[matchedCode];
+      }
+
+      // Exact description match.
+      const byDescription = Object.values(defaultInteriors).find(
+        interior => normalize(interior.description) === normalize(raw)
+      );
       if (byDescription) return byDescription;
 
-      const byCombinedDescription = Object.values(defaultInteriors).find(i => normalize(raw).includes(normalize(i.description)));
+      // Description contained within a longer CSV value.
+      const byCombinedDescription = Object.values(defaultInteriors).find(
+        interior => normalize(raw).includes(normalize(interior.description))
+      );
       if (byCombinedDescription) return byCombinedDescription;
 
       return null;
