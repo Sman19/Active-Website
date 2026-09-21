@@ -1301,11 +1301,22 @@
     }
 
     const F97_X3M_SHEETS = [
-      "2020 F97 X3M"
+      "2020 F97 X3M",
+      "2021 F97 X3M"
     ];
 
     function getSheetNamesForDataset(dataset) {
-      return [...F97_X3M_SHEETS];
+      const fileName = String(dataset || "").trim();
+
+      if (fileName === "2020 F97 X3M.csv") {
+        return ["2020 F97 X3M"];
+      }
+
+      if (fileName === "2021 F97 X3M.csv") {
+        return ["2021 F97 X3M"];
+      }
+
+      return ["2020 F97 X3M"];
     }
 
     function syncDatasetDropdown() {
@@ -3334,7 +3345,7 @@
           console.warn("Google Sheet load failed; trying the repository CSV instead:", sheetError);
           const localResponse = await fetch(encodeURI(currentCsvFile) + `?t=${cacheBust}`, { cache: "no-store" });
           if (!localResponse.ok) throw new Error(`Could not load ${currentCsvFile}`);
-          sheetResponses = [{ sheetName: F97_X3M_SHEETS[0], text: await localResponse.text() }];
+          sheetResponses = [{ sheetName: getSheetNamesForDataset(currentCsvFile)[0], text: await localResponse.text() }];
         }
 
         vehicles = [];
