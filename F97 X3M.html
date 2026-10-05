@@ -1007,7 +1007,7 @@
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
               <option value="2020 F97 X3M.csv">2020 F97 X3M</option>
               <option value="2021 F97 X3M.csv">2021 F97 X3M</option>
-              <option value="2021 F97 X3M.csv">2022 F97 X3M</option>
+              <option value="2022 F97 X3M.csv">2022 F97 X3M</option>
             </select>
           </div>
 
@@ -1326,6 +1326,10 @@
 
       if (fileName === "2021 F97 X3M.csv") {
         return ["2021 F97 X3M"];
+      }
+
+      if (fileName === "2022 F97 X3M.csv") {
+        return ["2022 F97 X3M"];
       }
 
       return ["2020 F97 X3M"];
