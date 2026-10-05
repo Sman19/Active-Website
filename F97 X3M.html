@@ -1008,6 +1008,7 @@
               <option value="2020 F97 X3M.csv">2020 F97 X3M</option>
               <option value="2021 F97 X3M.csv">2021 F97 X3M</option>
               <option value="2022 F97 X3M.csv">2022 F97 X3M</option>
+              <option value="2023 F97 X3M.csv">2022 F97 X3M</option>
             </select>
           </div>
 
@@ -1334,6 +1335,7 @@
       "2020 F97 X3M",
       "2021 F97 X3M",
       "2022 F97 X3M"
+      "2023 F97 X3M"
     ];
 
     function getSheetNamesForDataset(dataset) {
@@ -1349,6 +1351,10 @@
 
       if (fileName === "2022 F97 X3M.csv") {
         return ["2022 F97 X3M"];
+      }
+
+      if (fileName === "2023 F97 X3M.csv") {
+        return ["2023 F97 X3M"];
       }
 
       return ["2020 F97 X3M"];
