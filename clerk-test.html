@@ -1252,6 +1252,18 @@
   </style>
 
   <style>
+    /* Prevent the homepage from flashing before Clerk validates the session. */
+    body:not(.clerk-authenticated) > .topbar,
+    body:not(.clerk-authenticated) > .hero,
+    body:not(.clerk-authenticated) > main.page,
+    body:not(.clerk-authenticated) > #clerkTestBadge,
+    body:not(.clerk-authenticated) > #instagramExportStage,
+    body:not(.clerk-authenticated) > #monroneyOverlay,
+    body:not(.clerk-authenticated) > #generatorOverlay,
+    body:not(.clerk-authenticated) > #e90GeneratorFrame {
+      display: none !important;
+    }
+
     /* BMW M ARCHIV - custom Clerk test sign-in skin */
     #clerkGate {
       position: fixed; inset: 0; z-index: 99999; overflow-y: auto;
@@ -2758,6 +2770,7 @@
       function refreshUI() {
         const user = clerk.user;
         if (user) {
+          document.body.classList.add('clerk-authenticated');
           gate.hidden = true;
           const label = user.username || user.firstName || user.primaryEmailAddress?.emailAddress || 'Member';
           document.getElementById('auth-username').textContent = label;
@@ -2766,6 +2779,7 @@
             loadCSVs();
           }
         } else {
+          document.body.classList.remove('clerk-authenticated');
           gate.hidden = false;
           document.getElementById('auth-username').textContent = 'Member';
           if (!signInMounted) {
