@@ -2710,7 +2710,7 @@
       // Use the Clerk-hosted browser SDK (no Vite, npm, or import.meta required).
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = `https://${clerkDomain}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+        script.src = `https://${clerkDomain}/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
         script.setAttribute('data-clerk-publishable-key', publishableKey);
         script.async = true;
         script.crossOrigin = 'anonymous';
@@ -2722,6 +2722,7 @@
       const clerk = window.Clerk;
       if (!clerk) throw new Error('Clerk SDK loaded but window.Clerk was not available.');
       await clerk.load();
+      console.info('Clerk initialized; signed in:', Boolean(clerk.user));
 
       function refreshUI() {
         const user = clerk.user;
