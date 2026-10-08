@@ -779,6 +779,17 @@
       background: #f3f4f6;
       border-bottom: 1px solid #ddd;
       min-height: 50px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* Keep editing and text entry functional inside vehicle rows. */
+    .table-row input,
+    .table-row textarea,
+    .table-row select,
+    .table-row [contenteditable="true"] {
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     .table-row:nth-child(even) { background: #eceff1; }
