@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>M Database</title>
+
+  <link
+    id="favicon"
+    rel="icon"
+    type="image/gif"
+    href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
+  />
+
+  <!-- Clerk test copy: AuthPro is intentionally not loaded here. -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f3f3;
+      color: #202124;
+    }
+
+    .topbar {
+      background: #3f444d;
+      color: #ffffff;
+      height: 88px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .topbar-home {
+      justify-self: start;
+      position: relative;
+    }
+
+    .topbar-home a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+    }
+
+    .topbar-home a:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .home-btn {
+      color: #ffffff;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      min-width: 140px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-btn:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .home-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      background: #ffffff;
+      color: #202124;
+      border: 1px solid #d8d8d8;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      min-width: 320px;
+      padding: 8px;
+      z-index: 1000;
+    }
+
+    .home-dropdown a,
+    .home-submenu-btn {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: #202124;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.2;
+      border-radius: 8px;
+      min-width: unset;
+      box-shadow: none;
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .home-dropdown a:hover,
+    .home-submenu-btn:hover,
+    .home-submenu-wrap:hover > .home-submenu-btn {
+      background: #f3f4f6;
+    }
+
+    .home-submenu-wrap {
+      position: relative;
+    }
+
+    .home-submenu {
+      position: absolute;
+      top: 0;
+      left: calc(100% + 10px);
+      min-width: 280px;
+      background: #ffffff;
+      border: 1px solid #d8d8d8;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      padding: 8px;
+      z-index: 1001;
+    }
+
+    .home-submenu::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -12px;
+      width: 12px;
+    }
+
+    .topbar-title {
+      justify-self: center;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .topbar-user {
+      justify-self: end;
+      position: relative;
+    }
+
+    .user-menu-btn {
+      border: 2px solid #4da3ff;
+      background: transparent;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      min-width: 120px;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+    }
+
+    .user-menu-btn:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .user-icon {
+      font-size: 20px;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      min-width: 180px;
+      background: #ffffff;
+      color: #202124;
+      border: 1px solid #d8d8d8;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      padding: 8px;
+      z-index: 1000;
+    }
+
+    .user-dropdown {
+      min-width: 245px;
+      padding: 8px;
+      border-radius: 14px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.18);
+    }
+
+    .profile-action-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #202124;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.25;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    .profile-action-btn:hover {
+      background: #f3f6fb;
+      color: #1f73ff;
+    }
+
+    .profile-action-btn:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .profile-action-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #eaf2ff;
+      color: #1f73ff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .profile-action-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .profile-action-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: inherit;
+    }
+
+    .profile-action-sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: #777;
+    }
+
+    .profile-action-status {
+      display: none;
+      padding: 4px 14px 8px 52px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .profile-action-status:not(:empty) {
+      display: block;
+    }
+
+    .profile-menu-divider {
+      height: 1px;
+      background: #ececec;
+      margin: 6px 4px;
+    }
+
+
+    .logout-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #d71920;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      text-align: left;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.25;
+    }
+
+    .logout-btn:hover {
+      background: #fff1f1;
+    }
+
+    .logout-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #fff0f0;
+      color: #d71920;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .hero {
+      position: relative;
+      height: 455px;
+      background-image: url("https://images.mecum.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1600,h_899/v1697809136/auctions/FL24/1103018/704535.jpg?");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      display: none;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .search-panel {
+      width: 100%;
+      max-width: 600px;
+      background: #f4f4f4;
+      border-radius: 18px;
+      padding: 28px 30px 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+    }
+
+    .search-title {
+      font-size: 30px;
+      font-weight: 700;
+      color: #d94831;
+      margin-bottom: 22px;
+    }
+
+    .search-row {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 68px;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      background: #dcdde1;
+      padding: 0 96px 0 22px;
+      font-size: 22px;
+      color: #222;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 54px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.15);
+      color: #333;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clear-btn:hover {
+      background: rgba(0,0,0,0.25);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      font-size: 26px;
+      cursor: pointer;
+      color: #4a4a4a;
+    }
+
+    .hero-recent {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.45);
+      text-align: center;
+      padding: 0 12px;
+    }
+
+    .page {
+      max-width: 1760px;
+      margin: 0 auto;
+      padding: 24px 36px 60px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #d8d8d8;
+      border-radius: 18px;
+      padding: 22px 24px 18px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .left-controls {
+      display: flex;
+      border: 1px solid #cfcfcf;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 340px;
+    }
+
+    .control-btn {
+      border: none;
+      background: #fff;
+      color: #1f1f1f;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 16px 34px;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .control-btn.active {
+      background: #1f73ff;
+      color: #fff;
+    }
+
+    .right-controls {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-box {
+      min-width: 200px;
+      background: #efefef;
+      color: #222;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .divider {
+      border-top: 1px solid #e2e2e2;
+      margin: 10px 0 18px;
+    }
+
+    .subheading {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 4px 0 12px;
+      color: #202124;
+    }
+
+    .status {
+      padding: 14px 4px 18px;
+      font-size: 16px;
+      color: #555;
+    }
+
+
+    .archive-summary {
+      margin: 4px 0 20px;
+      padding: 18px;
+      border: 1px solid #e1e5eb;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fbfcff 0%, #f6f8fb 100%);
+    }
+
+    .archive-summary-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .archive-summary-title { font-size: 17px; font-weight: 800; }
+    .archive-summary-total { color: #1f73ff; font-size: 15px; font-weight: 800; }
+    .archive-series-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .archive-series-card { background: #fff; border: 1px solid #e2e6ec; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.035); display: flex; flex-direction: column; }
+    .archive-series-card.clickable { cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .archive-series-card.clickable:hover { transform: translateY(-2px); border-color: #b9cff9; box-shadow: 0 8px 20px rgba(31,115,255,.12); }
+    .archive-series-card.clickable:focus { outline: 3px solid rgba(31,115,255,.22); outline-offset: 2px; }
+    .archive-series-linkhint { margin-top: auto; padding-top: 11px; font-size: 12px; font-weight: 800; color: #1f73ff; letter-spacing: .02em; }
+    .archive-series-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+    .archive-series-name { font-size: 16px; font-weight: 800; }
+    .archive-series-count { font-size: 20px; font-weight: 800; color: #1f73ff; }
+    .archive-years { display: flex; flex-wrap: wrap; gap: 7px; }
+    .archive-year-chip { background: #f0f4fa; border: 1px solid #e0e6ef; border-radius: 999px; padding: 6px 9px; font-size: 13px; color: #4b5563; white-space: nowrap; }
+    .archive-year-chip.clickable { cursor: pointer; transition: background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+    .archive-year-chip.clickable:hover { background: #e8f0ff; border-color: #a9c4fb; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(31,115,255,.10); }
+    .archive-year-chip.clickable:focus { outline: 2px solid rgba(31,115,255,.30); outline-offset: 2px; }
+    .archive-year-chip strong { color: #202124; }
+
+    /* E92 PRE-LCI / LCI BREAKDOWN */
+    .archive-era-breakdown { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .archive-era-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 10px 12px; border: 1px solid #dde4ee; border-radius: 11px; background: linear-gradient(180deg, #fbfcfe 0%, #f3f6fa 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.85); }
+    .archive-era-box.lci { border-color: #dde4ee; background: linear-gradient(180deg, #fbfcfe 0%, #f3f6fa 100%); }
+    .archive-era-info { min-width: 0; }
+    .archive-era-title { font-size: 10px; line-height: 1; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #667085; margin-bottom: 5px; }
+    .archive-era-box.lci .archive-era-title { color: #667085; }
+    .archive-era-years { font-size: 10px; line-height: 1; font-weight: 700; color: #98a1ae; }
+    .archive-era-total { font-size: 19px; line-height: 1; font-weight: 900; color: #202124; white-space: nowrap; }
+    .archive-era-box.lci .archive-era-total { color: #202124; }
+
+
+    .instagram-export-btn {
+      border: none;
+      background: #111827;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 14px 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      white-space: nowrap;
+    }
+
+    .instagram-export-btn:hover {
+      background: #000000;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+    }
+
+    .instagram-export-btn:disabled {
+      opacity: .55;
+      cursor: wait;
+      transform: none;
+    }
+
+    .instagram-export-status {
+      font-size: 13px;
+      color: #6b7280;
+      margin-left: 8px;
+      align-self: center;
+    }
+
+    #instagramExportStage {
+      position: fixed;
+      left: -20000px;
+      top: 0;
+      width: 1080px;
+      height: 1350px;
+      background: #f3f3f3;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .ig-sheet {
+      width: 1080px;
+      height: 1350px;
+      background: #f3f3f3;
+      color: #202124;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    .ig-topbar {
+      height: 88px;
+      background: #3f444d;
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 34px;
+    }
+
+    .ig-topbar-left {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .ig-topbar-title {
+      font-size: 25px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+
+    .ig-topbar-right {
+      text-align: right;
+      font-size: 16px;
+      font-weight: 700;
+      opacity: .9;
+    }
+
+    .ig-hero {
+      height: 330px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(31,115,255,.38), transparent 34%),
+        linear-gradient(135deg, #111827 0%, #27344a 48%, #0b1324 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px;
+    }
+
+    .ig-search-panel {
+      width: 700px;
+      background: rgba(244,244,244,.98);
+      border-radius: 20px;
+      padding: 32px 36px 30px;
+      box-shadow: 0 16px 38px rgba(0,0,0,.28);
+    }
+
+    .ig-search-title {
+      font-size: 38px;
+      font-weight: 800;
+      color: #d94831;
+      margin-bottom: 20px;
+    }
+
+    .ig-search-box {
+      height: 82px;
+      background: #dcdde1;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 24px;
+      color: #6b7280;
+    }
+
+    .ig-content {
+      padding: 28px 34px 30px;
+    }
+
+    .ig-heading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .ig-heading {
+      font-size: 30px;
+      font-weight: 800;
+      color: #202124;
+    }
+
+    .ig-total {
+      font-size: 23px;
+      font-weight: 800;
+      color: #1f73ff;
+    }
+
+    .ig-breakdown {
+      background: linear-gradient(180deg, #fbfcff 0%, #f6f8fb 100%);
+      border: 1px solid #dfe4ec;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 22px;
+    }
+
+    .ig-series-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .ig-series-card {
+      background: #fff;
+      border: 1px solid #e2e6ec;
+      border-radius: 14px;
+      padding: 17px;
+      min-height: 190px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.04);
+    }
+
+    .ig-series-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+
+    .ig-series-name {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .ig-series-count {
+      font-size: 25px;
+      font-weight: 800;
+      color: #1f73ff;
+    }
+
+    .ig-years {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ig-year {
+      background: #f0f4fa;
+      border: 1px solid #e0e6ef;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 16px;
+      color: #4b5563;
+      white-space: nowrap;
+    }
+
+    .ig-year strong {
+      color: #202124;
+    }
+
+    .ig-launcher-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 4px 0 12px;
+    }
+
+    .ig-launcher {
+      background: #fff;
+      border: 1px solid #d8d8d8;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .ig-launcher-row {
+      display: grid;
+      grid-template-columns: 1.1fr .8fr .9fr .7fr;
+      gap: 12px;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid #ececec;
+      font-size: 17px;
+    }
+
+    .ig-launcher-row:last-child {
+      border-bottom: none;
+    }
+
+    .ig-launcher-row.header {
+      background: #f7f8fa;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #5a5a5a;
+    }
+
+    .ig-series-main {
+      font-weight: 800;
+    }
+
+    .ig-active {
+      color: #15803d;
+      font-weight: 800;
+    }
+
+    .ig-footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 17px;
+      color: #6b7280;
+      font-weight: 700;
+    }
+
+
+    .hidden {
+      display: none !important;
+    }
+
+    .results-header,
+    .result-row {
+      display: grid;
+      grid-template-columns: 1.15fr 1.35fr 0.9fr 0.8fr 1.2fr 1.1fr 0.8fr;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 12px;
+      border-bottom: 1px solid #ececec;
+    }
+
+    .series-header,
+    .series-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1.4fr 0.8fr 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 12px;
+      border-bottom: 1px solid #ececec;
+    }
+
+    .results-header,
+    .series-header {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #5a5a5a;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    .result-row,
+    .series-row {
+      font-size: 16px;
+      color: #202124;
+    }
+
+    .result-row:hover,
+    .series-row:hover {
+      background: #f7f9fc;
+    }
+
+    .result-main,
+    .series-main {
+      font-weight: 700;
+      color: #1f1f1f;
+      word-break: break-word;
+    }
+
+    .result-cell,
+    .series-cell {
+      color: #333;
+      word-break: break-word;
+    }
+
+    .open-link {
+      color: #1f73ff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .open-link:hover {
+      text-decoration: underline;
+    }
+
+    .play-audio-btn {
+      min-width: 170px;
+      height: 54px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      padding: 0 18px;
+    }
+
+    .play-audio-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
+        #ff003c,
+        #ff8a00,
+        #ffd400,
+        #48ff00,
+        #00ffd5,
+        #0066ff,
+        #7a00ff,
+        #ff00c8,
+        #ff003c
+      );
+      background-size: 300% 300%;
+      animation: rainbowFlow 4s linear infinite;
+      box-shadow: 0 0 18px rgba(31,115,255,0.22);
+    }
+
+    .play-audio-btn::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 999px;
+      background: #ffffff;
+    }
+
+    .play-audio-label {
+      position: relative;
+      z-index: 2;
+      font-size: 15px;
+      font-weight: 800;
+      color: #1f73ff;
+      letter-spacing: 0.05em;
+    }
+
+    .play-audio-btn.playing {
+      animation: pillPulse 0.75s ease-in-out infinite;
+    }
+
+    .play-audio-btn.playing .play-audio-label {
+      color: #111827;
+    }
+
+    .muted {
+      color: #777;
+    }
+
+    .panel-spacer {
+      height: 18px;
+    }
+
+    .monroney-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 5000;
+    }
+
+    .monroney-modal {
+      width: min(900px, 96vw);
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.24);
+      padding: 34px 28px 24px;
+      text-align: center;
+    }
+
+    .monroney-modal-title {
+      font-size: 34px;
+      font-weight: 800;
+      color: #d94831;
+      margin-bottom: 16px;
+    }
+
+    .monroney-modal-text {
+      font-size: 22px;
+      line-height: 1.45;
+      color: #202124;
+      margin-bottom: 24px;
+      word-break: break-word;
+    }
+
+    .monroney-modal-btn {
+      border: none;
+      background: #1f73ff;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .monroney-modal-btn:hover {
+      background: #165fd3;
+    }
+
+
+    .generator-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #10203a 0%, #05070c 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 6000;
+      color: #ffffff;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .generator-box {
+      max-width: 760px;
+      width: min(92vw, 760px);
+    }
+
+    .generator-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 18px;
+      letter-spacing: 0.01em;
+    }
+
+    .generator-text {
+      font-size: 18px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 24px;
+    }
+
+    .generator-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .generator-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #1f73ff;
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .generator-btn.secondary {
+      background: rgba(255,255,255,0.14);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.22) inset;
+    }
+
+    .hidden-generator-frame {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      left: -9999px;
+      top: -9999px;
+      border: 0;
+    }
+
+    @keyframes rainbowFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    @keyframes pillPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 1200px) {
+      .results-header,
+      .result-row {
+        grid-template-columns: 1.1fr 1.2fr 0.9fr 0.8fr 1.1fr 1fr 0.8fr;
+      }
+
+      .series-header,
+      .series-row {
+        grid-template-columns: 1.2fr 1fr 1fr 1.2fr 0.8fr 1fr;
+      }
+
+      .filter-box {
+        min-width: 160px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      .topbar-home,
+      .topbar-title,
+      .topbar-user {
+        justify-self: center;
+      }
+
+      .topbar-title {
+        white-space: normal;
+        font-size: 20px;
+      }
+
+      .page {
+        padding: 18px 14px 40px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .left-controls {
+        min-width: unset;
+        width: 100%;
+      }
+
+      .right-controls {
+        width: 100%;
+      }
+
+      .archive-series-grid { grid-template-columns: 1fr; }
+
+      .filter-box {
+        flex: 1 1 140px;
+        min-width: 140px;
+      }
+
+      .hero {
+        height: 400px;
+        background-position: center 28%;
+        background-size: cover;
+      }
+
+      .search-panel {
+        padding: 22px 18px 16px;
+      }
+
+      .search-title {
+        font-size: 25px;
+      }
+
+      .search-input {
+        height: 58px;
+        font-size: 18px;
+      }
+
+      .hero-recent {
+        font-size: 16px;
+      }
+
+      .monroney-modal-title {
+        font-size: 28px;
+      }
+
+      .monroney-modal-text {
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .results-header,
+      .series-header {
+        display: none;
+      }
+
+      .result-row,
+      .series-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .result-cell::before,
+      .series-cell::before {
+        content: attr(data-label) ": ";
+        font-weight: 700;
+        color: #555;
+      }
+
+      .hero {
+        height: 340px;
+        background-position: center 30%;
+        background-size: cover;
+      }
+
+
+      /* Mobile Home dropdown fix: keep Configurator submenu below, not off to the right */
+      .home-dropdown {
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 360px);
+        min-width: 0;
+      }
+
+      .home-submenu-wrap {
+        position: relative;
+      }
+
+      .home-submenu {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        min-width: 0;
+        margin-top: 8px;
+        box-shadow: none;
+        border-radius: 10px;
+        z-index: 1001;
+      }
+
+      .home-submenu::before {
+        display: none;
+      }
+
+      .home-submenu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+  </style>
+
+  <style>
+    /* Isolated Clerk test page; does not change the live homepage. */
+    #clerkGate { position:fixed; inset:0; z-index:99999; background:#f3f3f3;
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+      overflow:auto; padding:70px 16px 30px; }
+    #clerkGate[hidden] { display:none; }
+    #clerkGate h1 { color:#202124; font:700 28px Arial,sans-serif; margin:0 0 8px; }
+    #clerkGate p { font:15px Arial,sans-serif; color:#555; margin:0 0 20px; text-align:center; }
+    #clerkSignIn { min-height:300px; }
+    #clerkError { max-width:600px; color:#a00; white-space:pre-wrap; line-height:1.5; }
+    #clerkTestBadge { position:fixed; bottom:12px; left:12px; z-index:8000;
+      background:#fff3cd; color:#664d03; border:1px solid #ffecb5;
+      padding:8px 12px; border-radius:8px; font:700 12px Arial,sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="clerkGate" role="region" aria-label="Member sign in">
+    <h1>BMW M ARCHIV</h1>
+    <p>Clerk login test · Sign in or create a test account</p>
+    <div id="clerkSignIn"></div>
+    <p id="clerkError" role="alert"></p>
+  </div>
+  <div id="clerkTestBadge">CLERK TEST PAGE · NOT LIVE AUTHENTICATION</div>
+  <header class="topbar">
+    <div class="topbar-home dropdown">
+      <button class="home-btn" id="homeDropdownBtn" type="button">
+        Home ▼
+      </button>
+
+      <div class="home-dropdown hidden" id="homeDropdown">
+        <a href="https://sman19.github.io/DEALER-MAP/dealer.html" target="_blank" rel="noopener noreferrer">
+          North America BMW Dealers
+        </a>
+        <a href="https://sman19.github.io/CRT---MAP/M3%20CRT%20MAP.html" target="_blank" rel="noopener noreferrer">
+          M3 CRT Worldwide Locations
+        </a>
+        <a href="https://sman19.github.io/Active-Website/owned.html" target="_blank" rel="noopener noreferrer">
+          Owned Vehicles
+        </a>
+
+        <div class="home-submenu-wrap">
+          <button class="home-submenu-btn" type="button" id="configuratorMenuBtn">
+            Configurator ›
+          </button>
+
+          <div class="home-submenu hidden" id="configuratorMenu">
+            <a href="https://sman19.github.io/2011-E90-M3-Configurator/?v=2" target="_blank" rel="noopener noreferrer">
+              2010/2011 E90 M3 Sedans
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar-title">
+      M ARCHIV
+    </div>
+
+    <div class="topbar-user">
+      <button id="userMenuBtn" class="user-menu-btn" type="button">
+        <span id="auth-username">Member</span>
+        <span class="user-icon">👤</span>
+      </button>
+
+      <div id="userDropdown" class="user-dropdown hidden">
+        <button id="instagramExportBtn" class="profile-action-btn" type="button">
+          <span class="profile-action-icon">↓</span>
+          <span class="profile-action-text">
+            <span class="profile-action-title">Instagram Story</span>
+            <span class="profile-action-sub">Exact page • 1080 × 1920 PNG</span>
+          </span>
+        </button>
+        <div id="instagramExportStatus" class="profile-action-status"></div>
+        <div class="profile-menu-divider"></div>
+        <a class="logout-btn" href="#" id="clerkLogout">
+          <span class="logout-icon">↪</span>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="search-panel">
+      <div class="search-title">Vehicle Inquiry</div>
+
+      <div class="search-row">
+        <input
+          id="searchInput"
+          class="search-input"
+          type="text"
+          placeholder="Search for VIN, or last 7"
+        />
+        <button id="clearBtn" class="clear-btn" type="button" aria-label="Clear search">×</button>
+        <button id="searchBtn" class="search-btn" type="button">⌕</button>
+      </div>
+    </div>
+
+    <div class="hero-recent" id="recentSearches">Recent searches: None</div>
+  </section>
+
+  <main class="page">
+    <section class="panel">
+      <div class="section-title">My BMW Series</div>
+
+      <div class="toolbar">
+        <div class="left-controls">
+          <button class="control-btn active" type="button">Grouped</button>
+          <button class="control-btn" type="button">A-Z ▼</button>
+        </div>
+
+        <div class="right-controls">
+          <div class="filter-box">BMW M SERIES</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subheading">BMW Search Results</div>
+      <div id="archiveSummary" class="archive-summary hidden">
+        <div class="archive-summary-top">
+          <div class="archive-summary-title">Archive Breakdown</div>
+          <div id="archiveSummaryTotal" class="archive-summary-total">0 vehicles</div>
+        </div>
+        <div id="archiveSeriesGrid" class="archive-series-grid"></div>
+      </div>
+      <div id="loadingStatus" class="status">Loading CSV files...</div>
+
+      <div id="emptyState" class="status hidden">
+        Start typing above to search the linked BMW CSV files.
+      </div>
+
+      <div id="resultsSection" class="hidden">
+        <div class="results-header">
+          <div>Match</div>
+          <div>VIN</div>
+          <div>Last 7</div>
+          <div>Year</div>
+          <div>Details</div>
+          <div>Monroney</div>
+          <div>Source</div>
+        </div>
+        <div id="resultsList"></div>
+      </div>
+
+      <div class="panel-spacer"></div>
+      <div class="divider"></div>
+
+      <div class="subheading">Series Launcher</div>
+      <div class="series-header">
+        <div>Series</div>
+        <div>Generation</div>
+        <div>Body Style</div>
+        <div>Notes</div>
+        <div>Open</div>
+        <div></div>
+      </div>
+
+      <div class="series-row">
+        <div class="series-main">F87 M2</div>
+        <div class="series-cell" data-label="Generation">F87</div>
+        <div class="series-cell" data-label="Body Style">Coupe</div>
+        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="F87%20M2.html">Open</a>
+        </div>
+        <div class="series-cell">
+          <button class="play-audio-btn" type="button" onclick="playF87OpenAudio(event, this)">
+            <span class="play-audio-label">PLAY ME</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="series-row">
+        <div class="series-main">E82 1M</div>
+        <div class="series-cell" data-label="Generation">E82</div>
+        <div class="series-cell" data-label="Body Style">Coupe</div>
+        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="E821MCoupe.html">Open</a>
+        </div>
+        <div class="series-cell"></div>
+      </div>
+
+      <div class="series-row">
+        <div class="series-main">E90 M3</div>
+        <div class="series-cell" data-label="Generation">E90</div>
+        <div class="series-cell" data-label="Body Style">Sedan</div>
+        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="E90%20Sedan.html">Open</a>
+        </div>
+        <div class="series-cell">
+          <button class="play-audio-btn" type="button" onclick="playE90OpenAudio(event, this)">
+            <span class="play-audio-label">PLAY ME</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="series-row">
+        <div class="series-main">E92 M3</div>
+        <div class="series-cell" data-label="Generation">E92</div>
+        <div class="series-cell" data-label="Body Style">Coupe</div>
+        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="E92%20Coupe.html">Open</a>
+        </div>
+        <div class="series-cell">
+          <button class="play-audio-btn" type="button" onclick="playE90OpenAudio(event, this)">
+            <span class="play-audio-label">PLAY ME</span>
+          </button>
+        </div>
+      </div>
+
+     <div class="series-row">
+        <div class="series-main">F97 X3M</div>
+        <div class="series-cell" data-label="Generation">F97</div>
+        <div class="series-cell" data-label="Body Style">X3M</div>
+        <div class="series-cell muted" data-label="Notes">ACTIVE</div>
+        <div class="series-cell" data-label="Open">
+          <a class="open-link" href="F97%20X3M.html">Open</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="instagramExportStage" aria-hidden="true"></div>
+
+  <div id="monroneyOverlay" class="monroney-overlay hidden">
+    <div class="monroney-modal">
+      <div class="monroney-modal-title">Monroney Unavailable</div>
+      <div id="monroneyModalText" class="monroney-modal-text">
+        No Monroney PDF is available for this vehicle.
+      </div>
+      <button id="closeMonroneyModal" class="monroney-modal-btn" type="button">Cancel</button>
+    </div>
+  </div>
+
+
+  <div id="generatorOverlay" class="generator-overlay hidden">
+    <div class="generator-box">
+      <div id="generatorTitle" class="generator-title">Generating BMW document...</div>
+      <div id="generatorText" class="generator-text">Please wait while the E90 M3 BMW Spec Sheet PDF is created.</div>
+      <div id="generatorActions" class="generator-actions hidden">
+        <a id="openConfiguratorFallback" class="generator-btn" href="#" target="_blank" rel="noopener noreferrer">Open Configurator</a>
+        <button id="cancelGeneratorBtn" class="generator-btn secondary" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="e90GeneratorFrame" class="hidden-generator-frame" title="E90 M3 PDF Generator"></iframe>
+
+  <audio id="f87OpenAudio" preload="auto" crossorigin="anonymous">
+    <source src="https://raw.githubusercontent.com/Sman19/Active-Website/28e274f91d0a71fb14dafa10bb76793c84ac508e/M2%20rev%20clip.m4a" type="audio/mp4">
+    Your browser does not support the audio element.
+  </audio>
+
+  <audio id="e90OpenAudio" preload="auto" crossorigin="anonymous">
+    <source src="https://raw.githubusercontent.com/Sman19/Active-Website/94c7980b355c8ddbf90fd3862060c80797266cd4/E90%20M3%20Exhaust.m4a" type="audio/mp4">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const CSV_FILES = [
+      "2016 F87 M2.csv",
+      "2017 F87 M2.csv",
+      "2018 F87 M2.csv",
+      "2008 E90 M3 Sedan.csv",
+      "2009 E90 M3 Sedan.csv",
+      "2010 E90 M3 Sedan.csv",
+      "2011 E90 M3 Sedan.csv",
+      "2012 E90 M3 Sedan CRT.csv",
+      "2008 E92 M3 Coupe.csv",
+      "2009 E92 M3 Coupe.csv",
+      "2010 E92 M3 Coupe.csv",
+      "2011 E92 M3 Coupe.csv",
+      "2012 E92 M3 Coupe.csv",
+      "2013 E92 M3 Coupe.csv",
+      "2011 E82 1M Coupe.csv",
+      "2020 F97 X3M.csv",
+      "2021 F97 X3M.csv",
+      "2022 F97 X3M.csv",
+      "2023 F97 X3M.csv",
+    ];
+
+    const recentTerms = [];
+    const allRows = [];
+
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const recentSearches = document.getElementById("recentSearches");
+
+    const loadingStatus = document.getElementById("loadingStatus");
+    const emptyState = document.getElementById("emptyState");
+    const resultsSection = document.getElementById("resultsSection");
+    const resultsList = document.getElementById("resultsList");
+
+    const userMenuBtn = document.getElementById("userMenuBtn");
+    const userDropdown = document.getElementById("userDropdown");
+    const authUsername = document.getElementById("auth-username");
+
+    const homeDropdownBtn = document.getElementById("homeDropdownBtn");
+    const homeDropdown = document.getElementById("homeDropdown");
+    const configuratorMenuBtn = document.getElementById("configuratorMenuBtn");
+    const configuratorMenu = document.getElementById("configuratorMenu");
+
+    const monroneyOverlay = document.getElementById("monroneyOverlay");
+    const monroneyModalText = document.getElementById("monroneyModalText");
+    const closeMonroneyModal = document.getElementById("closeMonroneyModal");
+
+    const generatorOverlay = document.getElementById("generatorOverlay");
+    const generatorTitle = document.getElementById("generatorTitle");
+    const generatorText = document.getElementById("generatorText");
+    const generatorActions = document.getElementById("generatorActions");
+    const openConfiguratorFallback = document.getElementById("openConfiguratorFallback");
+    const cancelGeneratorBtn = document.getElementById("cancelGeneratorBtn");
+    const e90GeneratorFrame = document.getElementById("e90GeneratorFrame");
+    const instagramExportBtn = document.getElementById("instagramExportBtn");
+    const instagramExportStatus = document.getElementById("instagramExportStatus");
+    const instagramExportStage = document.getElementById("instagramExportStage");
+
+    let e90GeneratorTimeout = null;
+    let activeAudio = null;
+    let activeButton = null;
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const next = line[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          result.push(current.trim());
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current.trim());
+      return result;
+    }
+
+    function parseCSV(text, sourceFile) {
+      const lines = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .filter(line => line.trim() !== "");
+
+      if (!lines.length) return [];
+
+      const headers = parseCSVLine(lines[0]).map(h => h.trim());
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+        const row = {
+          __sourceFile: sourceFile,
+          __values: values
+        };
+
+        headers.forEach((header, index) => {
+          row[header] = values[index] || "";
+        });
+
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function getField(row, possibleNames) {
+      const keys = Object.keys(row);
+
+      for (const name of possibleNames) {
+        const foundKey = keys.find(key => key.toLowerCase().trim() === name.toLowerCase().trim());
+        if (foundKey && row[foundKey]) return row[foundKey];
+      }
+
+      return "";
+    }
+
+    function getBestVin(row) {
+      return getField(row, [
+        "VIN",
+        "vin",
+        "Full VIN",
+        "FullVin",
+        "Full_VIN",
+        "Full VIN Number"
+      ]);
+    }
+
+    function getBestLast7(row) {
+      let last7 = getField(row, [
+        "Last 7",
+        "Last7",
+        "last 7",
+        "last7",
+        "VIN Last 7"
+      ]);
+
+      if (!last7) {
+        const vin = getBestVin(row);
+        if (vin && vin.length >= 7) last7 = vin.slice(-7);
+      }
+
+      return last7;
+    }
+
+    function getBestYear(row) {
+      return getField(row, [
+        "Year",
+        "year",
+        "Model Year",
+        "Production Year",
+        "MY"
+      ]);
+    }
+
+    function getBestTitle(row) {
+      return getField(row, [
+        "Model",
+        "Series",
+        "Description",
+        "Vehicle",
+        "Name"
+      ]) || "BMW Record";
+    }
+
+    function getBestDetails(row) {
+      const color = getField(row, [
+        "Color",
+        "Exterior",
+        "Exterior Color",
+        "Paint",
+        "Paint Code"
+      ]);
+
+      const interior = getField(row, [
+        "Interior",
+        "Interior Color",
+        "Trim",
+        "Upholstery"
+      ]);
+
+      const transmission = getField(row, [
+        "Transmission",
+        "Trans",
+        "Gearbox"
+      ]);
+
+      const parts = [color, interior, transmission].filter(Boolean);
+      return parts.length ? parts.join(" • ") : "BMW record";
+    }
+
+    function normalizeVin(value) {
+      return String(value || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+    }
+
+    function convertGitHubPdfLink(link) {
+      if (!link) return "";
+
+      let fixed = String(link).trim();
+
+      if (fixed.includes("github.com") && fixed.includes("/blob/")) {
+        fixed = fixed
+          .replace("https://github.com/", "https://raw.githubusercontent.com/")
+          .replace("/blob/", "/");
+      }
+
+      return fixed;
+    }
+
+    function getMonroneyLink(row) {
+      const rawLink = row.__values && row.__values[19] ? row.__values[19].trim() : "";
+      return convertGitHubPdfLink(rawLink);
+    }
+
+    function getSearchText(row) {
+      return Object.values(row).join(" ").toLowerCase();
+    }
+
+    function updateRecent(term) {
+      if (!term.trim()) return;
+
+      const existingIndex = recentTerms.indexOf(term);
+      if (existingIndex !== -1) recentTerms.splice(existingIndex, 1);
+
+      recentTerms.unshift(term);
+      if (recentTerms.length > 3) recentTerms.pop();
+
+      recentSearches.textContent = "Recent searches: " + recentTerms.join(" | ");
+    }
+
+    function renderMonroneyUnavailable(row = null) {
+      const vin = row ? getBestVin(row) : "";
+      const last7 = row ? getBestLast7(row) : "";
+
+      if (vin || last7) {
+        monroneyModalText.textContent =
+          `No Monroney PDF is currently available for this vehicle.${vin ? " VIN: " + vin : ""}${!vin && last7 ? " Last 7: " + last7 : ""}`;
+      } else {
+        monroneyModalText.textContent = "No Monroney PDF is currently available for this vehicle.";
+      }
+
+      monroneyOverlay.classList.remove("hidden");
+    }
+
+    function closeMonroneyUnavailable() {
+      monroneyOverlay.classList.add("hidden");
+    }
+
+    function openMonroney(row) {
+      const link = getMonroneyLink(row);
+
+      if (!link) {
+        renderMonroneyUnavailable(row);
+        return;
+      }
+
+      window.open(link, "_blank", "noopener,noreferrer");
+    }
+
+    function isE90M3Row(row) {
+      const source = String(row.__sourceFile || "").toLowerCase();
+      const title = String(getBestTitle(row) || "").toLowerCase();
+      const details = String(getBestDetails(row) || "").toLowerCase();
+
+      return (
+        source.includes("e90") ||
+        source.includes("m3 sedan") ||
+        title.includes("e90") ||
+        title.includes("m3 sedan") ||
+        details.includes("e90") ||
+        details.includes("m3 sedan")
+      );
+    }
+
+    function showGeneratorOverlay(url) {
+      if (!generatorOverlay) return;
+
+      generatorTitle.textContent = "Generating BMW document...";
+      generatorText.textContent = "Please wait while the E90 M3 BMW Spec Sheet PDF is created.";
+      generatorActions.classList.add("hidden");
+
+      if (openConfiguratorFallback) openConfiguratorFallback.href = url || "#";
+      generatorOverlay.classList.remove("hidden");
+    }
+
+    function showGeneratorFallback(url) {
+      if (!generatorOverlay) return;
+
+      generatorTitle.textContent = "Still generating...";
+      generatorText.textContent = "The E90 configurator did not send the PDF back yet. You can open the configurator directly, or cancel and try again.";
+      if (openConfiguratorFallback) openConfiguratorFallback.href = url || "#";
+      generatorActions.classList.remove("hidden");
+      generatorOverlay.classList.remove("hidden");
+    }
+
+    function hideGeneratorOverlay() {
+      if (generatorOverlay) generatorOverlay.classList.add("hidden");
+      if (generatorActions) generatorActions.classList.add("hidden");
+
+      if (e90GeneratorTimeout) {
+        clearTimeout(e90GeneratorTimeout);
+        e90GeneratorTimeout = null;
+      }
+    }
+
+    function resetE90GeneratorFrame() {
+      if (e90GeneratorFrame) e90GeneratorFrame.removeAttribute("src");
+    }
+
+    function downloadDataUrl(dataUrl, filename) {
+      if (!dataUrl) return false;
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = filename || "BMW_E90_M3_Spec_Sheet.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      return true;
+    }
+
+    function isAllowedGeneratorOrigin(origin) {
+      return origin === "https://sman19.github.io" || origin === window.location.origin;
+    }
+
+    window.addEventListener("message", function (event) {
+      if (!isAllowedGeneratorOrigin(event.origin)) return;
+
+      const data = event.data || {};
+
+      if (data.type === "e90-pdf-data-url") {
+        downloadDataUrl(data.dataUrl, data.filename);
+        hideGeneratorOverlay();
+        resetE90GeneratorFrame();
+        return;
+      }
+
+      if (data.type === "e90-document-error") {
+        hideGeneratorOverlay();
+        resetE90GeneratorFrame();
+        monroneyModalText.textContent = "BMW Spec Sheet could not be generated for this E90 M3 VIN. Please open the configurator and try the BMW Spec Sheet PDF button there.";
+        monroneyOverlay.classList.remove("hidden");
+      }
+    });
+
+    function getBestPackageText(row) {
+      const pieces = [];
+
+      const fieldGroups = [
+        ["Packages", "Package", "Package Codes", "Packages & Options"],
+        ["Transmission", "Trans", "Gearbox"],
+        ["Options", "Option Codes", "Factory Installed Packages & Accessories"],
+        ["Color", "Exterior", "Exterior Color", "Paint", "Paint Code"],
+        ["Interior", "Interior Color", "Trim", "Upholstery"]
+      ];
+
+      fieldGroups.forEach(names => {
+        const value = getField(row, names);
+        if (value) pieces.push(value);
+      });
+
+      // E90 CSVs have shifted/extra columns over time. Add the row values too so
+      // package codes like ZCV, ZCW, ZCP, ZP2/ZP3, 223, 2MK, and 2MT are not missed.
+      if (row.__values && Array.isArray(row.__values)) {
+        row.__values.forEach(value => {
+          const text = String(value || "").trim();
+          if (/\b(ZCV|ZCW|ZCP|ZPP|ZP2|ZP3|ZTP|223|2MK|2MT|1CC|6FL|6NF|6NR|403|415|494|655|752|4MX|4MY|4MZ|771|XE2|XE8)\b/i.test(text)) {
+            pieces.push(text);
+          }
+        });
+      }
+
+      return [...new Set(
+        pieces
+          .join(" ")
+          .replace(/[|;]/g, " ")
+          .split(/\s*,\s*|\s{2,}|\n/)
+          .map(item => item.trim())
+          .filter(Boolean)
+      )].join(", ");
+    }
+
+    function openE90ConfiguratorSpecSheet(row) {
+      const vin = normalizeVin(getBestVin(row));
+      const last7 = normalizeVin(getBestLast7(row));
+      const vinParam = vin || last7;
+
+      if (!vinParam) {
+        renderMonroneyUnavailable(row);
+        return;
+      }
+
+      const packageText = getBestPackageText(row);
+      const url =
+        "https://sman19.github.io/2011-E90-M3-Configurator/" +
+        "?vin=" + encodeURIComponent(vinParam) +
+        "&auto=spec" +
+        "&handoff=1" +
+        "&packages=" + encodeURIComponent(packageText) +
+        "&packageCodes=" + encodeURIComponent(packageText) +
+        "&source=home-search" +
+        "&cache=" + Date.now();
+
+      showGeneratorOverlay(url);
+
+      if (e90GeneratorFrame) {
+        e90GeneratorFrame.src = url;
+      } else {
+        window.open(url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      if (e90GeneratorTimeout) clearTimeout(e90GeneratorTimeout);
+      e90GeneratorTimeout = setTimeout(() => {
+        showGeneratorFallback(url);
+      }, 45000);
+    }
+
+    function renderResults(matches, term) {
+      resultsList.innerHTML = "";
+
+      if (!term.trim()) {
+        resultsSection.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        emptyState.textContent = "Start typing above to search the linked BMW CSV files.";
+        return;
+      }
+
+      resultsSection.classList.remove("hidden");
+      emptyState.classList.add("hidden");
+
+      if (!matches.length) {
+        resultsList.innerHTML = `<div class="status">No matches found for "${escapeHtml(term)}".</div>`;
+        return;
+      }
+
+      matches.forEach((row) => {
+        const item = document.createElement("div");
+        item.className = "result-row";
+
+        const monroneyLink = getMonroneyLink(row);
+
+        item.innerHTML = `
+          <div class="result-main">${escapeHtml(getBestTitle(row))}</div>
+          <div class="result-cell" data-label="VIN">${escapeHtml(getBestVin(row) || "—")}</div>
+          <div class="result-cell" data-label="Last 7">${escapeHtml(getBestLast7(row) || "—")}</div>
+          <div class="result-cell" data-label="Year">${escapeHtml(getBestYear(row) || "—")}</div>
+          <div class="result-cell muted" data-label="Details">${escapeHtml(getBestDetails(row))}</div>
+          <div class="result-cell" data-label="Monroney">
+            ${
+              monroneyLink
+                ? `<a class="open-link" href="${escapeHtml(monroneyLink)}" target="_blank" rel="noopener noreferrer">Open Monroney</a>`
+                : `<span class="muted">Unavailable</span>`
+            }
+          </div>
+          <div class="result-cell" data-label="Source">${escapeHtml(row.__sourceFile || "—")}</div>
+        `;
+
+        if (monroneyLink) {
+          item.style.cursor = "pointer";
+          item.addEventListener("dblclick", () => openMonroney(row));
+          item.title = "Double-click row to open Monroney";
+        }
+
+        resultsList.appendChild(item);
+      });
+    }
+
+    function renderArchiveSummary() {
+      const summary = {};
+
+      allRows.forEach(row => {
+        const source = String(row.__sourceFile || "");
+        let series = "Other BMW";
+        if (/F87\s*M2/i.test(source)) series = "F87 M2";
+        else if (/E82\s*1M/i.test(source)) series = "E82 1M";
+        else if (/E90\s*M3/i.test(source)) series = "E90 M3";
+        else if (/E92\s*M3/i.test(source)) series = "E92 M3";
+        else if (/F97\s*X3M/i.test(source)) series = "F97 X3M";
+
+        const yearMatch = source.match(/\b(19|20)\d{2}\b/);
+        const year = String(getBestYear(row) || (yearMatch ? yearMatch[0] : "Unknown")).trim();
+
+        if (!summary[series]) summary[series] = { total: 0, years: {} };
+        summary[series].total++;
+        summary[series].years[year] = (summary[series].years[year] || 0) + 1;
+      });
+
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "Other BMW"];
+      const grid = document.getElementById("archiveSeriesGrid");
+      const total = document.getElementById("archiveSummaryTotal");
+      const box = document.getElementById("archiveSummary");
+      if (!grid || !total || !box) return;
+
+      total.textContent = `${allRows.length.toLocaleString()} vehicles total`;
+      const seriesLinks = {
+        "F87 M2": "F87%20M2.html",
+        "E82 1M": "E821MCoupe.html",
+        "E90 M3": "E90%20Sedan.html",
+        "E92 M3": "E92%20Coupe.html",
+        "F97 X3M": "F97%20X3M.html"
+      };
+
+      grid.innerHTML = order.filter(name => summary[name]).map(name => {
+        const item = summary[name];
+        const years = Object.keys(item.years).sort((a, b) => Number(a) - Number(b));
+        const target = seriesLinks[name] || "";
+        const clickable = target ? " clickable" : "";
+        const attrs = target
+          ? ` role="link" tabindex="0" data-series-link="${escapeHtml(target)}" aria-label="Open ${escapeHtml(name)} database"`
+          : "";
+
+        let preLciTotal = 0;
+        let lciTotal = 0;
+        let preLciYearsLabel = "";
+        let lciYearsLabel = "";
+
+        if (name === "E90 M3") {
+          // E90 Sedan: 2008 is Pre-LCI. 2009–2011 are LCI.
+          // 2012 CRT remains in the overall E90 total/year pills, but is excluded from the LCI total.
+          preLciTotal = item.years["2008"] || 0;
+          lciTotal = ["2009", "2010", "2011"].reduce(
+            (sum, year) => sum + (item.years[year] || 0),
+            0
+          );
+          preLciYearsLabel = "2008";
+          lciYearsLabel = "2009–2011";
+        } else if (name === "E92 M3") {
+          preLciTotal = ["2008", "2009", "2010"].reduce(
+            (sum, year) => sum + (item.years[year] || 0),
+            0
+          );
+          lciTotal = ["2011", "2012", "2013"].reduce(
+            (sum, year) => sum + (item.years[year] || 0),
+            0
+          );
+          preLciYearsLabel = "2008–2010";
+          lciYearsLabel = "2011–2013";
+        }
+
+        return `
+          <div class="archive-series-card${clickable}"${attrs}>
+            <div class="archive-series-head">
+              <div class="archive-series-name">${escapeHtml(name)}</div>
+              <div class="archive-series-count">${item.total.toLocaleString()}</div>
+            </div>
+            <div class="archive-years">
+              ${years.map(year => {
+                const datasetFiles = {
+                  "F87 M2": {
+                    "2016": "2016 F87 M2.csv",
+                    "2017": "2017 F87 M2.csv",
+                    "2018": "2018 F87 M2.csv"
+                  },
+                  "E82 1M": {
+                    "2011": "2011 E82 1M Coupe.csv"
+                  },
+                  "E90 M3": {
+                    "2008": "2008 E90 M3 Sedan.csv",
+                    "2009": "2009 E90 M3 Sedan.csv",
+                    "2010": "2010 E90 M3 Sedan.csv",
+                    "2011": "2011 E90 M3 Sedan.csv",
+                    "2012": "2012 E90 M3 Sedan CRT.csv"
+                  },
+                  "E92 M3": {
+                    "2008": "2008 E92 M3 Coupe.csv",
+                    "2009": "2009 E92 M3 Coupe.csv",
+                    "2010": "2010 E92 M3 Coupe.csv",
+                    "2011": "2011 E92 M3 Coupe.csv",
+                    "2012": "2012 E92 M3 Coupe.csv",
+                    "2013": "2013 E92 M3 Coupe.csv"
+                  },
+                  "F97 X3M": {
+                    "2020": "2020 F97 X3M.csv"
+                  }
+                };
+
+                const datasetFile = datasetFiles[name] && datasetFiles[name][year]
+                  ? datasetFiles[name][year]
+                  : "";
+
+                return target && datasetFile
+                  ? `<span class="archive-year-chip clickable" role="link" tabindex="0" data-year-link="${escapeHtml(target)}" data-dataset-file="${escapeHtml(datasetFile)}" data-year="${escapeHtml(year)}" data-series="${escapeHtml(name)}" aria-label="Open ${escapeHtml(year)} ${escapeHtml(name)} vehicles"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`
+                  : `<span class="archive-year-chip"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>`;
+              }).join("")}
+            </div>
+            ${(name === "E90 M3" || name === "E92 M3") ? `
+              <div class="archive-era-breakdown">
+                <div class="archive-era-box">
+                  <div class="archive-era-info">
+                    <div class="archive-era-title">Pre-LCI</div>
+                    <div class="archive-era-years">${preLciYearsLabel}</div>
+                  </div>
+                  <div class="archive-era-total">${preLciTotal.toLocaleString()}</div>
+                </div>
+                <div class="archive-era-box lci">
+                  <div class="archive-era-info">
+                    <div class="archive-era-title">LCI</div>
+                    <div class="archive-era-years">${lciYearsLabel}</div>
+                  </div>
+                  <div class="archive-era-total">${lciTotal.toLocaleString()}</div>
+                </div>
+              </div>
+            ` : ""}
+            ${target ? `<div class="archive-series-linkhint">VIEW ${escapeHtml(name)} DATABASE →</div>` : ""}
+          </div>`;
+      }).join("");
+
+      grid.querySelectorAll("[data-year-link]").forEach(chip => {
+        const openYear = (event) => {
+          event.stopPropagation();
+          const target = chip.getAttribute("data-year-link");
+          const datasetFile = chip.getAttribute("data-dataset-file");
+          if (!target || !datasetFile) return;
+
+          const url = new URL(target, window.location.href);
+          url.searchParams.set("file", datasetFile);
+          window.location.href = url.toString();
+        };
+
+        chip.addEventListener("click", openYear);
+        chip.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openYear(event);
+          }
+        });
+      });
+
+      grid.querySelectorAll("[data-series-link]").forEach(card => {
+        const openSeries = () => {
+          const target = card.getAttribute("data-series-link");
+          if (target) window.location.href = target;
+        };
+
+        card.addEventListener("click", openSeries);
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openSeries();
+          }
+        });
+      });
+
+      box.classList.remove("hidden");
+    }
+
+    function runSearch() {
+      const rawTerm = searchInput.value.trim();
+      const term = rawTerm.toLowerCase();
+      const normalizedTerm = normalizeVin(rawTerm);
+
+      if (!rawTerm) {
+        renderResults([], "");
+        return;
+      }
+
+      updateRecent(rawTerm);
+
+      const exactVinMatch = allRows.find(row => {
+        const vin = normalizeVin(getBestVin(row));
+        const last7 = normalizeVin(getBestLast7(row));
+        return vin === normalizedTerm || last7 === normalizedTerm;
+      });
+
+      if (exactVinMatch) {
+        if (isE90M3Row(exactVinMatch)) {
+          openE90ConfiguratorSpecSheet(exactVinMatch);
+        } else {
+          openMonroney(exactVinMatch);
+        }
+        return;
+      }
+
+      const matches = allRows
+        .filter(row => getSearchText(row).includes(term))
+        .slice(0, 100);
+
+      renderResults(matches, rawTerm);
+    }
+
+    async function loadCSVs() {
+      try {
+        const responses = await Promise.all(
+          CSV_FILES.map(async file => {
+            const response = await fetch(
+              encodeURI(file) + "?v=" + Date.now(),
+              { cache: "no-store" }
+            );
+            if (!response.ok) {
+              throw new Error(`Could not load ${file}`);
+            }
+
+            const text = await response.text();
+            const parsedRows = parseCSV(text, file);
+
+            const filteredRows = [];
+            let reachedEnd = false;
+
+            parsedRows.forEach(row => {
+              const vin = String(getBestVin(row) || "").trim();
+
+              if (vin === "END_VEHICLES") {
+                reachedEnd = true;
+                return;
+              }
+
+              if (reachedEnd) return;
+
+              const cleanVin = vin.toUpperCase();
+              if (/^[A-HJ-NPR-Z0-9]{17}$/.test(cleanVin)) {
+                filteredRows.push(row);
+              }
+            });
+
+            return filteredRows;
+          })
+        );
+
+        allRows.length = 0;
+        const seenVins = new Set();
+        responses.flat().forEach(row => {
+          const vin = String(getBestVin(row) || "").trim().toUpperCase();
+          if (!seenVins.has(vin)) {
+            seenVins.add(vin);
+            allRows.push(row);
+          }
+        });
+
+        loadingStatus.classList.add("hidden");
+        emptyState.classList.add("hidden");
+        renderArchiveSummary();
+      } catch (error) {
+        loadingStatus.classList.remove("hidden");
+        loadingStatus.textContent = "Error loading CSV files. Check the exact file names and make sure GitHub Pages is serving them.";
+        console.error(error);
+      }
+    }
+
+
+    function buildInstagramSummaryData() {
+      const summary = {};
+
+      allRows.forEach(row => {
+        const source = String(row.__sourceFile || "");
+        let series = "Other BMW";
+
+        if (/F87\s*M2/i.test(source)) series = "F87 M2";
+        else if (/E82\s*1M/i.test(source)) series = "E82 1M";
+        else if (/E90\s*M3/i.test(source)) series = "E90 M3";
+        else if (/E92\s*M3/i.test(source)) series = "E92 M3";
+
+        if (series === "Other BMW") return;
+
+        const yearMatch = source.match(/\b(19|20)\d{2}\b/);
+        const year = String(getBestYear(row) || (yearMatch ? yearMatch[0] : "Unknown")).trim();
+
+        if (!summary[series]) summary[series] = { total: 0, years: {} };
+        summary[series].total++;
+        summary[series].years[year] = (summary[series].years[year] || 0) + 1;
+      });
+
+      return summary;
+    }
+
+    function buildInstagramExportMarkup() {
+      const summary = buildInstagramSummaryData();
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3"];
+
+      const cards = order.map(name => {
+        const item = summary[name] || { total: 0, years: {} };
+        const years = Object.keys(item.years).sort((a, b) => Number(a) - Number(b));
+
+        return `
+          <div class="ig-series-card">
+            <div class="ig-series-head">
+              <div class="ig-series-name">${escapeHtml(name)}</div>
+              <div class="ig-series-count">${item.total.toLocaleString()}</div>
+            </div>
+            <div class="ig-years">
+              ${years.map(year => `
+                <span class="ig-year"><strong>${escapeHtml(year)}</strong> · ${item.years[year].toLocaleString()}</span>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="ig-sheet">
+          <div class="ig-topbar">
+            <div class="ig-topbar-left">BMW M ARCHIV</div>
+            <div class="ig-topbar-title">M ARCHIV</div>
+            <div class="ig-topbar-right">BMW M ARCHIV.Com</div>
+          </div>
+
+          <div class="ig-hero">
+            <div class="ig-search-panel">
+              <div class="ig-search-title">Vehicle Inquiry</div>
+              <div class="ig-search-box">Search by VIN or last 7</div>
+            </div>
+          </div>
+
+          <div class="ig-content">
+            <div class="ig-breakdown">
+              <div class="ig-heading-row">
+                <div class="ig-heading">Archive Breakdown</div>
+                <div class="ig-total">${allRows.length.toLocaleString()} vehicles total</div>
+              </div>
+              <div class="ig-series-grid">${cards}</div>
+            </div>
+
+            <div class="ig-launcher-title">Series Launcher</div>
+            <div class="ig-launcher">
+              <div class="ig-launcher-row header">
+                <div>Series</div>
+                <div>Generation</div>
+                <div>Body Style</div>
+                <div>Status</div>
+              </div>
+              <div class="ig-launcher-row">
+                <div class="ig-series-main">F87 M2</div>
+                <div>F87</div>
+                <div>Coupe</div>
+                <div class="ig-active">ACTIVE</div>
+              </div>
+              <div class="ig-launcher-row">
+                <div class="ig-series-main">E82 1M</div>
+                <div>E82</div>
+                <div>Coupe</div>
+                <div class="ig-active">ACTIVE</div>
+              </div>
+              <div class="ig-launcher-row">
+                <div class="ig-series-main">E90 M3</div>
+                <div>E90</div>
+                <div>Sedan</div>
+                <div class="ig-active">ACTIVE</div>
+              </div>
+              <div class="ig-launcher-row">
+                <div class="ig-series-main">E92 M3</div>
+                <div>E92</div>
+                <div>Coupe</div>
+                <div class="ig-active">ACTIVE</div>
+              </div>
+            </div>
+
+            <div class="ig-footer">North American BMW M vehicle archive • Updated automatically from the live database</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function downloadInstagramPost() {
+      if (!instagramExportBtn) return;
+
+      if (!window.html2canvas) {
+        alert("Screenshot library did not load. Refresh the page and try again.");
+        return;
+      }
+
+      const originalScrollX = window.scrollX;
+      const originalScrollY = window.scrollY;
+      const dropdownWasOpen = userDropdown && !userDropdown.classList.contains("hidden");
+
+      instagramExportBtn.disabled = true;
+      instagramExportBtn.innerHTML = `
+        <span class="profile-action-icon">…</span>
+        <span class="profile-action-text">
+          <span class="profile-action-title">Capturing page…</span>
+          <span class="profile-action-sub">Creating 1080 × 1920 story</span>
+        </span>
+      `;
+      if (instagramExportStatus) instagramExportStatus.textContent = "Taking a full-page screenshot…";
+
+      try {
+        // Hide only the profile dropdown that contains the download button.
+        // Everything else on the homepage is captured exactly as it currently exists.
+        if (userDropdown) userDropdown.classList.add("hidden");
+
+        window.scrollTo(0, 0);
+        await new Promise(resolve => setTimeout(resolve, 250));
+
+        // Let web fonts/background images finish painting before the capture.
+        if (document.fonts && document.fonts.ready) {
+          try { await document.fonts.ready; } catch (_) {}
+        }
+
+        const doc = document.documentElement;
+        const body = document.body;
+
+        const pageWidth = Math.max(
+          body.scrollWidth,
+          body.offsetWidth,
+          doc.clientWidth,
+          doc.scrollWidth,
+          doc.offsetWidth
+        );
+
+        const pageHeight = Math.max(
+          body.scrollHeight,
+          body.offsetHeight,
+          doc.clientHeight,
+          doc.scrollHeight,
+          doc.offsetHeight
+        );
+
+        // This is the actual homepage DOM — not a recreated marketing layout.
+        const pageCanvas = await html2canvas(body, {
+          width: pageWidth,
+          height: pageHeight,
+          windowWidth: pageWidth,
+          windowHeight: pageHeight,
+          scrollX: 0,
+          scrollY: 0,
+          scale: 1,
+          backgroundColor: "#f3f3f3",
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          imageTimeout: 15000,
+          onclone: clonedDoc => {
+            const cloneDropdown = clonedDoc.getElementById("userDropdown");
+            if (cloneDropdown) cloneDropdown.classList.add("hidden");
+
+            // Prevent the off-screen export staging node from affecting the screenshot.
+            const cloneStage = clonedDoc.getElementById("instagramExportStage");
+            if (cloneStage) cloneStage.style.display = "none";
+
+            // Disable animations during the screenshot so every element is crisp.
+            const style = clonedDoc.createElement("style");
+            style.textContent = `
+              *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                caret-color: transparent !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
+          }
+        });
+
+        // Instagram Story canvas.
+        const storyWidth = 1080;
+        const storyHeight = 1920;
+        const storyCanvas = document.createElement("canvas");
+        storyCanvas.width = storyWidth;
+        storyCanvas.height = storyHeight;
+
+        const ctx = storyCanvas.getContext("2d");
+        ctx.fillStyle = "#f3f3f3";
+        ctx.fillRect(0, 0, storyWidth, storyHeight);
+
+        // Fit the ENTIRE exact page inside the 9:16 story without cropping.
+        const fitScale = Math.min(
+          storyWidth / pageCanvas.width,
+          storyHeight / pageCanvas.height
+        );
+
+        const drawWidth = Math.round(pageCanvas.width * fitScale);
+        const drawHeight = Math.round(pageCanvas.height * fitScale);
+        const drawX = Math.round((storyWidth - drawWidth) / 2);
+        const drawY = Math.round((storyHeight - drawHeight) / 2);
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(
+          pageCanvas,
+          0, 0, pageCanvas.width, pageCanvas.height,
+          drawX, drawY, drawWidth, drawHeight
+        );
+
+        const blob = await new Promise(resolve =>
+          storyCanvas.toBlob(resolve, "image/png")
+        );
+        if (!blob) throw new Error("PNG could not be created.");
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "M-ARCHIV-Exact-Page-Instagram-Story-1080x1920.png";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+        if (instagramExportStatus) instagramExportStatus.textContent = "Story downloaded.";
+      } catch (error) {
+        console.error("Instagram Story screenshot failed:", error);
+        if (instagramExportStatus) instagramExportStatus.textContent = "Capture failed.";
+        alert("The full-page Instagram Story screenshot could not be created. Refresh the page and try again.");
+      } finally {
+        window.scrollTo(originalScrollX, originalScrollY);
+
+        if (userDropdown && dropdownWasOpen) {
+          // Leave it closed after download so the downloaded screenshot/menu doesn't immediately cover the page.
+          userDropdown.classList.add("hidden");
+        }
+
+        instagramExportBtn.disabled = false;
+        instagramExportBtn.innerHTML = `
+          <span class="profile-action-icon">↓</span>
+          <span class="profile-action-text">
+            <span class="profile-action-title">Instagram Story</span>
+            <span class="profile-action-sub">Exact page • 1080 × 1920 PNG</span>
+          </span>
+        `;
+
+        setTimeout(() => {
+          if (instagramExportStatus) instagramExportStatus.textContent = "";
+        }, 3000);
+      }
+    }
+
+    function updateAuthUser() {
+      if (!authUsername) return;
+
+      if (typeof login !== "undefined" && login) {
+        authUsername.textContent = login;
+      } else {
+        authUsername.textContent = "Member";
+      }
+    }
+
+    function stopActiveAudioVisual() {
+      if (activeButton) {
+        activeButton.classList.remove("playing");
+      }
+
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio.currentTime = 0;
+        activeAudio.onended = null;
+      }
+
+      activeAudio = null;
+      activeButton = null;
+    }
+
+    function playAudioClip(audioId, button) {
+      const audio = document.getElementById(audioId);
+      if (!audio || !button) return;
+
+      if (activeAudio && activeAudio !== audio) {
+        stopActiveAudioVisual();
+      }
+
+      if (activeAudio === audio && !audio.paused) {
+        stopActiveAudioVisual();
+        return;
+      }
+
+      activeAudio = audio;
+      activeButton = button;
+
+      button.classList.add("playing");
+
+      audio.pause();
+      audio.currentTime = 0;
+
+      audio.onended = () => {
+        stopActiveAudioVisual();
+      };
+
+      audio.play().catch((err) => {
+        console.error("Audio play failed:", err);
+        stopActiveAudioVisual();
+      });
+    }
+
+    function playF87OpenAudio(event, button) {
+      event.preventDefault();
+      playAudioClip("f87OpenAudio", button);
+    }
+
+    function playE90OpenAudio(event, button) {
+      event.preventDefault();
+      playAudioClip("e90OpenAudio", button);
+    }
+
+    if (instagramExportBtn) {
+      instagramExportBtn.addEventListener("click", downloadInstagramPost);
+    }
+
+    searchBtn.addEventListener("click", runSearch);
+
+    searchInput.addEventListener("input", () => {
+      clearBtn.style.display = searchInput.value ? "flex" : "none";
+    });
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearBtn.style.display = "none";
+      searchInput.focus();
+      renderResults([], "");
+    });
+
+    searchInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") runSearch();
+    });
+
+    homeDropdownBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      homeDropdown.classList.toggle("hidden");
+      userDropdown.classList.add("hidden");
+    });
+
+    if (configuratorMenuBtn && configuratorMenu) {
+      configuratorMenuBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        configuratorMenu.classList.toggle("hidden");
+      });
+    }
+
+    userMenuBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      userDropdown.classList.toggle("hidden");
+      homeDropdown.classList.add("hidden");
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!userDropdown.contains(event.target) && !userMenuBtn.contains(event.target)) {
+        userDropdown.classList.add("hidden");
+      }
+
+      if (!homeDropdown.contains(event.target) && !homeDropdownBtn.contains(event.target)) {
+        homeDropdown.classList.add("hidden");
+        if (configuratorMenu) configuratorMenu.classList.add("hidden");
+      }
+    });
+
+    if (cancelGeneratorBtn) {
+      cancelGeneratorBtn.addEventListener("click", function () {
+        hideGeneratorOverlay();
+        resetE90GeneratorFrame();
+      });
+    }
+
+    closeMonroneyModal.addEventListener("click", closeMonroneyUnavailable);
+
+    monroneyOverlay.addEventListener("click", function (event) {
+      if (event.target === monroneyOverlay) {
+        closeMonroneyUnavailable();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Clerk test copy: wait for verified Clerk sign-in before initializing UI.
+    });
+  </script>
+
+  <script>
+  // Clerk browser integration for this standalone GitHub Pages test file.
+  // Publishable keys are public. NEVER place a Clerk secret key in HTML.
+  (async function initializeClerkTest() {
+    const publishableKey = 'pk_test_YWNjZXB0ZWQtc2FpbGZpc2gtMjI2LmNsZXJrLmFjY291bnRzLmRldiQ';
+    const gate = document.getElementById('clerkGate');
+    const error = document.getElementById('clerkError');
+    const mount = document.getElementById('clerkSignIn');
+    let loadedArchive = false;
+
+    function showError(message) {
+      error.textContent = message;
+      console.error('Clerk test:', message);
+    }
+
+    try {
+      const encodedDomain = publishableKey.split('_')[2];
+      if (!encodedDomain) throw new Error('Invalid Clerk publishable key');
+      const clerkDomain = atob(encodedDomain).replace(/\$$/, '');
+      // Use the Clerk-hosted browser SDK (no Vite, npm, or import.meta required).
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://${clerkDomain}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+        script.setAttribute('data-clerk-publishable-key', publishableKey);
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Could not load the Clerk browser SDK. Check your Clerk domain and allowed origins.'));
+        document.head.appendChild(script);
+      });
+
+      const clerk = window.Clerk;
+      if (!clerk) throw new Error('Clerk SDK loaded but window.Clerk was not available.');
+      await clerk.load();
+
+      function refreshUI() {
+        const user = clerk.user;
+        if (user) {
+          gate.hidden = true;
+          const label = user.firstName || user.username || user.primaryEmailAddress?.emailAddress || 'Member';
+          document.getElementById('auth-username').textContent = label;
+          if (!loadedArchive) {
+            loadedArchive = true;
+            loadCSVs();
+          }
+        } else {
+          gate.hidden = false;
+          document.getElementById('auth-username').textContent = 'Member';
+          mount.replaceChildren();
+          clerk.mountSignIn(mount);
+        }
+      }
+
+      document.getElementById('clerkLogout').addEventListener('click', async (event) => {
+        event.preventDefault();
+        await clerk.signOut();
+        window.location.reload();
+      });
+      clerk.addListener(() => refreshUI());
+      refreshUI();
+    } catch (e) {
+      showError(e?.message || String(e));
+    }
+  })();
+  </script>
+</body>
+</html>
