@@ -1283,7 +1283,27 @@
     #clerkGate .login-heading { background:#242529; color:white; font-size:19px; font-weight:800;
       text-align:center; padding: 17px 14px; letter-spacing:.02em; }
     #clerkGate .login-content { padding: 20px 17px 22px; }
-    #clerkGate #clerkSignIn { min-height: 250px; display:flex; justify-content:center; }
+    /* Center Clerk's complete sign-in widget within the login panel. */
+    #clerkGate .login-content { padding: 22px 24px 26px; }
+    #clerkGate #clerkSignIn {
+      width: 100%; min-height: 250px;
+      display: flex; justify-content: center; align-items: flex-start;
+    }
+    #clerkGate #clerkSignIn > div { width: 100%; max-width: 100%; margin-inline: auto; }
+    #clerkGate #clerkSignIn .cl-rootBox,
+    #clerkGate #clerkSignIn .cl-cardBox,
+    #clerkGate #clerkSignIn .cl-card,
+    #clerkGate #clerkSignIn .cl-main,
+    #clerkGate #clerkSignIn .cl-form,
+    #clerkGate #clerkSignIn .cl-socialButtonsBlockButton {
+      width: 100%; max-width: 100%; margin-inline: auto;
+    }
+    #clerkGate #clerkSignIn .cl-formButtonPrimary,
+    #clerkGate #clerkSignIn .cl-formFieldInput { width: 100%; }
+    #clerkGate #clerkSignIn .cl-footerAction,
+    #clerkGate #clerkSignIn .cl-footer,
+    #clerkGate #clerkSignIn .cl-dividerRow { text-align: center; }
+
     #clerkGate #clerkError { color:#a30000; white-space:pre-wrap; line-height:1.4;
       font: 14px Arial,sans-serif; margin:10px 0 0; }
     #clerkGate .login-footer { text-align:center; margin-top:28px; color:rgba(255,255,255,.78);
@@ -2796,8 +2816,11 @@
                   fontFamily: 'Arial, Helvetica, sans-serif'
                 },
                 elements: {
-                  cardBox: { boxShadow: 'none', width: '100%', maxWidth: '100%' },
-                  card: { boxShadow: 'none', background: 'transparent', padding: '0' },
+                  rootBox: { width: '100%', maxWidth: '100%' },
+                  cardBox: { boxShadow: 'none', width: '100%', maxWidth: '100%', margin: '0 auto' },
+                  card: { boxShadow: 'none', background: 'transparent', padding: '0', width: '100%' },
+                  main: { width: '100%' },
+                  form: { width: '100%' },
                   headerTitle: { display: 'none' },
                   headerSubtitle: { display: 'none' },
                   formButtonPrimary: { backgroundColor: '#242529', borderRadius: '24px', fontWeight: '700' },
