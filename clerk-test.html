@@ -1252,26 +1252,54 @@
   </style>
 
   <style>
-    /* Isolated Clerk test page; does not change the live homepage. */
-    #clerkGate { position:fixed; inset:0; z-index:99999; background:#f3f3f3;
-      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-      overflow:auto; padding:70px 16px 30px; }
-    #clerkGate[hidden] { display:none; }
-    #clerkGate h1 { color:#202124; font:700 28px Arial,sans-serif; margin:0 0 8px; }
-    #clerkGate p { font:15px Arial,sans-serif; color:#555; margin:0 0 20px; text-align:center; }
-    #clerkSignIn { min-height:300px; }
-    #clerkError { max-width:600px; color:#a00; white-space:pre-wrap; line-height:1.5; }
+    /* BMW M ARCHIV - custom Clerk test sign-in skin */
+    #clerkGate {
+      position: fixed; inset: 0; z-index: 99999; overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start; padding: 108px 16px 60px;
+      background: linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.2) 50%,rgba(0,0,0,.58)),
+        url("https://images.mecum.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1600,h_899/v1697809136/auctions/FL24/1103018/704535.jpg?") center/cover fixed;
+      color: #fff;
+    }
+    #clerkGate[hidden] { display: none; }
+    #clerkGate .login-topbar { position: fixed; top: 0; left: 0; right: 0; height: 82px;
+      display:flex; align-items:center; padding: 14px 26px; background:rgba(0,0,0,.94);
+      border-bottom: 1px solid rgba(255,255,255,.17); }
+    #clerkGate .login-logo { width: 60px; height: 60px; object-fit: contain; background:#fff; }
+    #clerkGate .login-card { width: min(100%, 420px); border-radius: 17px; overflow:hidden;
+      background: #efefef; color: #242529; box-shadow: 0 22px 55px rgba(0,0,0,.5); }
+    #clerkGate .login-heading { background:#242529; color:white; font-size:19px; font-weight:800;
+      text-align:center; padding: 17px 14px; letter-spacing:.02em; }
+    #clerkGate .login-content { padding: 20px 17px 22px; }
+    #clerkGate #clerkSignIn { min-height: 250px; display:flex; justify-content:center; }
+    #clerkGate #clerkError { color:#a30000; white-space:pre-wrap; line-height:1.4;
+      font: 14px Arial,sans-serif; margin:10px 0 0; }
+    #clerkGate .login-footer { text-align:center; margin-top:28px; color:rgba(255,255,255,.78);
+      font-size:14px; text-shadow:0 1px 5px #000; }
     #clerkTestBadge { position:fixed; bottom:12px; left:12px; z-index:8000;
       background:#fff3cd; color:#664d03; border:1px solid #ffecb5;
       padding:8px 12px; border-radius:8px; font:700 12px Arial,sans-serif; }
+    @media(max-width:480px) {
+      #clerkGate { padding: 100px 12px 36px; }
+      #clerkGate .login-topbar { height:70px; padding:10px 15px; }
+      #clerkGate .login-logo { width:50px; height:50px; }
+      #clerkGate .login-content { padding: 14px 9px 18px; }
+    }
   </style>
 </head>
 <body>
   <div id="clerkGate" role="region" aria-label="Member sign in">
-    <h1>BMW M ARCHIV</h1>
-    <p>Clerk login test · Sign in or create a test account</p>
-    <div id="clerkSignIn"></div>
-    <p id="clerkError" role="alert"></p>
+    <div class="login-topbar">
+      <img class="login-logo" alt="CARBOI-CREATIONS" src="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
+    </div>
+    <div class="login-card">
+      <div class="login-heading">BMW M ARCHIV</div>
+      <div class="login-content">
+        <div id="clerkSignIn"></div>
+        <p id="clerkError" role="alert"></p>
+      </div>
+    </div>
+    <div class="login-footer">Presented by CARBOI-CREATIONS</div>
   </div>
   <div id="clerkTestBadge">CLERK TEST PAGE · NOT LIVE AUTHENTICATION</div>
   <header class="topbar">
@@ -2743,6 +2771,25 @@
           if (!signInMounted) {
             signInMounted = true;
             clerk.mountSignIn(mount, {
+              appearance: {
+                variables: {
+                  colorPrimary: '#242529',
+                  colorText: '#242529',
+                  colorBackground: '#efefef',
+                  colorInputBackground: '#e7edf8',
+                  colorInputText: '#202124',
+                  borderRadius: '10px',
+                  fontFamily: 'Arial, Helvetica, sans-serif'
+                },
+                elements: {
+                  cardBox: { boxShadow: 'none', width: '100%', maxWidth: '100%' },
+                  card: { boxShadow: 'none', background: 'transparent', padding: '0' },
+                  headerTitle: { display: 'none' },
+                  headerSubtitle: { display: 'none' },
+                  formButtonPrimary: { backgroundColor: '#242529', borderRadius: '24px', fontWeight: '700' },
+                  footer: { background: 'transparent' }
+                }
+              },
               forceRedirectUrl: 'https://sman19.github.io/Active-Website/clerk-test.html',
               signUpForceRedirectUrl: 'https://sman19.github.io/Active-Website/clerk-test.html'
             });
