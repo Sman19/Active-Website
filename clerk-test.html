@@ -1304,6 +1304,23 @@
     #clerkGate #clerkSignIn .cl-footer,
     #clerkGate #clerkSignIn .cl-dividerRow { text-align: center; }
 
+    /* Final visual refinements: slightly smaller heading and tighter vertical rhythm. */
+    #clerkGate .login-heading {
+      font-size: 17px;
+      padding: 14px 14px;
+      letter-spacing: .015em;
+    }
+    #clerkGate .login-content { padding: 12px 24px 17px; }
+    #clerkGate #clerkSignIn { min-height: 0; }
+    #clerkGate #clerkSignIn .cl-main { padding-top: 0; padding-bottom: 0; }
+    #clerkGate #clerkSignIn .cl-socialButtonsBlockButton { min-height: 38px; }
+    #clerkGate #clerkSignIn .cl-form { gap: 12px; }
+    #clerkGate #clerkSignIn .cl-footer { padding-top: 8px; }
+    #clerkGate .login-footer { margin-top: 22px; }
+    @media (max-width: 480px) {
+      #clerkGate .login-content { padding: 12px 12px 16px; }
+    }
+
     #clerkGate #clerkError { color:#a30000; white-space:pre-wrap; line-height:1.4;
       font: 14px Arial,sans-serif; margin:10px 0 0; }
     #clerkGate .login-footer { text-align:center; margin-top:28px; color:rgba(255,255,255,.78);
