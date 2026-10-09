@@ -15,7 +15,7 @@
     href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
   />
 
-  <!-- Clerk test copy: AuthPro is intentionally not loaded here. -->
+  <!-- Clerk production-login test: AuthPro is intentionally not loaded here. -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
@@ -1350,7 +1350,7 @@
     </div>
     <div class="login-footer">Presented by CARBOI-CREATIONS</div>
   </div>
-  <div id="clerkTestBadge">CLERK TEST PAGE · NOT LIVE AUTHENTICATION</div>
+  <div id="clerkTestBadge">CLERK PRODUCTION LOGIN · TEST PAGE</div>
   <header class="topbar">
     <div class="topbar-home dropdown">
       <button class="home-btn" id="homeDropdownBtn" type="button">
@@ -2768,10 +2768,10 @@
   </script>
 
   <script>
-  // Clerk browser integration for this standalone GitHub Pages test file.
+  // Clerk production browser integration for this standalone test file.
   // Publishable keys are public. NEVER place a Clerk secret key in HTML.
   (async function initializeClerkTest() {
-    const publishableKey = 'pk_test_YWNjZXB0ZWQtc2FpbGZpc2gtMjI2LmNsZXJrLmFjY291bnRzLmRldiQ';
+    const publishableKey = 'pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k';
     const gate = document.getElementById('clerkGate');
     const error = document.getElementById('clerkError');
     const mount = document.getElementById('clerkSignIn');
@@ -2844,8 +2844,8 @@
                   footer: { background: 'transparent' }
                 }
               },
-              forceRedirectUrl: 'https://sman19.github.io/Active-Website/clerk-test.html',
-              signUpForceRedirectUrl: 'https://sman19.github.io/Active-Website/clerk-test.html'
+              forceRedirectUrl: 'https://www.bmwmarchiv.com/clerk-test.html',
+              signUpForceRedirectUrl: 'https://www.bmwmarchiv.com/clerk-test.html'
             });
           }
         }
