@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BMW M ARCHIV | Member Login</title>
+  <link rel="icon" type="image/png" href="carbo-insta_1080x1080 Favicon.png">
+  <link rel="preload" as="image" href="crtrep login.png">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; font-family: Arial, Helvetica, sans-serif; }
+    body { min-height: 100vh; min-height: 100dvh; background: linear-gradient(rgba(0,0,0,.16),rgba(0,0,0,.16)), url('crtrep login.png') center center / cover no-repeat fixed; }
+    .top-strip { height: 92px; background: rgba(0,0,0,.78); border-bottom: 1px solid rgba(255,255,255,.18); }
+    .top-logo { position: absolute; top: 22px; left: 34px; width: 58px; height: 58px; object-fit: contain; }
+    .login-stage { display: flex; justify-content: center; padding: 28px 16px 110px; }
+    .login-card { width: min(100%, 480px); border-radius: 15px; overflow: hidden; background: #efefef; box-shadow: 0 12px 34px rgba(0,0,0,.24); }
+    .login-header { background: #242529; color: #fff; text-align: center; padding: 17px 12px; font-size: 22px; font-weight: 800; }
+    .login-content { padding: 18px 24px 24px; }
+    #clerkSignIn, #clerkSignIn > div { width: 100%; max-width: 100%; margin-inline: auto; }
+    .cl-rootBox, .cl-cardBox, .cl-card { max-width: 100% !important; width: 100% !important; }
+    #loginStatus { text-align: center; color: #444; padding: 12px; font-size: 14px; }
+    #loginError { color: #a61b22; text-align: center; font-size: 14px; margin-top: 8px; }
+    .bumper-text { text-align: center; color: rgba(255,255,255,.85); font-size: 15px; text-shadow: 0 1px 4px #000; padding: 0 16px 30px; }
+    @media (max-width:600px) { .top-strip { height:74px; } .top-logo { top:14px; left:20px; width:46px; height:46px; } .login-stage { padding-top:18px; padding-bottom:70px; } .login-content { padding:12px 14px 18px; } .login-header { font-size:19px; } }
+  </style>
+</head>
+<body>
+  <div class="top-strip"></div>
+  <img class="top-logo" src="carbo-insta_1080x1080 Favicon.png" alt="BMW M ARCHIV logo">
+  <main class="login-stage">
+    <section class="login-card" aria-label="Member sign in">
+      <div class="login-header">BMW M ARCHIV</div>
+      <div class="login-content">
+        <div id="loginStatus" role="status">Loading secure sign-in...</div>
+        <div id="clerkSignIn"></div>
+        <div id="loginError" role="alert"></div>
+      </div>
+    </section>
+  </main>
+  <div class="bumper-text">Presented by CARBOI-CREATIONS</div>
+  <script>
+    (async function initializeClerkLogin() {
+      const publishableKey = 'pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k';
+      const homepage = 'https://www.bmwmarchiv.com/';
+      const status = document.getElementById('loginStatus');
+      const error = document.getElementById('loginError');
+      try {
+        const encodedDomain = publishableKey.split('_')[2];
+        if (!encodedDomain) throw new Error('Invalid Clerk publishable key.');
+        const clerkDomain = atob(encodedDomain).replace(/\$$/, '');
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `https://${clerkDomain}/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
+          script.setAttribute('data-clerk-publishable-key', publishableKey);
+          script.async = true;
+          script.crossOrigin = 'anonymous';
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Unable to load Clerk. Check your connection and Clerk domain.'));
+          document.head.appendChild(script);
+        });
+        const clerk = window.Clerk;
+        if (!clerk) throw new Error('Clerk could not initialize.');
+        await clerk.load();
+        if (clerk.user) { window.location.replace(homepage); return; }
+        status.style.display = 'none';
+        clerk.mountSignIn(document.getElementById('clerkSignIn'), {
+          appearance: {
+            variables: {
+              colorPrimary: '#242529', colorText: '#242529',
+              colorBackground: '#efefef', colorInputBackground: '#e7edf8',
+              colorInputText: '#202124', borderRadius: '10px',
+              fontFamily: 'Arial, Helvetica, sans-serif'
+            },
+            elements: {
+              rootBox: { width: '100%', maxWidth: '100%' },
+              cardBox: { boxShadow: 'none', width: '100%', maxWidth: '100%', margin: '0 auto' },
+              card: { boxShadow: 'none', background: 'transparent', padding: '0', width: '100%' },
+              headerTitle: { display: 'none' },
+              headerSubtitle: { display: 'none' },
+              formButtonPrimary: { backgroundColor: '#242529', borderRadius: '24px', fontWeight: '700' },
+              footer: { background: 'transparent' }
+            }
+          },
+          forceRedirectUrl: homepage,
+          signUpForceRedirectUrl: homepage
+        });
+        clerk.addListener(() => {
+          if (clerk.user) window.location.replace(homepage);
+        });
+      } catch (e) {
+        status.style.display = 'none';
+        error.textContent = e?.message || 'Sign-in is temporarily unavailable.';
+        console.error('Clerk login:', e);
+      }
+    })();
+  </script>
+</body>
+</html>
