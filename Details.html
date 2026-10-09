@@ -654,26 +654,13 @@ function getPriceForCode(code,year){if(year==="2009"&&code==="655")return 595;re
 function descriptionFor(code,year){if(year==="2009"&&code==="655")return"Satellite Radio with 1-year subscription - $595.00";return PACKAGE_TEXT[code]||code}
 
 function getDetailsUsername(){
-  try{
-    const fromUrl=params.get("authuser")||params.get("username")||params.get("user");
-    if(fromUrl)return fromUrl;
-    if(window.opener && !window.opener.closed && typeof window.opener.getAuthProUsername==="function"){
-      return window.opener.getAuthProUsername();
-    }
-    if(typeof login!=="undefined" && login)return String(login);
-  }catch(error){}
-  return "Member";
+  const user=window.Clerk?.user;
+  return user?.username || user?.primaryEmailAddress?.emailAddress || user?.id || "Member";
 }
 function getDetailsEmail(){
-  try{
-    const fromUrl=params.get("authemail")||params.get("email");
-    if(fromUrl)return fromUrl;
-    if(window.opener && !window.opener.closed && typeof window.opener.getAuthProEmail==="function"){
-      return window.opener.getAuthProEmail()||"";
-    }
-  }catch(error){}
-  return "";
+  return window.Clerk?.user?.primaryEmailAddress?.emailAddress || "";
 }
+
 async function checkDocumentLimit(documentType,vehicle){
   const response=await fetch(DOCUMENT_LIMIT_WEBHOOK_URL,{
     method:"POST",
@@ -1194,7 +1181,38 @@ if(copyVinButton){
   copyVinButton.addEventListener("click",copyCurrentVin);
 }
 
-init();
+async function initializeAuthenticatedDetails(){
+  const loading=document.getElementById("loading");
+  try{
+    const publishableKey="pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k";
+    const domain=atob(publishableKey.split("_")[2]).replace(/\$$/, "");
+    await new Promise((resolve,reject)=>{
+      const script=document.createElement("script");
+      script.src=`https://${domain}/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
+      script.setAttribute("data-clerk-publishable-key",publishableKey);
+      script.crossOrigin="anonymous";
+      script.onload=resolve;
+      script.onerror=()=>reject(new Error("Unable to load Clerk authentication."));
+      document.head.appendChild(script);
+    });
+    if(!window.Clerk)throw new Error("Clerk authentication is unavailable.");
+    await window.Clerk.load();
+    if(!window.Clerk.user){
+      const destination=new URL("login.html",window.location.href);
+      window.location.replace(destination.href);
+      return;
+    }
+    window.Clerk.addListener(({user})=>{
+      if(!user)window.location.replace(new URL("login.html",window.location.href).href);
+    });
+    await init();
+  }catch(error){
+    console.error("Authentication initialization failed:",error);
+    if(loading)loading.textContent="Authentication could not be verified.";
+    showError("Unable to verify your Clerk session. Please refresh the page or sign in again.");
+  }
+}
+initializeAuthenticatedDetails();
 </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6wmsZHv6hoIzkt5eIcm5NVVqxQHoThcA&callback=initDetailsGoogleMaps"></script>
 </body>
