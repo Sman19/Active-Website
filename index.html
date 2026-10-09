@@ -2828,6 +2828,19 @@
     const loading = document.getElementById('authLoading');
     const error = document.getElementById('clerkError');
     const mount = document.getElementById('clerkSignIn');
+    // Return members to the bookmarked page after signing in.
+    function getReturnDestination() {
+      const requested = new URLSearchParams(window.location.search).get('redirect_url');
+      if (!requested) return null;
+      try {
+        const destination = new URL(requested, window.location.origin);
+        if (destination.origin !== window.location.origin) return null;
+        if (!['http:', 'https:'].includes(destination.protocol)) return null;
+        if (/\/(?:index|login)\.html$/i.test(destination.pathname) || destination.pathname === '/') return null;
+        return destination.href;
+      } catch (_) { return null; }
+    }
+    const returnDestination = getReturnDestination();
     let loadedArchive = false;
     let signInMounted = false;
 
@@ -2916,8 +2929,24 @@
         try {
           const email = document.getElementById('resetEmail').value.trim();
           const signIn = clerk.client.signIn;
-          await signIn.create({ identifier: email });
-          await signIn.prepareFirstFactor({ strategy: 'reset_password_email_code' });
+          const resetSignIn = await signIn.create({ identifier: email });
+          // Clerk requires the email address ID for password-reset verification.
+          // Find it in the first factors returned for this exact sign-in attempt.
+          const factors = resetSignIn.supportedFirstFactors || signIn.supportedFirstFactors || [];
+          const emailFactor = factors.find(factor =>
+            factor.emailAddressId && (
+              factor.strategy === 'reset_password_email_code' ||
+              factor.strategy === 'email_code' ||
+              factor.strategy === 'password'
+            )
+          ) || factors.find(factor => factor.emailAddressId);
+          if (!emailFactor?.emailAddressId) {
+            throw new Error('Clerk could not find a verified email address for this account. Check the email and try again.');
+          }
+          await signIn.prepareFirstFactor({
+            strategy: 'reset_password_email_code',
+            emailAddressId: emailFactor.emailAddressId
+          });
           beginResetCooldown(60);
           resetRequest.hidden = true;
           resetConfirm.hidden = false;
@@ -2950,7 +2979,7 @@
           });
           if (result.status === 'complete' && result.createdSessionId) {
             await clerk.setActive({ session: result.createdSessionId });
-            window.location.href = 'https://www.bmwmarchiv.com/';
+            window.location.replace(returnDestination || 'https://www.bmwmarchiv.com/');
           } else {
             resetMessage.textContent = 'Password updated. Please return to sign in.';
           }
@@ -2961,6 +2990,10 @@
       function refreshUI() {
         const user = clerk.user;
         if (user) {
+          if (returnDestination) {
+            window.location.replace(returnDestination);
+            return;
+          }
           document.body.classList.add('clerk-authenticated');
           gate.hidden = true;
           loading.hidden = true;
@@ -3000,8 +3033,8 @@
                   footer: { background: 'transparent' }
                 }
               },
-              forceRedirectUrl: 'https://www.bmwmarchiv.com/',
-              signUpForceRedirectUrl: 'https://www.bmwmarchiv.com/'
+              forceRedirectUrl: returnDestination || 'https://www.bmwmarchiv.com/',
+              signUpForceRedirectUrl: returnDestination || 'https://www.bmwmarchiv.com/'
             });
           }
         }
