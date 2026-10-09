@@ -1359,6 +1359,7 @@
     #clerkGate .reset-panel label { display:block; font-weight:700; margin:12px 0 6px; }
     #clerkGate .reset-panel input { display:block; width:100%; padding:12px; border:1px solid #c4c7cf; border-radius:9px; font-size:15px; }
     #clerkGate .reset-panel button { width:100%; padding:12px; border:0; border-radius:22px; margin-top:14px; background:#242529; color:white; font-weight:700; cursor:pointer; }
+    #clerkGate .reset-panel button:disabled { opacity:.55; cursor:not-allowed; }
     #clerkGate .reset-panel .reset-back { background:transparent; color:#285eaa; margin-top:6px; }
     #clerkGate .reset-panel .reset-message { margin-top:12px; white-space:pre-wrap; color:#a30000; }
   </style>
@@ -2884,20 +2885,57 @@
       function resetError(e) {
         resetMessage.textContent = e?.errors?.[0]?.longMessage || e?.errors?.[0]?.message || e?.message || 'Unable to reset password. Please try again.';
       }
+      // Avoid accidental repeated requests and respect Clerk's rate limits.
+      const resetSendButton = resetRequest.querySelector('button[type="submit"]');
+      const resetSendLabel = resetSendButton.textContent;
+      let resetRequestPending = false;
+      let resetCooldownUntil = 0;
+      let resetCooldownTimer = null;
+      function updateResetSendButton() {
+        const seconds = Math.max(0, Math.ceil((resetCooldownUntil - Date.now()) / 1000));
+        resetSendButton.disabled = resetRequestPending || seconds > 0;
+        resetSendButton.textContent = resetRequestPending
+          ? 'Sending...' : seconds > 0
+            ? `Try again in ${seconds}s` : resetSendLabel;
+        if (!seconds && resetCooldownTimer) {
+          clearInterval(resetCooldownTimer);
+          resetCooldownTimer = null;
+        }
+      }
+      function beginResetCooldown(seconds) {
+        resetCooldownUntil = Math.max(resetCooldownUntil, Date.now() + seconds * 1000);
+        if (!resetCooldownTimer) resetCooldownTimer = setInterval(updateResetSendButton, 1000);
+        updateResetSendButton();
+      }
       resetRequest.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (resetRequestPending || Date.now() < resetCooldownUntil) return;
         resetMessage.textContent = '';
-        const button = resetRequest.querySelector('button[type="submit"]');
-        button.disabled = true;
+        resetRequestPending = true;
+        updateResetSendButton();
         try {
           const email = document.getElementById('resetEmail').value.trim();
           const signIn = clerk.client.signIn;
           await signIn.create({ identifier: email });
           await signIn.prepareFirstFactor({ strategy: 'reset_password_email_code' });
+          beginResetCooldown(60);
           resetRequest.hidden = true;
           resetConfirm.hidden = false;
-        } catch (e) { resetError(e); }
-        finally { button.disabled = false; }
+        } catch (e) {
+          resetError(e);
+          const errors = Array.isArray(e?.errors) ? e.errors : [];
+          const rateLimited = e?.status === 429 || errors.some(error =>
+            /rate.limit|too.many.requests|429/i.test(`${error.code || ''} ${error.message || ''} ${error.longMessage || ''}`)
+          );
+          if (rateLimited) {
+            // This is a UI safeguard, not Clerk's actual cooldown duration.
+            beginResetCooldown(60);
+            resetMessage.textContent += '\nPlease wait before trying again. Clerk may require a longer cooldown.';
+          }
+        } finally {
+          resetRequestPending = false;
+          updateResetSendButton();
+        }
       });
       resetConfirm.addEventListener('submit', async (event) => {
         event.preventDefault();
