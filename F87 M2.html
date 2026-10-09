@@ -790,7 +790,7 @@
           <div class="user-menu-dropdown" id="user-menu-dropdown">
             <button class="instagram-menu-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)">Instagram Story</button>
             <div class="user-menu-separator"></div>
-            <a class="user-menu-link" href="login.html" id="clerk-logout-link">Logout</a>
+            <a class="user-menu-link" href="index.html" id="clerk-logout-link">Logout</a>
           </div>
         </div>
       </div>
@@ -1047,7 +1047,7 @@
     }
 
     async function initializeClerk() {
-      const loginUrl = new URL("login.html", window.location.href);
+      const loginUrl = new URL("index.html", window.location.href);
       loginUrl.searchParams.set("redirect_url", window.location.href);
       const redirectToLogin = () => window.location.replace(loginUrl.href);
 
@@ -1073,7 +1073,7 @@
           logoutLink.addEventListener("click", async (event) => {
             event.preventDefault();
             try {
-              await window.Clerk.signOut({ redirectUrl: new URL("login.html", window.location.href).href });
+              await window.Clerk.signOut({ redirectUrl: new URL("index.html", window.location.href).href });
             } catch (error) {
               console.error("Clerk sign-out failed", error);
             }
@@ -1084,7 +1084,7 @@
       } catch (error) {
         console.error("Clerk authentication failed", error);
         const loader = document.getElementById("archiv-auth-loader");
-        if (loader) loader.innerHTML = '<div class="archiv-loader-content"><div class="archiv-loader-title">BMW M ARCHIV</div><p class="archiv-loader-caption">Unable to load. Please refresh or <a href="login.html" style="color:#93c5fd">sign in</a>.</p></div>';
+        if (loader) loader.innerHTML = '<div class="archiv-loader-content"><div class="archiv-loader-title">BMW M ARCHIV</div><p class="archiv-loader-caption">Unable to load. Please refresh or <a href="index.html" style="color:#93c5fd">sign in</a>.</p></div>';
       }
     }
 
