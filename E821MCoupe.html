@@ -1339,7 +1339,7 @@
     }
 
     async function logoutClerk() {
-      await window.Clerk.signOut({ redirectUrl: "https://www.bmwmarchiv.com/login.html" });
+      await window.Clerk.signOut({ redirectUrl: "https://www.bmwmarchiv.com/index.html" });
     }
 
     async function downloadInstagramStory(event) {
@@ -3328,7 +3328,9 @@
         if (!window.Clerk) throw new Error("Clerk SDK unavailable");
         await window.Clerk.load();
         if (!window.Clerk.user) {
-          window.location.replace("https://www.bmwmarchiv.com/login.html");
+          const loginUrl = new URL("https://www.bmwmarchiv.com/index.html");
+          loginUrl.searchParams.set("redirect_url", window.location.href);
+          window.location.replace(loginUrl.toString());
           return;
         }
         document.documentElement.classList.add("clerk-authenticated");
