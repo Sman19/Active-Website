@@ -13,7 +13,8 @@
     href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
   />
 
-  <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
+  <script async crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k" src="https://clerk.bmwmarchiv.com/npm/@clerk/clerk-js@5/dist/clerk.browser.js"></script>
+  <style>html:not(.clerk-authorized) body { visibility: hidden; }</style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -981,7 +982,7 @@
           <div class="user-menu-dropdown" id="user-menu-dropdown">
             <button class="instagram-menu-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)">Instagram Story</button>
             <div class="user-menu-separator"></div>
-            <a class="user-menu-link" href="https://www.authpro.com/auth/sman201/?action=logout">Logout</a>
+            <a class="user-menu-link" href="login.html" onclick="event.preventDefault(); window.Clerk?.signOut({ redirectUrl: 'https://www.bmwmarchiv.com/login.html' });">Logout</a>
           </div>
         </div>
       </div>
@@ -1401,13 +1402,7 @@
 
     function updateAuthUser() {
       const el = document.getElementById("auth-username");
-      if (!el) return;
-
-      if (typeof login !== "undefined" && login) {
-        el.textContent = login;
-      } else {
-        el.textContent = "Member";
-      }
+      if (el) el.textContent = getCurrentLoginName() || "Member";
     }
 
     async function downloadInstagramStory(event) {
@@ -1677,27 +1672,8 @@
     }
 
     function getCurrentLoginName() {
-      // AuthPro normally exposes login, but different embeds can expose user/userName/username.
-      const possibleGlobals = [
-        "login",
-        "username",
-        "userName",
-        "authpro_login",
-        "authpro_user"
-      ];
-
-      for (const key of possibleGlobals) {
-        try {
-          if (window[key]) return String(window[key]).trim();
-        } catch (error) {}
-      }
-
-      const authEl = document.getElementById("auth-username");
-      if (authEl && authEl.textContent && authEl.textContent.trim() !== "Member") {
-        return authEl.textContent.trim();
-      }
-
-      return "";
+      const user = window.Clerk?.user;
+      return user?.username || user?.primaryEmailAddress?.emailAddress || "";
     }
 
     function isAdminUser() {
@@ -2675,21 +2651,12 @@
     const PDF_ALERT_TO_EMAIL = "carboicreations@outlook.com";
 
     function getAuthProUsername() {
-      if (typeof login !== "undefined" && login) return String(login);
-      const el = document.getElementById("auth-username");
-      return el && el.textContent ? el.textContent.trim() : "Member";
+      return getCurrentLoginName() || "Member";
     }
 
     function getAuthProEmail() {
-      const possibleNames = ["email", "user_email", "member_email", "auth_email"];
-      for (const name of possibleNames) {
-        try {
-          if (typeof window[name] !== "undefined" && window[name]) return String(window[name]);
-        } catch (err) {}
-      }
-      return "";
+      return window.Clerk?.user?.primaryEmailAddress?.emailAddress || "";
     }
-
 
     function getDocumentLimitPopupHTML(title, message) {
       return `<!DOCTYPE html><html><head><title>${escapeHtml(title)}</title><style>html,body{height:100%;margin:0}body{font-family:Arial,sans-serif;color:#111827;background:#f8fafc;display:flex;align-items:center;justify-content:center}.loader-card{background:white;border:1px solid #e5e7eb;border-radius:14px;padding:28px 34px;box-shadow:0 18px 45px rgba(15,23,42,.14);text-align:center;min-width:280px}.spinner{width:42px;height:42px;border:4px solid #e5e7eb;border-top-color:#dc2626;border-radius:999px;animation:spin .85s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}h2{font-size:18px;margin:0 0 8px}p{font-size:13px;color:#6b7280;margin:0}</style></head><body><div class="loader-card"><div class="spinner"></div><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p></div></body></html>`;
@@ -3404,14 +3371,36 @@
       }
     }
 
+    async function initializeClerkPage() {
+      try {
+        // Clerk's browser script is asynchronous; wait for it before loading member data.
+        for (let attempt = 0; attempt < 100 && !window.Clerk; attempt++) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        if (!window.Clerk) throw new Error("Clerk did not load");
+        await window.Clerk.load();
+        if (!window.Clerk.user) {
+          window.location.replace("login.html?redirect_url=" + encodeURIComponent(window.location.href));
+          return;
+        }
+        document.documentElement.classList.add("clerk-authorized");
+        updateAuthUser();
+        updateAdminMode();
+        setupFilterInputs();
+        setupSortableHeaders();
+        setupColumnDragAndDrop();
+        loadCSV();
+      } catch (error) {
+        console.error("Clerk authentication failed:", error);
+        document.body.style.visibility = "visible";
+        document.body.innerHTML = '<main style="padding:40px;font-family:sans-serif"><h2>Unable to verify your login</h2><p>Please refresh the page or try signing in again.</p><a href="login.html">Go to login</a></main>';
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-      updateAuthUser();
-      updateAdminMode();
-      setupFilterInputs();
-      setupSortableHeaders();
-      setupColumnDragAndDrop();
-      loadCSV();
+      initializeClerkPage();
     });
+
   </script>
 </body>
 </html>
