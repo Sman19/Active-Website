@@ -1,7 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
+    <script async crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k" src="https://clerk.bmwmarchiv.com/npm/@clerk/clerk-js@5/dist/clerk.browser.js"></script>
+    <style id="clerk-access-style">html:not(.clerk-authorized) body { visibility: hidden !important; }</style>
+    <script>
+      (async function () {
+        const loginUrl = 'https://www.bmwmarchiv.com/login.html';
+        const deadline = Date.now() + 15000;
+        while (!window.Clerk && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 100));
+        try {
+          if (!window.Clerk) throw new Error('Clerk did not load');
+          await window.Clerk.load();
+          if (!window.Clerk.user) {
+            window.location.replace(loginUrl + '?redirect_url=' + encodeURIComponent(window.location.href));
+            return;
+          }
+          document.documentElement.classList.add('clerk-authorized');
+        } catch (error) {
+          console.error('Clerk authentication failed:', error);
+          document.body.innerHTML = '<main style="font:16px Arial,sans-serif;padding:32px"><h2>Unable to verify your login</h2><p>Please sign in again.</p><a href="' + loginUrl + '">Go to login</a></main>';
+          document.documentElement.classList.add('clerk-authorized');
+        }
+      })();
+    </script>
     <style>
         .logout-link {
             position: fixed;
@@ -34,7 +55,7 @@
     </style>
 </head>
 <body>
-    <a href="https://sman19.github.io/Active-Website/index.html" class="home-btn">Home</a>
+    <a href="https://www.bmwmarchiv.com/index.html" class="home-btn">Home</a>
 
 mat-sidenav-content {
     height: auto !important;
