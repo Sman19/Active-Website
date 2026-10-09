@@ -1000,7 +1000,7 @@
           <div class="user-menu-dropdown" id="user-menu-dropdown">
             <button class="instagram-menu-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)">Instagram Story</button>
             <div class="user-menu-separator"></div>
-            <a class="user-menu-link" href="login.html" onclick="event.preventDefault(); window.Clerk?.signOut({ redirectUrl: 'https://www.bmwmarchiv.com/login.html' });">Logout</a>
+            <a class="user-menu-link" href="index.html" onclick="event.preventDefault(); window.Clerk?.signOut({ redirectUrl: 'https://www.bmwmarchiv.com/index.html' });">Logout</a>
           </div>
         </div>
       </div>
@@ -3398,7 +3398,7 @@
         if (!window.Clerk) throw new Error("Clerk did not load");
         await window.Clerk.load();
         if (!window.Clerk.user) {
-          window.location.replace("login.html?redirect_url=" + encodeURIComponent(window.location.href));
+          window.location.replace("index.html?redirect_url=" + encodeURIComponent(window.location.href));
           return;
         }
         document.documentElement.classList.add("clerk-authorized");
@@ -3411,7 +3411,7 @@
       } catch (error) {
         console.error("Clerk authentication failed:", error);
         const loader = document.getElementById("archiv-auth-loader");
-        if (loader) loader.innerHTML = '<div class="archiv-loader-content"><div class="archiv-loader-title">BMW M ARCHIV</div><p class="archiv-loader-caption">Unable to load. Please refresh or <a href="login.html" style="color:#93c5fd">sign in</a>.</p></div>';
+        if (loader) loader.innerHTML = '<div class="archiv-loader-content"><div class="archiv-loader-title">BMW M ARCHIV</div><p class="archiv-loader-caption">Unable to load. Please refresh or <a href="index.html" style="color:#93c5fd">sign in</a>.</p></div>';
       }
     }
 
