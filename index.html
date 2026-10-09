@@ -1348,6 +1348,18 @@
       #clerkGate .login-logo { width:50px; height:50px; }
       #clerkGate .login-content { padding: 14px 9px 18px; }
     }
+
+    #clerkGate .reset-entry { text-align:center; margin: 12px 0 0; }
+    #clerkGate .reset-entry button { border:0; background:none; color:#285eaa; font:600 14px Arial,sans-serif; cursor:pointer; text-decoration:underline; padding:7px; }
+    #clerkGate .reset-panel[hidden], #clerkGate .reset-entry[hidden] { display:none!important; }
+    #clerkGate .reset-panel { font:14px Arial,sans-serif; color:#242529; }
+    #clerkGate .reset-panel h3 { margin:4px 0 12px; font-size:19px; }
+    #clerkGate .reset-panel p { line-height:1.45; margin:0 0 12px; }
+    #clerkGate .reset-panel label { display:block; font-weight:700; margin:12px 0 6px; }
+    #clerkGate .reset-panel input { display:block; width:100%; padding:12px; border:1px solid #c4c7cf; border-radius:9px; font-size:15px; }
+    #clerkGate .reset-panel button { width:100%; padding:12px; border:0; border-radius:22px; margin-top:14px; background:#242529; color:white; font-weight:700; cursor:pointer; }
+    #clerkGate .reset-panel .reset-back { background:transparent; color:#285eaa; margin-top:6px; }
+    #clerkGate .reset-panel .reset-message { margin-top:12px; white-space:pre-wrap; color:#a30000; }
   </style>
 </head>
 <body>
@@ -1364,6 +1376,26 @@
       <div class="login-heading">BMW M ARCHIV</div>
       <div class="login-content">
         <div id="clerkSignIn"></div>
+        <div class="reset-entry" id="resetEntry"><button type="button" id="resetOpen">Forgot password?</button></div>
+        <div class="reset-panel" id="resetPanel" hidden>
+          <h3>Reset your password</h3>
+          <p>Enter the email address associated with your BMW M ARCHIV account.</p>
+          <form id="resetRequestForm">
+            <label for="resetEmail">Email address</label>
+            <input id="resetEmail" type="email" autocomplete="email" required>
+            <button type="submit">Send verification code</button>
+          </form>
+          <form id="resetConfirmForm" hidden>
+            <p>Check your email for a verification code.</p>
+            <label for="resetCode">Verification code</label>
+            <input id="resetCode" type="text" autocomplete="one-time-code" required>
+            <label for="resetPassword">New password</label>
+            <input id="resetPassword" type="password" autocomplete="new-password" required minlength="8">
+            <button type="submit">Reset password</button>
+          </form>
+          <p class="reset-message" id="resetMessage" role="alert"></p>
+          <button type="button" class="reset-back" id="resetBack">Back to sign in</button>
+        </div>
         <p id="clerkError" role="alert"></p>
       </div>
     </div>
@@ -2824,6 +2856,64 @@
       if (!clerk) throw new Error('Clerk SDK loaded but window.Clerk was not available.');
       await clerk.load();
       console.info('Clerk initialized; signed in:', Boolean(clerk.user));
+
+      // Password recovery available from the initial username/email screen.
+      const resetPanel = document.getElementById('resetPanel');
+      const resetEntry = document.getElementById('resetEntry');
+      const resetMessage = document.getElementById('resetMessage');
+      const resetRequest = document.getElementById('resetRequestForm');
+      const resetConfirm = document.getElementById('resetConfirmForm');
+      document.getElementById('resetOpen').addEventListener('click', () => {
+        mount.hidden = true;
+        resetEntry.hidden = true;
+        resetPanel.hidden = false;
+        resetMessage.textContent = '';
+        const currentEmail = mount.querySelector('input[type="email"], input[name="identifier"]');
+        if (currentEmail && currentEmail.value.includes('@')) document.getElementById('resetEmail').value = currentEmail.value;
+      });
+      document.getElementById('resetBack').addEventListener('click', () => {
+        resetPanel.hidden = true;
+        resetEntry.hidden = false;
+        mount.hidden = false;
+        resetMessage.textContent = '';
+      });
+      function resetError(e) {
+        resetMessage.textContent = e?.errors?.[0]?.longMessage || e?.errors?.[0]?.message || e?.message || 'Unable to reset password. Please try again.';
+      }
+      resetRequest.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        resetMessage.textContent = '';
+        const button = resetRequest.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          const email = document.getElementById('resetEmail').value.trim();
+          await clerk.client.signIn.create({ identifier: email });
+          await clerk.client.signIn.prepareFirstFactor({ strategy: 'reset_password_email_code' });
+          resetRequest.hidden = true;
+          resetConfirm.hidden = false;
+        } catch (e) { resetError(e); }
+        finally { button.disabled = false; }
+      });
+      resetConfirm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        resetMessage.textContent = '';
+        const button = resetConfirm.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          const result = await clerk.client.signIn.attemptFirstFactor({
+            strategy: 'reset_password_email_code',
+            code: document.getElementById('resetCode').value.trim(),
+            password: document.getElementById('resetPassword').value
+          });
+          if (result.status === 'complete' && result.createdSessionId) {
+            await clerk.setActive({ session: result.createdSessionId });
+            window.location.href = 'https://www.bmwmarchiv.com/';
+          } else {
+            resetMessage.textContent = 'Password updated. Please return to sign in.';
+          }
+        } catch (e) { resetError(e); }
+        finally { button.disabled = false; }
+      });
 
       function refreshUI() {
         const user = clerk.user;
