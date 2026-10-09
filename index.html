@@ -1252,6 +1252,24 @@
   </style>
 
   <style>
+    /* Authentication splash: visible only while Clerk checks the session. */
+    #authLoading {
+      position: fixed; inset: 0; z-index: 100000;
+      background: #11151d; color: #fff;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 19px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    #authLoading[hidden] { display: none !important; }
+    .auth-spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 4px solid rgba(255,255,255,.17);
+      border-top-color: #4da3ff;
+      animation: authSpin .75s linear infinite;
+    }
+    @keyframes authSpin { to { transform: rotate(360deg); } }
+    .auth-loading-title { font-size: 21px; font-weight: 800; letter-spacing: .07em; }
+    .auth-loading-subtitle { font-size: 13px; color: #aab4c5; }
     /* Prevent the homepage from flashing before Clerk validates the session. */
     body:not(.clerk-authenticated) > .topbar,
     body:not(.clerk-authenticated) > .hero,
@@ -1333,7 +1351,12 @@
   </style>
 </head>
 <body>
-  <div id="clerkGate" role="region" aria-label="Member sign in">
+  <div id="authLoading" role="status" aria-live="polite">
+    <div class="auth-spinner" aria-hidden="true"></div>
+    <div class="auth-loading-title">BMW M ARCHIV</div>
+    <div class="auth-loading-subtitle">Loading...</div>
+  </div>
+  <div id="clerkGate" role="region" aria-label="Member sign in" hidden>
     <div class="login-topbar">
       <img class="login-logo" alt="CARBOI-CREATIONS" src="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
     </div>
@@ -2768,12 +2791,15 @@
   (async function initializeClerkProduction() {
     const publishableKey = 'pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k';
     const gate = document.getElementById('clerkGate');
+    const loading = document.getElementById('authLoading');
     const error = document.getElementById('clerkError');
     const mount = document.getElementById('clerkSignIn');
     let loadedArchive = false;
     let signInMounted = false;
 
     function showError(message) {
+      gate.hidden = false;
+      loading.hidden = true;
       error.textContent = message;
       console.error('Clerk authentication:', message);
     }
@@ -2804,6 +2830,7 @@
         if (user) {
           document.body.classList.add('clerk-authenticated');
           gate.hidden = true;
+          loading.hidden = true;
           const label = user.username || user.firstName || user.primaryEmailAddress?.emailAddress || 'Member';
           document.getElementById('auth-username').textContent = label;
           if (!loadedArchive) {
@@ -2813,6 +2840,7 @@
         } else {
           document.body.classList.remove('clerk-authenticated');
           gate.hidden = false;
+          loading.hidden = true;
           document.getElementById('auth-username').textContent = 'Member';
           if (!signInMounted) {
             signInMounted = true;
