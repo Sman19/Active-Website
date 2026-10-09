@@ -1349,6 +1349,7 @@
       #clerkGate .login-content { padding: 14px 9px 18px; }
     }
 
+    #clerkGate #clerkSignIn[hidden], #clerkGate #resetRequestForm[hidden], #clerkGate #resetConfirmForm[hidden] { display:none!important; }
     #clerkGate .reset-entry { text-align:center; margin: 12px 0 0; }
     #clerkGate .reset-entry button { border:0; background:none; color:#285eaa; font:600 14px Arial,sans-serif; cursor:pointer; text-decoration:underline; padding:7px; }
     #clerkGate .reset-panel[hidden], #clerkGate .reset-entry[hidden] { display:none!important; }
@@ -1390,7 +1391,7 @@
             <label for="resetCode">Verification code</label>
             <input id="resetCode" type="text" autocomplete="one-time-code" required>
             <label for="resetPassword">New password</label>
-            <input id="resetPassword" type="password" autocomplete="new-password" required minlength="8">
+            <input id="resetPassword" type="password" autocomplete="new-password" required minlength="15">
             <button type="submit">Reset password</button>
           </form>
           <p class="reset-message" id="resetMessage" role="alert"></p>
@@ -2868,8 +2869,11 @@
         resetEntry.hidden = true;
         resetPanel.hidden = false;
         resetMessage.textContent = '';
+        resetRequest.hidden = false;
+        resetConfirm.hidden = true;
         const currentEmail = mount.querySelector('input[type="email"], input[name="identifier"]');
         if (currentEmail && currentEmail.value.includes('@')) document.getElementById('resetEmail').value = currentEmail.value;
+        document.getElementById('resetEmail').focus();
       });
       document.getElementById('resetBack').addEventListener('click', () => {
         resetPanel.hidden = true;
@@ -2887,8 +2891,9 @@
         button.disabled = true;
         try {
           const email = document.getElementById('resetEmail').value.trim();
-          await clerk.client.signIn.create({ identifier: email });
-          await clerk.client.signIn.prepareFirstFactor({ strategy: 'reset_password_email_code' });
+          const signIn = clerk.client.signIn;
+          await signIn.create({ identifier: email });
+          await signIn.prepareFirstFactor({ strategy: 'reset_password_email_code' });
           resetRequest.hidden = true;
           resetConfirm.hidden = false;
         } catch (e) { resetError(e); }
