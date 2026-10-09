@@ -1514,7 +1514,7 @@
     }
 
     async function logoutClerk() {
-      await window.Clerk.signOut({ redirectUrl: "https://www.bmwmarchiv.com/login.html" });
+      await window.Clerk.signOut({ redirectUrl: "https://www.bmwmarchiv.com/index.html" });
     }
 
     async function downloadInstagramStory(event) {
@@ -3532,7 +3532,7 @@
     }
 
     async function initializeClerkProtection() {
-      const loginUrl = "https://www.bmwmarchiv.com/login.html";
+      const loginUrl = "https://www.bmwmarchiv.com/index.html";
       const label = document.getElementById("clerk-loading-label");
       try {
         // The Clerk SDK is async, so it may not be available at DOMContentLoaded.
