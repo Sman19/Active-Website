@@ -13,7 +13,8 @@
     href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
   />
 
-  <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
+  <script async crossorigin="anonymous" data-clerk-publishable-key="pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k" src="https://clerk.bmwmarchiv.com/npm/@clerk/clerk-js@5/dist/clerk.browser.js" type="text/javascript"></script>
+  <style>html:not(.clerk-authenticated) body { visibility: hidden; }</style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -971,7 +972,7 @@
           <div class="user-menu-dropdown" id="user-menu-dropdown">
             <button class="instagram-menu-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)">Instagram Story</button>
             <div class="user-menu-separator"></div>
-            <a class="user-menu-link" href="https://www.authpro.com/auth/sman201/?action=logout">Logout</a>
+            <button class="instagram-menu-btn" type="button" onclick="logoutClerk()">Logout</button>
           </div>
         </div>
       </div>
@@ -1436,13 +1437,12 @@
 
     function updateAuthUser() {
       const el = document.getElementById("auth-username");
-      if (!el) return;
+      const user = window.Clerk?.user;
+      if (el) el.textContent = user?.username || user?.primaryEmailAddress?.emailAddress || "Member";
+    }
 
-      if (typeof login !== "undefined" && login) {
-        el.textContent = login;
-      } else {
-        el.textContent = "Member";
-      }
+    async function logoutClerk() {
+      await window.Clerk.signOut({ redirectUrl: "https://www.bmwmarchiv.com/login.html" });
     }
 
     async function downloadInstagramStory(event) {
@@ -1715,27 +1715,7 @@
     }
 
     function getCurrentLoginName() {
-      // AuthPro normally exposes login, but different embeds can expose user/userName/username.
-      const possibleGlobals = [
-        "login",
-        "username",
-        "userName",
-        "authpro_login",
-        "authpro_user"
-      ];
-
-      for (const key of possibleGlobals) {
-        try {
-          if (window[key]) return String(window[key]).trim();
-        } catch (error) {}
-      }
-
-      const authEl = document.getElementById("auth-username");
-      if (authEl && authEl.textContent && authEl.textContent.trim() !== "Member") {
-        return authEl.textContent.trim();
-      }
-
-      return "";
+      return window.Clerk?.user?.username || "";
     }
 
     function isAdminUser() {
@@ -2777,19 +2757,11 @@
     const PDF_ALERT_TO_EMAIL = "carboicreations@outlook.com";
 
     function getAuthProUsername() {
-      if (typeof login !== "undefined" && login) return String(login);
-      const el = document.getElementById("auth-username");
-      return el && el.textContent ? el.textContent.trim() : "Member";
+      return window.Clerk?.user?.username || window.Clerk?.user?.primaryEmailAddress?.emailAddress || "Member";
     }
 
     function getAuthProEmail() {
-      const possibleNames = ["email", "user_email", "member_email", "auth_email"];
-      for (const name of possibleNames) {
-        try {
-          if (typeof window[name] !== "undefined" && window[name]) return String(window[name]);
-        } catch (err) {}
-      }
-      return "";
+      return window.Clerk?.user?.primaryEmailAddress?.emailAddress || "";
     }
 
 
@@ -3501,13 +3473,29 @@
       }
     }
 
+    async function initializeClerkProtection() {
+      try {
+        if (!window.Clerk) throw new Error("Clerk SDK unavailable");
+        await window.Clerk.load();
+        if (!window.Clerk.user) {
+          window.location.replace("https://www.bmwmarchiv.com/login.html");
+          return;
+        }
+        document.documentElement.classList.add("clerk-authenticated");
+        updateAuthUser();
+        updateAdminMode();
+        setupFilterInputs();
+        setupSortableHeaders();
+        setupColumnDragAndDrop();
+        loadCSV();
+      } catch (error) {
+        console.error("Clerk authentication failed:", error);
+        window.location.replace("https://www.bmwmarchiv.com/login.html");
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-      updateAuthUser();
-      updateAdminMode();
-      setupFilterInputs();
-      setupSortableHeaders();
-      setupColumnDragAndDrop();
-      loadCSV();
+      initializeClerkProtection();
     });
   </script>
 </body>
