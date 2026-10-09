@@ -6,7 +6,7 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   />
-  <title>M Database</title>
+  <title>BMW M ARCHIV</title>
 
   <link
     id="favicon"
@@ -15,7 +15,7 @@
     href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png"
   />
 
-  <script type="text/javascript" src="https://www.authpro.com/auth/sman201/?action=pp"></script>
+  <!-- Clerk Production authentication; legacy authentication script removed. -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
@@ -1250,8 +1250,102 @@
       }
     }
   </style>
+
+  <style>
+    /* Prevent the homepage from flashing before Clerk validates the session. */
+    body:not(.clerk-authenticated) > .topbar,
+    body:not(.clerk-authenticated) > .hero,
+    body:not(.clerk-authenticated) > main.page,
+    body:not(.clerk-authenticated) > #instagramExportStage,
+    body:not(.clerk-authenticated) > #monroneyOverlay,
+    body:not(.clerk-authenticated) > #generatorOverlay,
+    body:not(.clerk-authenticated) > #e90GeneratorFrame {
+      display: none !important;
+    }
+
+    /* BMW M ARCHIV - custom Clerk test sign-in skin */
+    #clerkGate {
+      position: fixed; inset: 0; z-index: 99999; overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start; padding: 108px 16px 60px;
+      background: linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.2) 50%,rgba(0,0,0,.58)),
+        url("https://raw.githubusercontent.com/Sman19/2017-BMW-M2-Active-Website/0375d65f454d31f6d9f6ec104d46bf2695f75f63/crtrep%20login.png") center/cover fixed;
+      color: #fff;
+    }
+    #clerkGate[hidden] { display: none; }
+    #clerkGate .login-topbar { position: fixed; top: 0; left: 0; right: 0; height: 82px;
+      display:flex; align-items:center; padding: 14px 26px; background:rgba(0,0,0,.94);
+      border-bottom: 1px solid rgba(255,255,255,.17); }
+    #clerkGate .login-logo { width: 60px; height: 60px; object-fit: contain; background:#fff; }
+    #clerkGate .login-card { width: min(100%, 420px); border-radius: 17px; overflow:hidden;
+      background: #efefef; color: #242529; box-shadow: 0 22px 55px rgba(0,0,0,.5); }
+    #clerkGate .login-heading { background:#242529; color:white; font-size:19px; font-weight:800;
+      text-align:center; padding: 17px 14px; letter-spacing:.02em; }
+    #clerkGate .login-content { padding: 20px 17px 22px; }
+    /* Center Clerk's complete sign-in widget within the login panel. */
+    #clerkGate .login-content { padding: 22px 24px 26px; }
+    #clerkGate #clerkSignIn {
+      width: 100%; min-height: 250px;
+      display: flex; justify-content: center; align-items: flex-start;
+    }
+    #clerkGate #clerkSignIn > div { width: 100%; max-width: 100%; margin-inline: auto; }
+    #clerkGate #clerkSignIn .cl-rootBox,
+    #clerkGate #clerkSignIn .cl-cardBox,
+    #clerkGate #clerkSignIn .cl-card,
+    #clerkGate #clerkSignIn .cl-main,
+    #clerkGate #clerkSignIn .cl-form,
+    #clerkGate #clerkSignIn .cl-socialButtonsBlockButton {
+      width: 100%; max-width: 100%; margin-inline: auto;
+    }
+    #clerkGate #clerkSignIn .cl-formButtonPrimary,
+    #clerkGate #clerkSignIn .cl-formFieldInput { width: 100%; }
+    #clerkGate #clerkSignIn .cl-footerAction,
+    #clerkGate #clerkSignIn .cl-footer,
+    #clerkGate #clerkSignIn .cl-dividerRow { text-align: center; }
+
+    /* Final visual refinements: slightly smaller heading and tighter vertical rhythm. */
+    #clerkGate .login-heading {
+      font-size: 17px;
+      padding: 14px 14px;
+      letter-spacing: .015em;
+    }
+    #clerkGate .login-content { padding: 12px 24px 17px; }
+    #clerkGate #clerkSignIn { min-height: 0; }
+    #clerkGate #clerkSignIn .cl-main { padding-top: 0; padding-bottom: 0; }
+    #clerkGate #clerkSignIn .cl-socialButtonsBlockButton { min-height: 38px; }
+    #clerkGate #clerkSignIn .cl-form { gap: 12px; }
+    #clerkGate #clerkSignIn .cl-footer { padding-top: 8px; }
+    #clerkGate .login-footer { margin-top: 22px; }
+    @media (max-width: 480px) {
+      #clerkGate .login-content { padding: 12px 12px 16px; }
+    }
+
+    #clerkGate #clerkError { color:#a30000; white-space:pre-wrap; line-height:1.4;
+      font: 14px Arial,sans-serif; margin:10px 0 0; }
+    #clerkGate .login-footer { text-align:center; margin-top:28px; color:rgba(255,255,255,.78);
+      font-size:14px; text-shadow:0 1px 5px #000; }
+    @media(max-width:480px) {
+      #clerkGate { padding: 100px 12px 36px; }
+      #clerkGate .login-topbar { height:70px; padding:10px 15px; }
+      #clerkGate .login-logo { width:50px; height:50px; }
+      #clerkGate .login-content { padding: 14px 9px 18px; }
+    }
+  </style>
 </head>
 <body>
+  <div id="clerkGate" role="region" aria-label="Member sign in">
+    <div class="login-topbar">
+      <img class="login-logo" alt="CARBOI-CREATIONS" src="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
+    </div>
+    <div class="login-card">
+      <div class="login-heading">BMW M ARCHIV</div>
+      <div class="login-content">
+        <div id="clerkSignIn"></div>
+        <p id="clerkError" role="alert"></p>
+      </div>
+    </div>
+    <div class="login-footer">Presented by CARBOI-CREATIONS</div>
+  </div>
   <header class="topbar">
     <div class="topbar-home dropdown">
       <button class="home-btn" id="homeDropdownBtn" type="button">
@@ -1303,7 +1397,7 @@
         </button>
         <div id="instagramExportStatus" class="profile-action-status"></div>
         <div class="profile-menu-divider"></div>
-        <a class="logout-btn" href="https://www.authpro.com/auth/sman201/?action=logout">
+        <a class="logout-btn" href="#" id="clerkLogout">
           <span class="logout-icon">↪</span>
           <span>Logout</span>
         </a>
@@ -2088,7 +2182,10 @@
                     "2013": "2013 E92 M3 Coupe.csv"
                   },
                   "F97 X3M": {
-                    "2020": "2020 F97 X3M.csv"
+                    "2020": "2020 F97 X3M.csv",
+                    "2021": "2020 F97 X3M.csv",
+                    "2022": "2020 F97 X3M.csv",
+                    "2023": "2020 F97 X3M.csv"
                   }
                 };
 
@@ -2661,9 +2758,105 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-      updateAuthUser();
-      loadCSVs();
+      // Wait for Clerk sign-in before loading archive data.
     });
+  </script>
+
+  <script>
+  // Clerk Production browser integration for the live homepage.
+  // Publishable keys are public. NEVER place a Clerk secret key in HTML.
+  (async function initializeClerkProduction() {
+    const publishableKey = 'pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k';
+    const gate = document.getElementById('clerkGate');
+    const error = document.getElementById('clerkError');
+    const mount = document.getElementById('clerkSignIn');
+    let loadedArchive = false;
+    let signInMounted = false;
+
+    function showError(message) {
+      error.textContent = message;
+      console.error('Clerk authentication:', message);
+    }
+
+    try {
+      const encodedDomain = publishableKey.split('_')[2];
+      if (!encodedDomain) throw new Error('Invalid Clerk publishable key');
+      const clerkDomain = atob(encodedDomain).replace(/\$$/, '');
+      // Use the Clerk-hosted browser SDK (no Vite, npm, or import.meta required).
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://${clerkDomain}/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
+        script.setAttribute('data-clerk-publishable-key', publishableKey);
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Could not load the Clerk browser SDK. Check your Clerk domain and allowed origins.'));
+        document.head.appendChild(script);
+      });
+
+      const clerk = window.Clerk;
+      if (!clerk) throw new Error('Clerk SDK loaded but window.Clerk was not available.');
+      await clerk.load();
+      console.info('Clerk initialized; signed in:', Boolean(clerk.user));
+
+      function refreshUI() {
+        const user = clerk.user;
+        if (user) {
+          document.body.classList.add('clerk-authenticated');
+          gate.hidden = true;
+          const label = user.username || user.firstName || user.primaryEmailAddress?.emailAddress || 'Member';
+          document.getElementById('auth-username').textContent = label;
+          if (!loadedArchive) {
+            loadedArchive = true;
+            loadCSVs();
+          }
+        } else {
+          document.body.classList.remove('clerk-authenticated');
+          gate.hidden = false;
+          document.getElementById('auth-username').textContent = 'Member';
+          if (!signInMounted) {
+            signInMounted = true;
+            clerk.mountSignIn(mount, {
+              appearance: {
+                variables: {
+                  colorPrimary: '#242529',
+                  colorText: '#242529',
+                  colorBackground: '#efefef',
+                  colorInputBackground: '#e7edf8',
+                  colorInputText: '#202124',
+                  borderRadius: '10px',
+                  fontFamily: 'Arial, Helvetica, sans-serif'
+                },
+                elements: {
+                  rootBox: { width: '100%', maxWidth: '100%' },
+                  cardBox: { boxShadow: 'none', width: '100%', maxWidth: '100%', margin: '0 auto' },
+                  card: { boxShadow: 'none', background: 'transparent', padding: '0', width: '100%' },
+                  main: { width: '100%' },
+                  form: { width: '100%' },
+                  headerTitle: { display: 'none' },
+                  headerSubtitle: { display: 'none' },
+                  formButtonPrimary: { backgroundColor: '#242529', borderRadius: '24px', fontWeight: '700' },
+                  footer: { background: 'transparent' }
+                }
+              },
+              forceRedirectUrl: 'https://www.bmwmarchiv.com/',
+              signUpForceRedirectUrl: 'https://www.bmwmarchiv.com/'
+            });
+          }
+        }
+      }
+
+      document.getElementById('clerkLogout').addEventListener('click', async (event) => {
+        event.preventDefault();
+        await clerk.signOut();
+        window.location.reload();
+      });
+      clerk.addListener(() => refreshUI());
+      refreshUI();
+    } catch (e) {
+      showError(e?.message || String(e));
+    }
+  })();
   </script>
 </body>
 </html>
