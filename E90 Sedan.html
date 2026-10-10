@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>E90 M3 Sedan Archiv</title>
+  <title>E90 M3 Sedan | Supabase All Years TEST</title>
 
   <link 
     id="favicon"
@@ -27,6 +27,80 @@
     #clerk-loading-retry { display: none; padding: 9px 18px; border: 0; border-radius: 7px; background: #2879da; color: white; cursor: pointer; }
     @keyframes clerkBubbleSpin { to { transform: rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) { .clerk-loading-bubble { animation: none; } }
+
+    /* The entire footer row is clickable, not just a centered pill. */
+    .vehicle-load-more-row {
+      display: block;
+      width: 100%;
+      min-height: 76px;
+      padding: 22px 18px;
+      border: 0;
+      border-top: 1px solid #d1d5db;
+      background: #eceff1;
+      color: #111827;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+    .vehicle-load-more-row .load-more-heading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 750;
+    }
+    .vehicle-load-more-row .load-more-tickers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid #cbd5e1;
+    }
+    .vehicle-load-more-row .load-more-ticker {
+      display: block;
+      overflow: hidden;
+      min-width: 0;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .07em;
+      white-space: nowrap;
+    }
+    .vehicle-load-more-row .load-more-ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: loadMoreTicker 14s linear infinite;
+      will-change: transform;
+    }
+    .vehicle-load-more-row .load-more-ticker:nth-child(2) .load-more-ticker-text {
+      animation-delay: -4.5s;
+    }
+    .vehicle-load-more-row .load-more-ticker:nth-child(3) .load-more-ticker-text {
+      animation-delay: -9s;
+    }
+    @keyframes loadMoreTicker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    .vehicle-load-more-row:hover .load-more-ticker-text,
+    .vehicle-load-more-row:focus-visible .load-more-ticker-text { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .vehicle-load-more-row .load-more-ticker-text {
+        animation: none;
+        padding-left: 0;
+        white-space: normal;
+      }
+    }
+    .vehicle-load-more-row:hover { background: #dbe4ee; }
+    .vehicle-load-more-row:focus-visible {
+      outline: 3px solid #2563eb;
+      outline-offset: -3px;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -980,7 +1054,7 @@
         <a class="top-nav-home" href="index.html">Home</a>
       </div>
       <div class="top-nav-center">
-        <span>E90 M3 Sedan</span>
+        <span>E90 M3 Sedan — SQL ALL YEARS TEST</span>
         <span class="divider">|</span>
         <span>U.S/Canada</span>
       </div>
@@ -1188,9 +1262,7 @@
     // GET = loads latest CSV from Google Sheets.
     // POST = saves admin comments back to Google Sheets.
     const GOOGLE_SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbwv0OPdwq6qDc4oYusUfSokS2aW0BOLktR2P01SCVq87y8mKIXwDUu2_l32-vpo-oLlEA/exec";
-    const GITHUB_SAVE_WEBHOOK_URL = GOOGLE_SHEET_CSV_URL;
-    const COMMENTS_SAVE_TOKEN = "E90M3COMMENTS2026";
-    const ADMIN_USERS = ["admin"];
+    const ADMIN_CLERK_USER_IDS = new Set(["user_3KRENU1mgyhOwae7dQ0xkuhKerD"]);
     let vehicles = [];
     let filteredVehicles = [];
     let selectedVehicles = new Set();
@@ -1740,8 +1812,7 @@
     }
 
     function isAdminUser() {
-      const currentLogin = getCurrentLoginName().toLowerCase();
-      return ADMIN_USERS.some(user => user.toLowerCase() === currentLogin);
+      return ADMIN_CLERK_USER_IDS.has(window.Clerk?.user?.id || "");
     }
 
     function updateAdminMode() {
@@ -1797,108 +1868,53 @@
     }
 
     async function saveUpdatedCsvToGitHub() {
-      if (!isAdminUser()) {
-        alert("Only the admin account can save updated comments.");
+      if (!isAdminUser() || !window.Clerk?.session) {
+        alert("Sign in with your Admin account to save comments.");
         return;
       }
-
-      if (!GITHUB_SAVE_WEBHOOK_URL || GITHUB_SAVE_WEBHOOK_URL.includes("PASTE_YOUR")) {
-        alert("Save endpoint is not configured yet. Paste your Google Apps Script Web App URL into GITHUB_SAVE_WEBHOOK_URL.");
-        return;
-      }
-
-      if (!COMMENTS_SAVE_TOKEN || COMMENTS_SAVE_TOKEN === "CHANGE_THIS_PASSWORD") {
-        alert("COMMENTS_SAVE_TOKEN is missing. It must match ADMIN_TOKEN in Apps Script.");
-        return;
-      }
-
       const button = document.querySelector(".admin-save-btn");
-      const originalText = button ? button.textContent : "";
-
+      const originalText = button?.textContent || "Save Comments";
       try {
-        if (button) {
-          button.disabled = true;
-          button.textContent = "Saving...";
-        }
-
-        const updates = [];
-
-        document.querySelectorAll(".comments-edit").forEach(textarea => {
-          const originalComment = textarea.dataset.originalComment || "";
-          const currentComment = textarea.value || "";
-
-          if (currentComment !== originalComment) {
-            setCommentForVehicle(textarea.dataset.vin, currentComment);
-            updates.push({
-              vin: textarea.dataset.vin,
-              comment: currentComment
-            });
-          }
-        });
-
-        if (!updates.length) {
-          alert("No comment changes to save.");
-          return;
-        }
-
-        const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
+        if (button) { button.disabled = true; button.textContent = "Saving..."; }
+        // Only the visible, edited rows are submitted; other records are untouched.
+        const updates = Array.from(document.querySelectorAll(".comments-edit"))
+          .filter(el => (el.value || "") !== (el.dataset.originalComment || ""))
+          .map(el => ({ vin: el.dataset.vin, comment: el.value || "" }));
+        if (!updates.length) { alert("No comment changes to save."); return; }
+        const sessionToken = await window.Clerk.session.getToken();
+        if (!sessionToken) throw new Error("Clerk session expired. Please sign in again.");
+        let totalSaved = 0;
+        for (let i = 0; i < updates.length; i += 100) {
+        const batch = updates.slice(i, i + 100);
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/save-vehicle-comments`, {
           method: "POST",
-          mode: "cors",
           headers: {
-            "Content-Type": "text/plain;charset=utf-8"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionToken}`,
+            "apikey": SUPABASE_PUBLISHABLE_KEY
           },
-          body: JSON.stringify({
-            token: COMMENTS_SAVE_TOKEN,
-            sheetName:
-            currentCsvFile.includes("2008")
-              ? "2008 E90 M3 Sedan"
-              : currentCsvFile.includes("2009")
-              ? "2009 E90 M3 Sedan"
-              : currentCsvFile.includes("2010")
-              ? "2010 E90 M3 Sedan"
-              : currentCsvFile.includes("2011")
-              ? "2011 E90 M3 Sedan"
-              : currentCsvFile.includes("2012")
-              ? "2012 E90 M3 Sedan CRT"
-              : "2008 E90 M3 Sedan",
-            updates: updates,
-            source: "E90 Admin Comments",
-            updatedBy: getCurrentLoginName() || "Admin",
-            updatedAt: new Date().toISOString()
-          })
+          body: JSON.stringify({ updates: batch })
         });
-
-        const resultText = await response.text();
-        let result = {};
-        try { result = JSON.parse(resultText); } catch (e) {}
-
-        if (!response.ok || result.success === false || result.ok === false) {
-          const debugDetails = result && Object.keys(result).length
-            ? JSON.stringify(result, null, 2)
-            : resultText;
-          throw new Error(debugDetails || "Save failed.");
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.success !== true) {
+          throw new Error(result.error || `Save failed (HTTP ${response.status})`);
         }
-
-        const savedCount = typeof result.saved === "number" ? result.saved : updates.length;
-        const missingCount = Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
-
-        document.querySelectorAll(".comments-edit").forEach(textarea => {
-          textarea.dataset.originalComment = textarea.value || "";
+        if (result.saved !== batch.length) {
+          throw new Error(`Server saved ${result.saved} of ${batch.length} comments. Reload to check before retrying.`);
+        }
+        totalSaved += result.saved;
+        const changed = new Map(batch.map(item => [item.vin, item.comment]));
+        for (const [vin, comment] of changed) setCommentForVehicle(vin, comment);
+        document.querySelectorAll(".comments-edit").forEach(el => {
+          if (changed.has(el.dataset.vin)) el.dataset.originalComment = changed.get(el.dataset.vin);
         });
-
-        if (missingCount) {
-          alert(`Comments saved. ${savedCount} row(s) updated. ${missingCount} VIN(s) were not found in the sheet.`);
-        } else {
-          alert(`Save successful. ${savedCount} row(s) updated.`);
         }
+        alert(`Saved ${totalSaved} comment(s) to Supabase.`);
       } catch (error) {
-        console.error(error);
-        alert("Save failed: " + (error && error.message ? error.message : error));
+        console.error("Supabase comments save failed", error);
+        alert("Save failed: " + (error?.message || String(error)));
       } finally {
-        if (button) {
-          button.disabled = false;
-          button.textContent = originalText || "Save comments";
-        }
+        if (button) { button.disabled = false; button.textContent = originalText; }
       }
     }
 
@@ -2336,6 +2352,7 @@
       }
 
       filteredVehicles = applyCurrentSort(filteredVehicles);
+      visibleVehicleLimit = VEHICLE_DISPLAY_BATCH;
 
       document.getElementById("count").textContent = filteredVehicles.length;
       renderTable(filteredVehicles);
@@ -3296,11 +3313,14 @@
       window.open(vehicle.invoice, "_blank", "noopener,noreferrer");
     }
 
+    let visibleVehicleLimit = 100;
+    const VEHICLE_DISPLAY_BATCH = 100;
+
     function renderTable(rowsToRender) {
       const table = document.getElementById("table-rows");
       table.innerHTML = "";
 
-      rowsToRender.forEach((vehicle, index) => {
+      rowsToRender.slice(0, visibleVehicleLimit).forEach((vehicle, index) => {
         const row = document.createElement("div");
         row.className = "table-row";
         const isSelected = selectedVehicles.has(vehicle.vin);
@@ -3415,12 +3435,157 @@
         });
       });
 
+      // Display rows in batches so the browser does not create thousands of
+      // image, tooltip, and textarea elements before showing the first results.
+      // Filtering, sorting and charts still operate on the COMPLETE dataset.
+      if (rowsToRender.length > visibleVehicleLimit) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "vehicle-load-more-row";
+        const nextCount = Math.min(VEHICLE_DISPLAY_BATCH, rowsToRender.length - visibleVehicleLimit);
+        const displayedCount = Math.min(visibleVehicleLimit, rowsToRender.length);
+        button.setAttribute("aria-label", `Show next ${nextCount} vehicles. ${displayedCount} of ${rowsToRender.length} displayed.`);
+        const heading = document.createElement("span");
+        heading.className = "load-more-heading";
+        heading.textContent = `Show next ${nextCount} vehicles ↓`;
+        const tickers = document.createElement("span");
+        tickers.className = "load-more-tickers";
+        tickers.setAttribute("aria-hidden", "true");
+        const tickerMessages = [
+          "BMW M ARCHIV",
+          `${displayedCount.toLocaleString()} OF ${rowsToRender.length.toLocaleString()} DISPLAYED`,
+          "CLICK ANYWHERE TO LOAD MORE"
+        ];
+        tickerMessages.forEach(message => {
+          const ticker = document.createElement("span");
+          ticker.className = "load-more-ticker";
+          const tickerText = document.createElement("span");
+          tickerText.className = "load-more-ticker-text";
+          tickerText.textContent = `${message}  •  ${message}  •  `;
+          ticker.appendChild(tickerText);
+          tickers.appendChild(ticker);
+        });
+        button.append(heading, tickers);
+        button.addEventListener("click", () => {
+          // Preserve the reader's position while adding the next batch.
+          const previousScrollY = window.scrollY;
+          visibleVehicleLimit += VEHICLE_DISPLAY_BATCH;
+          renderTable(rowsToRender);
+          window.scrollTo({ top: previousScrollY, behavior: "instant" });
+        });
+        table.appendChild(button);
+      }
+
       updateAdminMode();
       initCopyButtons();
       applyColumnOrder();
     }
 
+    // Supabase test: all five E90 Sedan / CRT datasets use SQL.
+    const SUPABASE_URL = "https://qaikzwqdjdxkhhzscish.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
+
+    async function loadGoogleSheetCommentsForTest() {
+      // Sheets stays authoritative for editable comments. Load after SQL rows appear.
+      try {
+        const sheetName = currentCsvFile.includes("2012") ? "2012 E90 M3 Sedan CRT"
+          : currentCsvFile.includes("2011") ? "2011 E90 M3 Sedan"
+          : currentCsvFile.includes("2010") ? "2010 E90 M3 Sedan"
+          : currentCsvFile.includes("2009") ? "2009 E90 M3 Sedan"
+          : "2008 E90 M3 Sedan";
+        const url = `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${Date.now()}`;
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Sheets returned ${response.status}`);
+        const rows = parseCSV(await response.text());
+        const notesByVin = new Map();
+        for (const row of rows) {
+          const vin = String(getField(row, ["VIN", "Full VIN"]) || "").trim().toUpperCase();
+          if (vin) notesByVin.set(vin, getCommentsFromRow(row));
+        }
+        for (const vehicle of vehicles) {
+          if (notesByVin.has(vehicle.vin.toUpperCase())) {
+            vehicle.comments = notesByVin.get(vehicle.vin.toUpperCase());
+            vehicle.csvRow[commentsHeaderName] = vehicle.comments;
+          }
+        }
+        filteredVehicles = applyCurrentSort(vehicles.filter(vehicle => {
+          const filters = getActiveFilters();
+          return Object.entries(filters).every(([field, value]) => field === "packages"
+            ? matchesPackageFilter(vehicle, value)
+            : matchesFilter(getVehicleFieldText(vehicle, field), value));
+        }));
+        renderTable(filteredVehicles);
+        updateCharts();
+      } catch (err) {
+        console.warn("Could not refresh Google Sheets comments; vehicle data still loaded from Supabase.", err);
+      }
+    }
+
     async function loadCSV() {
+      currentCsvFile = getCsvFileFromUrl();
+      syncDatasetDropdown();
+      const datasetConfig = {
+        "2008 E90 M3 Sedan.csv": { year: 2008, model: "E90 M3 Sedan" },
+        "2009 E90 M3 Sedan.csv": { year: 2009, model: "E90 M3 Sedan" },
+        "2010 E90 M3 Sedan.csv": { year: 2010, model: "E90 M3 Sedan" },
+        "2011 E90 M3 Sedan.csv": { year: 2011, model: "E90 M3 Sedan" },
+        "2012 E90 M3 Sedan CRT.csv": { year: 2012, model: "E90 M3 Sedan CRT" }
+      };
+      const selectedDataset = datasetConfig[currentCsvFile];
+      if (!selectedDataset) throw new Error("Unknown E90 Sedan dataset: " + currentCsvFile);
+      const selectedYear = selectedDataset.year;
+
+      try {
+        const started = performance.now();
+        commentsHeaderName = "Notes";
+        const records = [];
+        const pageSize = 1000;
+        for (let offset = 0; ; offset += pageSize) {
+          const query = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
+          query.searchParams.set("select", "vin,model,model_year,exterior_color,interior_color,package_codes,msrp,dealer_name,comments,original_csv_data");
+          query.searchParams.set("model", `eq.${selectedDataset.model}`);
+          query.searchParams.set("model_year", `eq.${selectedYear}`);
+          query.searchParams.set("order", "id.asc");
+          query.searchParams.set("limit", String(pageSize));
+          query.searchParams.set("offset", String(offset));
+          const response = await fetch(query.toString(), {
+            headers: { "apikey": SUPABASE_PUBLISHABLE_KEY, "Accept": "application/json" }
+          });
+          if (!response.ok) throw new Error(`Supabase request failed (${response.status}): ${await response.text()}`);
+          const page = await response.json();
+          records.push(...page);
+          if (page.length < pageSize) break;
+        }
+        vehicles = records.map(record => {
+          const raw = record.original_csv_data && typeof record.original_csv_data === "object"
+            ? { ...record.original_csv_data } : {};
+          // Preserve original CSV column names, lookup behavior, images and links.
+          raw.VIN = record.vin || raw.VIN || "";
+          raw.YEAR = String(record.model_year || raw.YEAR || "");
+          raw.MODEL = raw.MODEL || "M3";
+          raw.EXTERIOR = record.exterior_color || raw.EXTERIOR || "";
+          raw.INTERIOR = record.interior_color || raw.INTERIOR || "";
+          raw["Package Codes"] = record.package_codes || raw["Package Codes"] || "";
+          raw.MSRP = record.msrp == null ? (raw.MSRP || "") : `$${Number(record.msrp).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          raw["DEALER NAME"] = record.dealer_name || raw["DEALER NAME"] || "";
+          raw[commentsHeaderName] = record.comments ?? "";
+          return buildVehicle(raw);
+        });
+        filteredVehicles = applyCurrentSort([...vehicles]);
+        document.getElementById("total-count").textContent = vehicles.length;
+        document.getElementById("count").textContent = vehicles.length;
+        renderTable(filteredVehicles);
+        updateCharts();
+        updateSortIndicators();
+        console.info(`Supabase loaded ${vehicles.length} ${selectedDataset.model} (${selectedYear}) vehicles in ${Math.round(performance.now() - started)} ms`);
+        // Comments are authoritative in Supabase; never overwrite with Google Sheets.
+      } catch (err) {
+        console.error("Supabase test load failed", err);
+        document.getElementById("table-rows").innerHTML = `<div style="padding:40px;color:#b91c1c"><h3>Supabase test failed</h3><p>${escapeHtml(err.message)}</p></div>`;
+      }
+    }
+
+    async function loadCSVOriginal() {
       try {
         currentCsvFile = getCsvFileFromUrl();
         syncDatasetDropdown();
