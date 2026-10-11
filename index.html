@@ -1647,10 +1647,13 @@
     // Publishable key is safe in browser code; NEVER use a service-role key here.
     const SUPABASE_URL = "https://qaikzwqdjdxkhhzscish.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
-    const ARCHIVE_PAGE_SIZE = 1000;
+    const ARCHIVE_SUMMARY_CACHE_MS = 5 * 60 * 1000;
+    let archiveSummaryRows = [];
+    let archiveTotal = 0;
+    let searchRequestId = 0;
 
     const recentTerms = [];
-    const allRows = [];
+    
 
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
@@ -2120,22 +2123,11 @@
 
     function renderArchiveSummary() {
       const summary = {};
-
-      allRows.forEach(row => {
-        const source = String(row.__sourceFile || "");
-        let series = "Other BMW";
-        if (/F87\s*M2/i.test(source)) series = "F87 M2";
-        else if (/E82\s*1M/i.test(source)) series = "E82 1M";
-        else if (/E90\s*M3/i.test(source)) series = "E90 M3";
-        else if (/E92\s*M3/i.test(source)) series = "E92 M3";
-        else if (/F97\s*X3M/i.test(source)) series = "F97 X3M";
-
-        const yearMatch = source.match(/\b(19|20)\d{2}\b/);
-        const year = String(getBestYear(row) || (yearMatch ? yearMatch[0] : "Unknown")).trim();
-
+      archiveSummaryRows.forEach(({ series, year, total }) => {
         if (!summary[series]) summary[series] = { total: 0, years: {} };
-        summary[series].total++;
-        summary[series].years[year] = (summary[series].years[year] || 0) + 1;
+        const count = Number(total) || 0;
+        summary[series].total += count;
+        summary[series].years[String(year)] = (summary[series].years[String(year)] || 0) + count;
       });
 
       const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "Other BMW"];
@@ -2144,7 +2136,7 @@
       const box = document.getElementById("archiveSummary");
       if (!grid || !total || !box) return;
 
-      total.textContent = `${allRows.length.toLocaleString()} vehicles total`;
+      total.textContent = `${archiveTotal.toLocaleString()} vehicles total`;
       const seriesLinks = {
         "F87 M2": "F87%20M2.html",
         "E82 1M": "E821MCoupe.html",
@@ -2300,38 +2292,56 @@
       box.classList.remove("hidden");
     }
 
-    function runSearch() {
+    async function runSearch() {
       const rawTerm = searchInput.value.trim();
-      const term = rawTerm.toLowerCase();
       const normalizedTerm = normalizeVin(rawTerm);
-
-      if (!rawTerm) {
-        renderResults([], "");
+      const requestId = ++searchRequestId;
+      if (!rawTerm) { renderResults([], ""); return; }
+      if (normalizedTerm.length < 4) {
+        resultsSection.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        emptyState.textContent = "Enter at least 4 VIN characters to search.";
         return;
       }
-
       updateRecent(rawTerm);
-
-      const exactVinMatch = allRows.find(row => {
-        const vin = normalizeVin(getBestVin(row));
-        const last7 = normalizeVin(getBestLast7(row));
-        return vin === normalizedTerm || last7 === normalizedTerm;
-      });
-
-      if (exactVinMatch) {
-        if (isE90M3Row(exactVinMatch)) {
-          openE90ConfiguratorSpecSheet(exactVinMatch);
-        } else {
-          openMonroney(exactVinMatch);
+      resultsSection.classList.add("hidden");
+      emptyState.classList.remove("hidden");
+      emptyState.textContent = "Searching Supabase...";
+      try {
+        const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
+        url.searchParams.set("select", "*");
+        url.searchParams.set("vin", `ilike.*${normalizedTerm}*`);
+        url.searchParams.set("limit", "100");
+        const response = await fetch(url, {
+          headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Accept: "application/json" }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const records = await response.json();
+        if (requestId !== searchRequestId) return;
+        const seen = new Set();
+        const matches = records.map(mapSupabaseArchiveRow).filter(row => {
+          const vin = normalizeVin(getBestVin(row));
+          if (!vin || seen.has(vin)) return false;
+          seen.add(vin);
+          return true;
+        });
+        const exact = matches.find(row => {
+          const vin = normalizeVin(getBestVin(row));
+          return vin === normalizedTerm || vin.slice(-7) === normalizedTerm;
+        });
+        if (exact) {
+          if (isE90M3Row(exact)) openE90ConfiguratorSpecSheet(exact);
+          else openMonroney(exact);
+          return;
         }
-        return;
+        renderResults(matches, rawTerm);
+      } catch (error) {
+        if (requestId !== searchRequestId) return;
+        resultsSection.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        emptyState.textContent = "VIN search unavailable: " + error.message;
+        console.error("Supabase VIN search failed", error);
       }
-
-      const matches = allRows
-        .filter(row => getSearchText(row).includes(term))
-        .slice(0, 100);
-
-      renderResults(matches, rawTerm);
     }
 
     function mapSupabaseArchiveRow(record) {
@@ -2381,66 +2391,50 @@
 
     async function loadCSVs() {
       loadingStatus.classList.remove("hidden");
-      loadingStatus.textContent = "Loading vehicle archive from Supabase...";
+      loadingStatus.textContent = "Loading production totals...";
       try {
-        const rows = [];
-        for (let offset = 0; ; offset += ARCHIVE_PAGE_SIZE) {
-          const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
-          url.searchParams.set("select", "*");
-          url.searchParams.set("order", "id.asc");
-          url.searchParams.set("limit", String(ARCHIVE_PAGE_SIZE));
-          url.searchParams.set("offset", String(offset));
-          const response = await fetch(url.toString(), {
-            headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Accept: "application/json" }
+        const cacheKey = "bmw-archiv-summary-v2";
+        let summary = null;
+        try {
+          const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+          if (cached && Date.now() - cached.savedAt < ARCHIVE_SUMMARY_CACHE_MS) summary = cached.rows;
+        } catch (_) {}
+        if (!summary) {
+          const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/vehicle_archive_summary`, {
+            method: "POST",
+            headers: {
+              apikey: SUPABASE_PUBLISHABLE_KEY,
+              "Content-Type": "application/json",
+              Accept: "application/json"
+            },
+            body: "{}"
           });
-          if (!response.ok) throw new Error(`Supabase HTTP ${response.status}: ${await response.text()}`);
-          const batch = await response.json();
-          if (!Array.isArray(batch)) throw new Error("Unexpected Supabase response");
-          rows.push(...batch);
-          loadingStatus.textContent = `Loading vehicle archive... ${rows.length.toLocaleString()} records`;
-          if (batch.length < ARCHIVE_PAGE_SIZE) break;
+          if (!response.ok) throw new Error(`Summary function unavailable (HTTP ${response.status}). Run the supplied SQL setup once in Supabase.`);
+          summary = await response.json();
+          if (!Array.isArray(summary)) throw new Error("Invalid summary response");
+          try { sessionStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), rows: summary })); } catch (_) {}
         }
-        const seen = new Set();
-        allRows.length = 0;
-        rows.forEach(record => {
-          const row = mapSupabaseArchiveRow(record);
-          const vin = normalizeVin(getBestVin(row));
-          if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin) || seen.has(vin)) return;
-          seen.add(vin);
-          allRows.push(row);
-        });
+        archiveSummaryRows = summary;
+        archiveTotal = summary.reduce((sum, row) => sum + (Number(row.total) || 0), 0);
         loadingStatus.classList.add("hidden");
         emptyState.classList.add("hidden");
         renderArchiveSummary();
       } catch (error) {
         loadingStatus.classList.remove("hidden");
-        loadingStatus.textContent = "Could not load Supabase vehicle records. " + error.message;
-        console.error("Supabase archive load failed:", error);
+        loadingStatus.textContent = "Could not load production totals. " + error.message;
+        console.error("Supabase summary load failed:", error);
       }
     }
 
     function buildInstagramSummaryData() {
       const summary = {};
-
-      allRows.forEach(row => {
-        const source = String(row.__sourceFile || "");
-        let series = "Other BMW";
-
-        if (/F87\s*M2/i.test(source)) series = "F87 M2";
-        else if (/E82\s*1M/i.test(source)) series = "E82 1M";
-        else if (/E90\s*M3/i.test(source)) series = "E90 M3";
-        else if (/E92\s*M3/i.test(source)) series = "E92 M3";
-
-        if (series === "Other BMW") return;
-
-        const yearMatch = source.match(/\b(19|20)\d{2}\b/);
-        const year = String(getBestYear(row) || (yearMatch ? yearMatch[0] : "Unknown")).trim();
-
+      archiveSummaryRows.forEach(({ series, year, total }) => {
+        if (!["F87 M2", "E82 1M", "E90 M3", "E92 M3"].includes(series)) return;
         if (!summary[series]) summary[series] = { total: 0, years: {} };
-        summary[series].total++;
-        summary[series].years[year] = (summary[series].years[year] || 0) + 1;
+        const count = Number(total) || 0;
+        summary[series].total += count;
+        summary[series].years[String(year)] = (summary[series].years[String(year)] || 0) + count;
       });
-
       return summary;
     }
 
@@ -2486,7 +2480,7 @@
             <div class="ig-breakdown">
               <div class="ig-heading-row">
                 <div class="ig-heading">Archive Breakdown</div>
-                <div class="ig-total">${allRows.length.toLocaleString()} vehicles total</div>
+                <div class="ig-total">${archiveTotal.toLocaleString()} vehicles total</div>
               </div>
               <div class="ig-series-grid">${cards}</div>
             </div>
@@ -2770,6 +2764,7 @@
 
     clearBtn.addEventListener("click", () => {
       searchInput.value = "";
+      searchRequestId++;
       clearBtn.style.display = "none";
       searchInput.focus();
       renderResults([], "");
