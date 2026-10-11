@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>2017 F87 M2 Coupe Database</title>
+  <title>BMW M ARCHIV | F87 M2 Coupe Database</title>
 
   <link
     id="favicon"
@@ -1017,10 +1017,24 @@
     }
 
     function handleDatasetChange(fileName) {
+      if (!M2_YEAR_FILES[fileName]) return;
+      currentCsvFile = fileName;
       const url = new URL(window.location.href);
       url.searchParams.set("file", fileName);
-      window.location.href = url.toString();
+      window.history.pushState({ file: fileName }, "", url);
+      selectedVehicles.clear();
+      closeSidePanel();
+      updateSelectionUI();
+      loadCSV();
     }
+    window.addEventListener("popstate", () => {
+      currentCsvFile = getCsvFileFromUrl();
+      if (!M2_YEAR_FILES[currentCsvFile]) currentCsvFile = "2016 F87 M2.csv";
+      selectedVehicles.clear();
+      closeSidePanel();
+      updateSelectionUI();
+      loadCSV();
+    });
 
     function toggleSidebar() {
       const sidebar = document.getElementById("left-sidebar");
@@ -1058,7 +1072,7 @@
             let attempts = 0;
             const waitForClerk = () => {
               if (window.Clerk) return resolve();
-              if (++attempts > 100) return reject(new Error("Clerk could not load"));
+              if (++attempts > 200) return reject(new Error("Clerk could not load"));
               setTimeout(waitForClerk, 100);
             };
             waitForClerk();
@@ -1080,6 +1094,8 @@
           });
         }
         setupFilterInputs();
+        currentCsvFile = getCsvFileFromUrl();
+        if (!M2_YEAR_FILES[currentCsvFile]) currentCsvFile = "2016 F87 M2.csv";
         loadCSV();
       } catch (error) {
         console.error("Clerk authentication failed", error);
@@ -1424,6 +1440,7 @@
         return true;
       });
 
+      m2VisibleLimit = M2_PAGE_SIZE;
       renderTable(filteredVehicles);
       document.getElementById("count").textContent = filteredVehicles.length;
       updateCharts();
@@ -1665,6 +1682,8 @@
       }).catch(() => {});
     }
 
+    const M2_PAGE_SIZE = 150;
+    let m2VisibleLimit = M2_PAGE_SIZE;
     function renderTable(rowsToRender) {
       const tableRows = document.getElementById("table-rows");
 
@@ -1677,7 +1696,7 @@
         return;
       }
 
-      tableRows.innerHTML = rowsToRender.map(vehicle => {
+      tableRows.innerHTML = rowsToRender.slice(0, m2VisibleLimit).map(vehicle => {
         const selected = selectedVehicles.has(vehicle.vin);
         const rgb = vehicle.rgb || "209, 213, 219";
         const msrpDisplay = formatMsrp(vehicle.msrp);
@@ -1746,6 +1765,16 @@
         `;
       }).join("");
 
+      if (rowsToRender.length > m2VisibleLimit) {
+        const more = document.createElement("div");
+        more.style.cssText = "text-align:center;padding:20px;background:#f3f4f6";
+        more.innerHTML = `<button type="button" id="m2-show-more" style="background:#111827;color:white;border:0;border-radius:8px;padding:12px 24px;cursor:pointer;font-weight:600">Show more vehicles (${Math.min(m2VisibleLimit, rowsToRender.length)} of ${rowsToRender.length})</button>`;
+        tableRows.appendChild(more);
+        more.querySelector("button").addEventListener("click", () => {
+          m2VisibleLimit += M2_PAGE_SIZE;
+          renderTable(rowsToRender);
+        });
+      }
       tableRows.querySelectorAll(".vehicle-checkbox").forEach(cb => {
         cb.addEventListener("change", e => {
           toggleVehicleSelection(e.target.dataset.vin, e.target.checked);
@@ -1806,52 +1835,80 @@
       alert(`Invoice link not set for ${vehicle.vin}`);
     }
 
-    async function loadCSV() {
-      try {
-        currentCsvFile = getCsvFileFromUrl();
-        syncDatasetDropdown();
+    // Supabase is the sole inventory source; the CSV filenames remain only as year selectors.
+    const SUPABASE_URL = "https://qaikzwqdjdxkhhzscish.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
+    const M2_YEAR_FILES = {
+      "2016 F87 M2.csv": 2016,
+      "2017 F87 M2.csv": 2017,
+      "2018 F87 M2.csv": 2018
+    };
+    const m2YearCache = new Map();
+    let m2RequestId = 0;
 
-        const response = await fetch(encodeURI(currentCsvFile));
-        if (!response.ok) {
-          throw new Error(`Could not load ${currentCsvFile}`);
+    async function fetchM2Year(year) {
+      if (m2YearCache.has(year)) return m2YearCache.get(year);
+      const promise = (async () => {
+        const all = [];
+        for (let offset = 0; ; offset += 1000) {
+          const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
+          url.searchParams.set("select", "*");
+          url.searchParams.set("model", "eq.F87 M2 Coupe");
+          url.searchParams.set("model_year", `eq.${year}`);
+          url.searchParams.set("order", "vin.asc");
+          url.searchParams.set("limit", "1000");
+          url.searchParams.set("offset", String(offset));
+          const response = await fetch(url, { headers: {
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            Accept: "application/json"
+          }});
+          if (!response.ok) throw new Error(`Supabase ${year}: ${response.status} ${await response.text()}`);
+          const batch = await response.json();
+          all.push(...batch);
+          if (batch.length < 1000) break;
         }
+        return all;
+      })();
+      m2YearCache.set(year, promise);
+      promise.catch(() => { if (m2YearCache.get(year) === promise) m2YearCache.delete(year); });
+      return promise;
+    }
 
-        const text = await response.text();
-        const rows = parseCSV(text);
+    function supabaseM2ToVehicle(record) {
+      const original = record.original_csv_data && typeof record.original_csv_data === "object"
+        ? record.original_csv_data : {};
+      const row = {
+        ...original,
+        EXTERIOR: record.exterior_color || original.EXTERIOR || "",
+        INTERIOR: record.interior_color || original.INTERIOR || "",
+        PACKAGES: record.package_codes || original.PACKAGES || "",
+        VIN: record.vin || original.VIN || "",
+        Year: String(record.model_year || ""),
+        MODEL: original.MODEL || "M2",
+        MSRP: record.msrp ?? original.MSRP ?? "",
+        "DEALER NAME": record.dealer_name || original["DEALER NAME"] || ""
+      };
+      return buildVehicle(row);
+    }
 
-        vehicles = [];
-        let reachedEnd = false;
-
-        rows.forEach(row => {
-          const vehicle = buildVehicle(row);
-          const vin = String(vehicle.vin || "").trim();
-
-          if (vin === "END_VEHICLES") {
-            reachedEnd = true;
-            return;
-          }
-
-          if (reachedEnd) return;
-
-          if (vin !== "" && vin !== "-" && vin.length >= 11) {
-            vehicles.push(vehicle);
-          }
-        });
-
+    async function loadCSV() {
+      const requestId = ++m2RequestId;
+      syncDatasetDropdown();
+      const table = document.getElementById("table-rows");
+      table.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Loading M2 inventory from Supabase...</div></div>';
+      try {
+        const year = M2_YEAR_FILES[currentCsvFile] || 2016;
+        const rows = await fetchM2Year(year);
+        if (requestId !== m2RequestId) return;
+        vehicles = rows.map(supabaseM2ToVehicle);
         filteredVehicles = [...vehicles];
-
+        m2VisibleLimit = M2_PAGE_SIZE;
         document.getElementById("total-count").textContent = vehicles.length;
-        document.getElementById("count").textContent = vehicles.length;
-
-        renderTable(filteredVehicles);
-        updateCharts();
+        applyFilters();
       } catch (error) {
-        document.getElementById("table-rows").innerHTML = `
-          <div class="loading">
-            <div>Failed to load vehicle data.</div>
-            <div style="margin-top:8px;">${escapeHtml(error.message)}</div>
-          </div>
-        `;
+        if (requestId !== m2RequestId) return;
+        console.error("M2 Supabase load failed:", error);
+        table.innerHTML = `<div class="loading"><div>Failed to load vehicle data from Supabase.</div><div style="margin-top:8px">${escapeHtml(error.message)}</div></div>`;
       }
     }
 
