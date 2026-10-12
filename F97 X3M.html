@@ -1701,17 +1701,13 @@
 
     function updateAdminMode() {
       const admin = isAdminUser();
-      document.body.classList.toggle("is-admin", false); // Test version: comments are read-only.
-
+      document.body.classList.toggle("is-admin", admin);
       const adminTools = document.getElementById("admin-tools");
-      if (adminTools) {
-        adminTools.style.display = "none";
-      }
-
+      if (adminTools) adminTools.style.display = admin ? "flex" : "none";
       document.querySelectorAll(".comments-edit").forEach(textarea => {
-        textarea.readOnly = true;
-        textarea.classList.add("readonly");
-        textarea.title = "Read-only during Supabase testing";
+        textarea.readOnly = !admin;
+        textarea.classList.toggle("readonly", !admin);
+        textarea.title = admin ? "Edit vehicle comment" : "Administrator only";
       });
     }
 
@@ -1751,102 +1747,52 @@
       ].join("\n");
     }
 
+    // Saving requires a deployed Supabase Edge Function that validates Clerk identity
+    // server-side and authorizes the administrator. Never put a service-role key here.
+    const X3M_COMMENTS_FUNCTION = `${SUPABASE_URL}/functions/v1/save-vehicle-comments`;
+
     async function saveUpdatedCsvToGitHub() {
       if (!isAdminUser()) {
-        alert("Only the admin account can save updated comments.");
+        alert("Only the administrator can save comments.");
         return;
       }
-
-      if (!GITHUB_SAVE_WEBHOOK_URL || GITHUB_SAVE_WEBHOOK_URL.includes("PASTE_YOUR")) {
-        alert("Save endpoint is not configured yet. Paste your Google Apps Script Web App URL into GITHUB_SAVE_WEBHOOK_URL.");
+      const edits = [...document.querySelectorAll(".comments-edit")]
+        .filter(el => el.value !== (el.dataset.originalComment || ""))
+        .map(el => ({ vin: el.dataset.vin, comment: el.value }));
+      if (!edits.length) {
+        alert("No comment changes to save.");
         return;
       }
-
-      if (!COMMENTS_SAVE_TOKEN || COMMENTS_SAVE_TOKEN === "CHANGE_THIS_PASSWORD") {
-        alert("COMMENTS_SAVE_TOKEN is missing. It must match ADMIN_TOKEN in Apps Script.");
-        return;
-      }
-
       const button = document.querySelector(".admin-save-btn");
-      const originalText = button ? button.textContent : "";
-
       try {
-        if (button) {
-          button.disabled = true;
-          button.textContent = "Saving...";
-        }
-
-        const updatesBySheet = new Map();
-
-        document.querySelectorAll(".comments-edit").forEach(textarea => {
-          const originalComment = textarea.dataset.originalComment || "";
-          const currentComment = textarea.value || "";
-          if (currentComment === originalComment) return;
-
-          const vin = textarea.dataset.vin;
-          setCommentForVehicle(vin, currentComment);
-          const vehicle = vehicles.find(item => item.vin === vin);
-          const sheetName = (vehicle && vehicle.sourceSheet) || getSheetNamesForDataset(currentCsvFile)[0];
-
-          if (!updatesBySheet.has(sheetName)) updatesBySheet.set(sheetName, []);
-          updatesBySheet.get(sheetName).push({ vin, comment: currentComment });
+        if (button) { button.disabled = true; button.textContent = "Saving..."; }
+        const clerkToken = await window.Clerk?.session?.getToken();
+        if (!clerkToken) throw new Error("Your Clerk session has expired. Sign in again.");
+        const response = await fetch(X3M_COMMENTS_FUNCTION, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${clerkToken}`,
+            "apikey": SUPABASE_PUBLISHABLE_KEY
+          },
+          body: JSON.stringify({ updates: edits })
         });
-
-        if (!updatesBySheet.size) {
-          alert("No comment changes to save.");
-          return;
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || payload.success === false) {
+          throw new Error(payload.error || `Comment save failed (HTTP ${response.status}). Check the Edge Function deployment and Clerk authorization.`);
         }
-
-        let totalSaved = 0;
-        let totalMissing = 0;
-
-        for (const [sheetName, updates] of updatesBySheet.entries()) {
-          const response = await fetch(GITHUB_SAVE_WEBHOOK_URL, {
-            method: "POST",
-            mode: "cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({
-              token: COMMENTS_SAVE_TOKEN,
-              sheetName,
-              updates,
-              source: "F97 X3M Admin Comments",
-              updatedBy: getCurrentLoginName() || "Admin",
-              updatedAt: new Date().toISOString()
-            })
-          });
-
-          const resultText = await response.text();
-          let result = {};
-          try { result = JSON.parse(resultText); } catch (e) {}
-
-          if (!response.ok || result.success === false || result.ok === false) {
-            const debugDetails = result && Object.keys(result).length
-              ? JSON.stringify(result, null, 2)
-              : resultText;
-            throw new Error(`${sheetName}: ${debugDetails || "Save failed."}`);
-          }
-
-          totalSaved += typeof result.saved === "number" ? result.saved : updates.length;
-          totalMissing += Array.isArray(result.missing) ? result.missing.filter(Boolean).length : 0;
+        if (payload.saved !== edits.length) {
+          throw new Error(`Server confirmed ${payload.saved ?? 0} of ${edits.length} updates. Refresh to verify before retrying.`);
         }
-
-        document.querySelectorAll(".comments-edit").forEach(textarea => {
-          textarea.dataset.originalComment = textarea.value || "";
-        });
-
-        if (totalMissing) {
-          alert(`Comments saved. ${totalSaved} row(s) updated. ${totalMissing} VIN(s) were not found in the sheet.`);
-        } else {
-          alert(`Save successful. ${totalSaved} row(s) updated.`);
+        for (const el of document.querySelectorAll(".comments-edit")) {
+          el.dataset.originalComment = el.value;
         }
+        alert(`Saved ${edits.length} comment(s) to Supabase.`);
       } catch (error) {
-        console.error(error);
-        alert("Save failed: " + (error && error.message ? error.message : error));
+        console.error("Supabase comment save failed", error);
+        alert(error.message || "Unable to save comments.");
       } finally {
-        if (button) {
-          button.disabled = false;
-          button.textContent = originalText || "Save Comments";
-        }
+        if (button) { button.disabled = false; button.textContent = "Save Comments"; }
       }
     }
 
