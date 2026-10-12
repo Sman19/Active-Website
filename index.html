@@ -2277,7 +2277,14 @@
       grid.querySelectorAll("[data-series-link]").forEach(card => {
         const openSeries = () => {
           const target = card.getAttribute("data-series-link");
-          if (target) window.location.href = target;
+          if (!target) return;
+          const url = new URL(target, window.location.href);
+          // Opening the F97 X3M series defaults to the 2020 model year.
+          // Individual model-year chips continue to open their selected year.
+          if (target === "F97%20X3M.html") {
+            url.searchParams.set("file", "2020 F97 X3M.csv");
+          }
+          window.location.href = url.toString();
         };
 
         card.addEventListener("click", openSeries);
