@@ -1701,17 +1701,17 @@
 
     function updateAdminMode() {
       const admin = isAdminUser();
-      document.body.classList.toggle("is-admin", admin);
+      document.body.classList.toggle("is-admin", false); // Test version: comments are read-only.
 
       const adminTools = document.getElementById("admin-tools");
       if (adminTools) {
-        adminTools.style.display = admin ? "flex" : "none";
+        adminTools.style.display = "none";
       }
 
       document.querySelectorAll(".comments-edit").forEach(textarea => {
-        textarea.readOnly = !admin;
-        textarea.classList.toggle("readonly", !admin);
-        textarea.title = admin ? "Edit comment" : "";
+        textarea.readOnly = true;
+        textarea.classList.add("readonly");
+        textarea.title = "Read-only during Supabase testing";
       });
     }
 
@@ -3313,79 +3313,89 @@
       applyColumnOrder();
     }
 
-    async function loadCSV() {
-      try {
-        currentCsvFile = getCsvFileFromUrl();
-        syncDatasetDropdown();
+    // Uses the same Supabase REST connection and pagination as the working F87 M2 page.
+    const SUPABASE_URL = "https://qaikzwqdjdxkhhzscish.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
+    const X3M_YEAR_FILES = {
+      "2020 F97 X3M.csv": 2020,
+      "2021 F97 X3M.csv": 2021,
+      "2022 F97 X3M.csv": 2022,
+      "2023 F97 X3M.csv": 2023
+    };
+    const x3mYearCache = new Map();
+    let x3mRequestId = 0;
 
-        const sheetNames = getSheetNamesForDataset(currentCsvFile);
-        const cacheBust = Date.now();
-
-        let sheetResponses;
-        try {
-          sheetResponses = await Promise.all(
-            sheetNames.map(async sheetName => {
-              const csvUrl = `${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheetName)}&t=${cacheBust}`;
-              const response = await fetch(csvUrl, { cache: "no-store" });
-              if (!response.ok) throw new Error(`Could not load ${sheetName}`);
-              const text = await response.text();
-              if (!text || !/VIN/i.test(text)) throw new Error(`Invalid CSV returned for ${sheetName}`);
-              return { sheetName, text };
-            })
-          );
-        } catch (sheetError) {
-          console.warn("Google Sheet load failed; trying the repository CSV instead:", sheetError);
-          const localResponse = await fetch(encodeURI(currentCsvFile) + `?t=${cacheBust}`, { cache: "no-store" });
-          if (!localResponse.ok) throw new Error(`Could not load ${currentCsvFile}`);
-          sheetResponses = [{ sheetName: getSheetNamesForDataset(currentCsvFile)[0], text: await localResponse.text() }];
+    async function fetchX3MYear(year) {
+      if (x3mYearCache.has(year)) return x3mYearCache.get(year);
+      const promise = (async () => {
+        const all = [];
+        for (let offset = 0; ; offset += 1000) {
+          const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
+          url.searchParams.set("select", "*");
+          url.searchParams.set("model", "eq.X3M");
+          url.searchParams.set("model_year", `eq.${year}`);
+          url.searchParams.set("order", "vin.asc");
+          url.searchParams.set("limit", "1000");
+          url.searchParams.set("offset", String(offset));
+          const response = await fetch(url, { headers: {
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            Accept: "application/json"
+          }});
+          if (!response.ok) throw new Error(`Supabase ${year}: ${response.status} ${await response.text()}`);
+          const batch = await response.json();
+          all.push(...batch);
+          if (batch.length < 1000) break;
         }
+        return all;
+      })();
+      x3mYearCache.set(year, promise);
+      promise.catch(() => { if (x3mYearCache.get(year) === promise) x3mYearCache.delete(year); });
+      return promise;
+    }
 
-        vehicles = [];
-        const seenVins = new Set();
+    function supabaseX3MToVehicle(record) {
+      const original = record.original_csv_data && typeof record.original_csv_data === "object" && !Array.isArray(record.original_csv_data)
+        ? record.original_csv_data : {};
+      const row = {
+        ...original,
+        EXTERIOR: record.exterior_color || original.EXTERIOR || "",
+        INTERIOR: record.interior_color || original.INTERIOR || "",
+        "Package Codes": record.package_codes || original["Package Codes"] || original.PACKAGES || "",
+        VIN: record.vin || original.VIN || "",
+        YEAR: String(record.model_year || ""),
+        MODEL: original.MODEL || "F97",
+        MSRP: record.msrp ?? original.MSRP ?? "",
+        "DEALER NAME": record.dealer_name || original["DEALER NAME"] || "",
+        [commentsHeaderName]: record.comments ?? original[commentsHeaderName] ?? original.Notes ?? ""
+      };
+      const vehicle = buildVehicle(row);
+      vehicle.sourceSheet = `${record.model_year} F97 X3M`;
+      return vehicle;
+    }
 
-        sheetResponses.forEach(({ sheetName, text }) => {
-          const rows = parseCSV(text);
-          let reachedEnd = false;
-
-          rows.forEach(row => {
-            row.__sourceSheet = sheetName;
-            const vehicle = buildVehicle(row);
-            const vin = String(vehicle.vin || "").trim().toUpperCase();
-
-            if (vin === "END_VEHICLES") {
-              reachedEnd = true;
-              return;
-            }
-            if (reachedEnd) return;
-
-            // Only include legitimate 17-character VINs. VINs never contain I, O, or Q.
-            if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) return;
-            if (seenVins.has(vin)) return;
-
-            seenVins.add(vin);
-            vehicle.vin = vin;
-            vehicles.push(vehicle);
-          });
-        });
-
+    async function loadCSV() {
+      const requestId = ++x3mRequestId;
+      currentCsvFile = getCsvFileFromUrl();
+      if (!X3M_YEAR_FILES[currentCsvFile]) currentCsvFile = "2020 F97 X3M.csv";
+      syncDatasetDropdown();
+      const table = document.getElementById("table-rows");
+      table.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Loading X3M inventory from Supabase...</div></div>';
+      try {
+        const year = X3M_YEAR_FILES[currentCsvFile];
+        const rows = await fetchX3MYear(year);
+        if (requestId !== x3mRequestId) return;
+        vehicles = rows.map(supabaseX3MToVehicle);
         filteredVehicles = applyCurrentSort([...vehicles]);
         selectedVehicles.clear();
-
         document.getElementById("total-count").textContent = vehicles.length;
         document.getElementById("count").textContent = vehicles.length;
-
         renderTable(filteredVehicles);
         updateCharts();
         updateSortIndicators();
       } catch (err) {
-        console.error("Error loading CSV:", err);
-        document.getElementById("table-rows").innerHTML = `
-          <div style="padding: 40px; text-align: center; color: #dc3545;">
-            <h3>⚠️ Error Loading Data</h3>
-            <p>${escapeHtml(err.message)}</p>
-            <p>Please confirm the Google Apps Script Web App is deployed and returning CSV from the Google Sheet.</p>
-          </div>
-        `;
+        if (requestId !== x3mRequestId) return;
+        console.error("X3M Supabase load failed:", err);
+        table.innerHTML = `<div class="loading"><h3>Unable to load X3M data</h3><p>${escapeHtml(err.message)}</p></div>`;
       }
     }
 
