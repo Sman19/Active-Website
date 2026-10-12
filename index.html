@@ -1249,6 +1249,36 @@
         justify-content: space-between;
       }
     }
+
+    /* Homepage-only advertising: desktop right rail, no mobile ad space. */
+    .homepage-ad-layout { width: 100%; }
+    .homepage-ad-layout > .page { min-width: 0; }
+    .homepage-ad-rail { display: none; }
+    @media (min-width: 1800px) {
+      .homepage-ad-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1760px) 160px;
+        justify-content: center;
+        gap: 20px;
+        max-width: 1980px;
+        margin: 0 auto;
+        padding-right: 20px;
+      }
+      .homepage-ad-layout > .page { width: 100%; }
+      .homepage-ad-rail { display: block; padding-top: 24px; }
+      .homepage-ad-sticky { position: sticky; top: 20px; }
+      .homepage-ad-slot {
+        width: 160px; min-height: 600px;
+        border: 1px solid #dce1e8; border-radius: 10px;
+        background: #edf0f4;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 12px; padding: 14px;
+        text-align: center; color: #6b7280;
+      }
+      .homepage-ad-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+      .homepage-ad-pending { font-size: 12px; line-height: 1.5; }
+    }
   </style>
 
   <style>
@@ -1481,6 +1511,7 @@
     <div class="hero-recent" id="recentSearches">Recent searches: None</div>
   </section>
 
+  <div class="homepage-ad-layout">
   <main class="page">
     <section class="panel">
       <div class="section-title">My BMW Series</div>
@@ -1605,6 +1636,17 @@
       </div>
     </section>
   </main>
+  <!-- Homepage only. Replace the placeholder with an approved AdSense unit
+       after obtaining your publisher ID and ad slot ID. -->
+  <aside class="homepage-ad-rail" aria-label="Advertisement">
+    <div class="homepage-ad-sticky">
+      <div class="homepage-ad-slot" id="homepageAdSlot">
+        <span class="homepage-ad-label">Advertisement</span>
+        <span class="homepage-ad-pending">Ad space reserved<br>160 × 600</span>
+      </div>
+    </div>
+  </aside>
+  </div>
 
   <div id="instagramExportStage" aria-hidden="true"></div>
 
