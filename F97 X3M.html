@@ -1749,7 +1749,7 @@
 
     // Saving requires a deployed Supabase Edge Function that validates Clerk identity
     // server-side and authorizes the administrator. Never put a service-role key here.
-    const X3M_COMMENTS_FUNCTION = `${SUPABASE_URL}/functions/v1/save-vehicle-comments`;
+
 
     async function saveUpdatedCsvToGitHub() {
       if (!isAdminUser()) {
@@ -3262,6 +3262,7 @@
     // Uses the same Supabase REST connection and pagination as the working F87 M2 page.
     const SUPABASE_URL = "https://qaikzwqdjdxkhhzscish.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
+    const X3M_COMMENTS_FUNCTION = `${SUPABASE_URL}/functions/v1/save-vehicle-comments`;
     const X3M_YEAR_FILES = {
       "2020 F97 X3M.csv": 2020,
       "2021 F97 X3M.csv": 2021,
