@@ -1695,8 +1695,12 @@
     }
 
     function isAdminUser() {
-      const currentLogin = getCurrentLoginName().toLowerCase();
-      return ADMIN_USERS.some(user => user.toLowerCase() === currentLogin);
+      // Read the authenticated Clerk account, never a label in the page.
+      const user = window.Clerk?.user;
+      if (!user) return false;
+      const username = String(user.username || "").trim().toLowerCase();
+      const role = String(user.publicMetadata?.role || "").trim().toLowerCase();
+      return ADMIN_USERS.some(name => name.trim().toLowerCase() === username) || role === "admin";
     }
 
     function updateAdminMode() {
@@ -1706,9 +1710,12 @@
       if (adminTools) adminTools.style.display = admin ? "flex" : "none";
       document.querySelectorAll(".comments-edit").forEach(textarea => {
         textarea.readOnly = !admin;
+        textarea.disabled = false;
         textarea.classList.toggle("readonly", !admin);
-        textarea.title = admin ? "Edit vehicle comment" : "Administrator only";
+        textarea.title = admin ? "Edit vehicle comment" : "Administrator only — sign in with the Clerk admin account";
+        textarea.setAttribute("aria-readonly", String(!admin));
       });
+      if (adminTools) adminTools.title = admin ? "Admin comments enabled" : "Admin comments unavailable for this Clerk account";
     }
 
     function getCommentsFromRow(row) {
@@ -3361,6 +3368,7 @@
         document.documentElement.classList.add("clerk-authorized");
         updateAuthUser();
         updateAdminMode();
+        console.info("X3M comments access:", isAdminUser() ? "admin editing enabled" : "read-only Clerk account", "Clerk username:", window.Clerk.user?.username || "(not set)");
         setupFilterInputs();
         setupSortableHeaders();
         setupColumnDragAndDrop();
