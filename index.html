@@ -358,11 +358,31 @@
       z-index: 1;
     }
     .hero > .hero-recent { position: absolute; }
+    /* Let visitors hide the VIN search panel to enjoy the background video. */
+    .hero .hero-panel-toggle {
+      position: absolute; top: 22px; right: 24px; z-index: 3;
+      border: 1px solid rgba(255,255,255,.55); border-radius: 999px;
+      background: rgba(20,25,33,.70); color: #fff;
+      padding: 11px 17px; font: 700 14px Arial, sans-serif;
+      cursor: pointer; backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .hero .hero-panel-toggle:hover { background: rgba(20,25,33,.92); }
+    .hero .hero-panel-toggle:focus-visible { outline: 3px solid #4da3ff; outline-offset: 3px; }
+    .hero.search-collapsed .search-panel,
+    .hero.search-collapsed .hero-recent { display: none; }
+    @media (max-width: 760px) {
+      .hero .hero-panel-toggle { top: 12px; right: 12px; padding: 9px 13px; }
+    }
+
 
     .search-panel {
       width: 100%;
       max-width: 600px;
-      background: #f4f4f4;
+      background: rgba(244,244,244,0.91);
+      border: 1px solid rgba(255,255,255,.35);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
       border-radius: 18px;
       padding: 28px 30px 20px;
       box-shadow: 0 10px 28px rgba(0,0,0,0.16);
@@ -1502,7 +1522,8 @@
 
   <section class="hero">
     <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4" type="video/mp4"></video>
-    <div class="search-panel">
+    <button id="heroPanelToggle" class="hero-panel-toggle" type="button" aria-expanded="true" aria-controls="heroSearchPanel">− Hide VIN Search</button>
+    <div class="search-panel" id="heroSearchPanel">
       <div class="search-title">Vehicle Inquiry</div>
 
       <div class="search-row">
@@ -3114,6 +3135,19 @@
       showError(e?.message || String(e));
     }
   })();
+  </script>
+  <script>
+    // Hero search panel: collapse without interrupting background video playback.
+    (() => {
+      const hero = document.querySelector('.hero');
+      const toggle = document.getElementById('heroPanelToggle');
+      if (!hero || !toggle) return;
+      toggle.addEventListener('click', () => {
+        const collapsed = hero.classList.toggle('search-collapsed');
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+        toggle.textContent = collapsed ? '+ Show VIN Search' : '− Hide VIN Search';
+      });
+    })();
   </script>
 </body>
 </html>
