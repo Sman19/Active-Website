@@ -25,6 +25,79 @@
     #archiv-auth-loader .archiv-loader-caption { font-size: 14px; color: #aeb8c7; }
     @keyframes archiv-loader-spin { to { transform: rotate(360deg); } }
     html.clerk-authorized #archiv-auth-loader { display: none; }
+    /* The entire footer row is clickable, not just a centered pill. */
+    .vehicle-load-more-row {
+      display: block;
+      width: 100%;
+      min-height: 76px;
+      padding: 22px 18px;
+      border: 0;
+      border-top: 1px solid #d1d5db;
+      background: #eceff1;
+      color: #111827;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+    .vehicle-load-more-row .load-more-heading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 750;
+    }
+    .vehicle-load-more-row .load-more-tickers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid #cbd5e1;
+    }
+    .vehicle-load-more-row .load-more-ticker {
+      display: block;
+      overflow: hidden;
+      min-width: 0;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .07em;
+      white-space: nowrap;
+    }
+    .vehicle-load-more-row .load-more-ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: loadMoreTicker 14s linear infinite;
+      will-change: transform;
+    }
+    .vehicle-load-more-row .load-more-ticker:nth-child(2) .load-more-ticker-text {
+      animation-delay: -4.5s;
+    }
+    .vehicle-load-more-row .load-more-ticker:nth-child(3) .load-more-ticker-text {
+      animation-delay: -9s;
+    }
+    @keyframes loadMoreTicker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    .vehicle-load-more-row:hover .load-more-ticker-text,
+    .vehicle-load-more-row:focus-visible .load-more-ticker-text { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .vehicle-load-more-row .load-more-ticker-text {
+        animation: none;
+        padding-left: 0;
+        white-space: normal;
+      }
+    }
+    .vehicle-load-more-row:hover { background: #dbe4ee; }
+    .vehicle-load-more-row:focus-visible {
+      outline: 3px solid #2563eb;
+      outline-offset: -3px;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -2267,6 +2340,7 @@
       }
 
       filteredVehicles = applyCurrentSort(filteredVehicles);
+      visibleVehicleLimit = VEHICLE_DISPLAY_BATCH;
 
       document.getElementById("count").textContent = filteredVehicles.length;
       renderTable(filteredVehicles);
@@ -3150,11 +3224,14 @@
       window.open(vehicle.invoice, "_blank", "noopener,noreferrer");
     }
 
+    let visibleVehicleLimit = 100;
+    const VEHICLE_DISPLAY_BATCH = 100;
+
     function renderTable(rowsToRender) {
       const table = document.getElementById("table-rows");
       table.innerHTML = "";
 
-      rowsToRender.forEach((vehicle, index) => {
+      rowsToRender.slice(0, visibleVehicleLimit).forEach((vehicle, index) => {
         const row = document.createElement("div");
         row.className = "table-row";
         const isSelected = selectedVehicles.has(vehicle.vin);
@@ -3264,6 +3341,47 @@
         });
       });
 
+      // Display rows in batches so the browser does not create thousands of
+      // image, tooltip, and textarea elements before showing the first results.
+      // Filtering, sorting and charts still operate on the COMPLETE dataset.
+      if (rowsToRender.length > visibleVehicleLimit) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "vehicle-load-more-row";
+        const nextCount = Math.min(VEHICLE_DISPLAY_BATCH, rowsToRender.length - visibleVehicleLimit);
+        const displayedCount = Math.min(visibleVehicleLimit, rowsToRender.length);
+        button.setAttribute("aria-label", `Show next ${nextCount} vehicles. ${displayedCount} of ${rowsToRender.length} displayed.`);
+        const heading = document.createElement("span");
+        heading.className = "load-more-heading";
+        heading.textContent = `Show next ${nextCount} vehicles ↓`;
+        const tickers = document.createElement("span");
+        tickers.className = "load-more-tickers";
+        tickers.setAttribute("aria-hidden", "true");
+        const tickerMessages = [
+          "BMW M ARCHIV",
+          `${displayedCount.toLocaleString()} OF ${rowsToRender.length.toLocaleString()} DISPLAYED`,
+          "CLICK ANYWHERE TO LOAD MORE"
+        ];
+        tickerMessages.forEach(message => {
+          const ticker = document.createElement("span");
+          ticker.className = "load-more-ticker";
+          const tickerText = document.createElement("span");
+          tickerText.className = "load-more-ticker-text";
+          tickerText.textContent = `${message}  •  ${message}  •  `;
+          ticker.appendChild(tickerText);
+          tickers.appendChild(ticker);
+        });
+        button.append(heading, tickers);
+        button.addEventListener("click", () => {
+          // Preserve the reader's position while adding the next batch.
+          const previousScrollY = window.scrollY;
+          visibleVehicleLimit += VEHICLE_DISPLAY_BATCH;
+          renderTable(rowsToRender);
+          window.scrollTo({ top: previousScrollY, behavior: "instant" });
+        });
+        table.appendChild(button);
+      }
+
       updateAdminMode();
       initCopyButtons();
       applyColumnOrder();
@@ -3344,6 +3462,7 @@
         if (requestId !== x3mRequestId) return;
         vehicles = rows.map(supabaseX3MToVehicle);
         filteredVehicles = applyCurrentSort([...vehicles]);
+        visibleVehicleLimit = VEHICLE_DISPLAY_BATCH;
         selectedVehicles.clear();
         document.getElementById("total-count").textContent = vehicles.length;
         document.getElementById("count").textContent = vehicles.length;
