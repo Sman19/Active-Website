@@ -868,6 +868,20 @@
 
     .table-row:nth-child(even) { background: #eceff1; }
 
+    /* Prevent highlighting inventory text without disabling controls. */
+    #table-rows .table-row,
+    #table-rows .table-row .cell,
+    #table-rows .table-row .cell *:not(input):not(textarea) {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    #table-rows .comments-edit {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+
     .cell {
       padding: 0 4px;
       display: flex;
