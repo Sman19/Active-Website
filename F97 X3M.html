@@ -1111,6 +1111,7 @@
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
+              <option value="ALL_YEARS">All Years (2020–2024)</option>
               <option value="2020 F97 X3M.csv">2020 F97 X3M</option>
               <option value="2021 F97 X3M.csv">2021 F97 X3M</option>
               <option value="2022 F97 X3M.csv">2022 F97 X3M</option>
@@ -1274,7 +1275,7 @@
     const colorLookup = {};
     const interiorLookup = {};
     const packageLookup = {};
-    let currentCsvFile = "2020 F97 X3M.csv";
+    let currentCsvFile = "ALL_YEARS";
     let csvHeaders = [];
     let csvRowsByVin = new Map();
     let commentsHeaderName = "Notes";
@@ -1442,7 +1443,7 @@
 
     function getCsvFileFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      return params.get("file") || "2020 F97 X3M.csv";
+      return params.get("file") || "ALL_YEARS";
     }
 
     const F97_X3M_SHEETS = [
@@ -3466,13 +3467,15 @@
     async function loadCSV() {
       const requestId = ++x3mRequestId;
       currentCsvFile = getCsvFileFromUrl();
-      if (!X3M_YEAR_FILES[currentCsvFile]) currentCsvFile = "2020 F97 X3M.csv";
+      if (currentCsvFile !== "ALL_YEARS" && !X3M_YEAR_FILES[currentCsvFile]) currentCsvFile = "ALL_YEARS";
       syncDatasetDropdown();
       const table = document.getElementById("table-rows");
       table.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Loading X3M inventory from Supabase...</div></div>';
       try {
         const year = X3M_YEAR_FILES[currentCsvFile];
-        const rows = await fetchX3MYear(year);
+        const rows = currentCsvFile === "ALL_YEARS"
+          ? (await Promise.all(Object.values(X3M_YEAR_FILES).map(fetchX3MYear))).flat()
+          : await fetchX3MYear(year);
         if (requestId !== x3mRequestId) return;
         vehicles = rows.map(supabaseX3MToVehicle);
         filteredVehicles = applyCurrentSort([...vehicles]);
