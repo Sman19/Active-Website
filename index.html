@@ -347,6 +347,9 @@
     }
 
     .hero > video.hero-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; z-index: 0; pointer-events: none; flex: none; }
+    .hero > video.hero-video { transition: opacity .55s ease; }
+    .hero > video.hero-video.video-hidden { opacity: 0; }
+    .hero > video.hero-video.video-visible { opacity: 1; }
     .hero::before {
       display: none;
     }
@@ -1521,7 +1524,8 @@
   </header>
 
   <section class="hero">
-    <video id="heroVideo" class="hero-video" autoplay muted playsinline preload="metadata" aria-hidden="true"><source src="https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4" type="video/mp4"></video>
+    <video id="heroVideo" class="hero-video video-visible" autoplay muted playsinline preload="metadata" aria-hidden="true"><source src="https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4" type="video/mp4"></video>
+    <video id="heroVideoNext" class="hero-video video-hidden" muted playsinline preload="none" aria-hidden="true"></video>
     <button id="heroPanelToggle" class="hero-panel-toggle" type="button" aria-expanded="true" aria-controls="heroSearchPanel">− Hide VIN Search</button>
     <div class="search-panel" id="heroSearchPanel">
       <div class="search-title">Vehicle Inquiry</div>
@@ -3150,23 +3154,65 @@
     })();
   </script>
   <script>
-    // Cycle through the BMW M ARCHIV homepage background videos.
+    // Double-buffer videos: keep the previous frame visible while the next MP4 loads.
     (() => {
-      const heroVideo = document.getElementById('heroVideo');
-      if (!heroVideo) return;
-      const heroVideos = [
+      const first = document.getElementById('heroVideo');
+      const second = document.getElementById('heroVideoNext');
+      if (!first || !second) return;
+      const videos = [
         'https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4',
         'https://webfrontend.evecp.bmw.cloud/trunks/012a75f7b974d371dc7e14664119d34d86363c48b35a34fcfa9dff48/G80_us_CapeTown_day_EXT.mp4',
         'https://webfrontend.evecp.bmw.cloud/trunks/01e64b3248158833bf8730137c1bfc3110f49c66c771492bc90e3cee/G80_us_Villa_day_EXT.mp4',
         'https://webfrontend.evecp.bmw.cloud/trunks/1227f1966f04c10d245a5ea236ccca783ebc50b041fdaa77a6f97421/G80_us_BMWWelt_day_EXT.mp4'
       ];
-      let currentVideo = 0;
-      heroVideo.addEventListener('ended', () => {
-        currentVideo = (currentVideo + 1) % heroVideos.length;
-        heroVideo.src = heroVideos[currentVideo];
-        heroVideo.load();
-        heroVideo.play().catch(() => {});
-      });
+      let active = first;
+      let standby = second;
+      let index = 0;
+      let switching = false;
+
+      function advance() {
+        if (switching) return;
+        switching = true;
+        const nextIndex = (index + 1) % videos.length;
+        const incoming = standby;
+        const outgoing = active;
+        let finished = false;
+
+        function cleanup() {
+          incoming.removeEventListener('playing', reveal);
+          incoming.removeEventListener('error', failed);
+        }
+        function reveal() {
+          if (finished) return;
+          finished = true;
+          cleanup();
+          // New video is already rendering; crossfade over the frozen previous frame.
+          incoming.classList.replace('video-hidden', 'video-visible');
+          outgoing.classList.replace('video-visible', 'video-hidden');
+          active = incoming;
+          standby = outgoing;
+          index = nextIndex;
+          window.setTimeout(() => {
+            standby.pause();
+            standby.removeAttribute('src');
+            standby.load();
+            switching = false;
+          }, 650);
+        }
+        function failed() {
+          cleanup();
+          incoming.removeAttribute('src');
+          incoming.load();
+          switching = false;
+        }
+        incoming.addEventListener('playing', reveal);
+        incoming.addEventListener('error', failed);
+        incoming.src = videos[nextIndex];
+        incoming.load();
+        incoming.play().catch(failed);
+      }
+      first.addEventListener('ended', () => { if (active === first) advance(); });
+      second.addEventListener('ended', () => { if (active === second) advance(); });
     })();
   </script>
 </body>
