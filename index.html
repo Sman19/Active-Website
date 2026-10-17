@@ -2234,7 +2234,7 @@
         "E90 M3": "E90%20Sedan.html",
         "E92 M3": "E92%20Coupe.html",
         "F97 X3M": "F97%20X3M.html",
-        "G80 M3": "G80_M3.html"
+        "G80 M3": "G80_M3_33AY_Supabase_Updated.html"
       };
 
       // Show the G80 card even before all variants have been imported.
@@ -2248,8 +2248,8 @@
         const rows = g80BreakdownRows.filter(r => String(r.model_code || "").toUpperCase() === trim.code);
         const count = rows.reduce((sum,r) => sum + (Number(r.total)||0), 0);
         const chips = rows.slice().sort((a,b)=>Number(a.year)-Number(b.year)).map(r =>
-          `<a class="g80-year-link" href="${escapeHtml(seriesLinks["G80 M3"])}?file=${encodeURIComponent(r.year + " G80 M3.csv")}" aria-label="Open ${escapeHtml(r.year)} ${escapeHtml(trim.label)} vehicles">${escapeHtml(r.year)}: ${(Number(r.total)||0).toLocaleString()}</a>`).join("");
-        return `<div class="g80-trim-card"><a class="g80-trim-label g80-open-link" href="${escapeHtml(seriesLinks["G80 M3"])}" aria-label="Open ${escapeHtml(trim.label)} database">${escapeHtml(trim.label)} · ${trim.code} →</a><div class="g80-trim-number">${count.toLocaleString()}</div><div class="g80-trim-note">${count ? "Vehicles archived" : "Awaiting import"}</div><div class="g80-trim-years">${chips}</div></div>`;
+          `<a class="g80-year-link" href="${escapeHtml(seriesLinks["G80 M3"])}?model_code=${trim.code}&file=${encodeURIComponent(r.year + " G80 M3.csv")}" aria-label="Open ${escapeHtml(r.year)} ${escapeHtml(trim.label)} vehicles">${escapeHtml(r.year)}: ${(Number(r.total)||0).toLocaleString()}</a>`).join("");
+        return `<div class="g80-trim-card"><a class="g80-trim-label g80-open-link" href="${escapeHtml(seriesLinks["G80 M3"])}?model_code=${trim.code}" aria-label="Open ${escapeHtml(trim.label)} database">${escapeHtml(trim.label)} · ${trim.code} →</a><div class="g80-trim-number">${count.toLocaleString()}</div><div class="g80-trim-note">${count ? "Vehicles archived" : "Awaiting import"}</div><div class="g80-trim-years">${chips}</div></div>`;
       }).join("");
       grid.innerHTML = order.filter(name => summary[name]).map(name => {
         const item = summary[name];
