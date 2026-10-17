@@ -1111,14 +1111,13 @@
           <div class="sidebar-section">
             <label class="sidebar-label" for="dataset-select">Dataset</label>
             <select id="dataset-select" class="sidebar-select" onchange="handleDatasetChange(this.value)">
-              <option value="ALL_YEARS">All Years (2021–2027)</option>
+              <option value="ALL_YEARS">All Years (2021–2026)</option>
               <option value="2021 G80 M3.csv">2021 G80 M3</option>
               <option value="2022 G80 M3.csv">2022 G80 M3</option>
               <option value="2023 G80 M3.csv">2023 G80 M3</option>
               <option value="2024 G80 M3.csv">2024 G80 M3</option>
               <option value="2025 G80 M3.csv">2025 G80 M3</option>
               <option value="2026 G80 M3.csv">2026 G80 M3</option>
-              <option value="2027 G80 M3.csv">2027 G80 M3</option>
             </select>
           </div>
 
@@ -3389,6 +3388,10 @@
       "2025 G80 M3.csv": 2025,
       "2026 G80 M3.csv": 2026
     };
+    const G80_SELECTED_MODEL_CODE = (() => {
+      const code = new URLSearchParams(window.location.search).get("model_code");
+      return ["33AY", "43AY", "53AY"].includes(String(code || "").toUpperCase()) ? code.toUpperCase() : "33AY";
+    })();
     const g80YearCache = new Map();
     let g80RequestId = 0;
 
@@ -3400,7 +3403,7 @@
           const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
           url.searchParams.set("select", "*");
           // Model labels vary across imports; model_code identifies this G80 variant.
-          url.searchParams.set("model_code", "eq.33AY");
+          url.searchParams.set("model_code", `eq.${G80_SELECTED_MODEL_CODE}`);
           url.searchParams.set("model_year", `eq.${year}`);
           url.searchParams.set("order", "vin.asc");
           url.searchParams.set("limit", "1000");
