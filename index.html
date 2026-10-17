@@ -570,7 +570,7 @@
 
     .archive-summary-title { font-size: 17px; font-weight: 800; }
     .archive-summary-total { color: #1f73ff; font-size: 15px; font-weight: 800; }
-    .archive-series-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .archive-series-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
     .archive-series-card { background: #fff; border: 1px solid #e2e6ec; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.035); display: flex; flex-direction: column; }
     .archive-series-card.clickable { cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
     .archive-series-card.clickable:hover { transform: translateY(-2px); border-color: #b9cff9; box-shadow: 0 8px 20px rgba(31,115,255,.12); }
@@ -585,6 +585,15 @@
     .archive-year-chip.clickable:hover { background: #e8f0ff; border-color: #a9c4fb; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(31,115,255,.10); }
     .archive-year-chip.clickable:focus { outline: 2px solid rgba(31,115,255,.30); outline-offset: 2px; }
     .archive-year-chip strong { color: #202124; }
+
+    .g80-trim-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:14px; }
+    .g80-trim-card { border:1px solid #e1e6ed; background:#f8fafc; padding:12px; border-radius:11px; }
+    .g80-trim-label { font-size:12px; font-weight:800; margin-bottom:6px; }
+    .g80-trim-number { font-size:23px; font-weight:900; color:#1f73ff; }
+    .g80-trim-note { color:#667085; font-size:11px; margin-top:4px; }
+    .g80-trim-years { display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; }
+    .g80-trim-years span { font-size:11px; padding:4px 6px; background:white; border:1px solid #e2e6ec; border-radius:6px; }
+    @media(max-width:760px){ .g80-trim-grid {grid-template-columns:1fr;} }
 
     /* E92 PRE-LCI / LCI BREAKDOWN */
     .archive-era-breakdown { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
@@ -1726,6 +1735,7 @@
     const ARCHIVE_SUMMARY_CACHE_MS = 5 * 60 * 1000;
     let archiveSummaryRows = [];
     let archiveTotal = 0;
+    let g80BreakdownRows = [];
     let searchRequestId = 0;
 
     const recentTerms = [];
@@ -2206,7 +2216,7 @@
         summary[series].years[String(year)] = (summary[series].years[String(year)] || 0) + count;
       });
 
-      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "Other BMW"];
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "G80 M3", "Other BMW"];
       const grid = document.getElementById("archiveSeriesGrid");
       const total = document.getElementById("archiveSummaryTotal");
       const box = document.getElementById("archiveSummary");
@@ -2218,9 +2228,24 @@
         "E82 1M": "E821MCoupe.html",
         "E90 M3": "E90%20Sedan.html",
         "E92 M3": "E92%20Coupe.html",
-        "F97 X3M": "F97%20X3M.html"
+        "F97 X3M": "F97%20X3M.html",
+        "G80 M3": "G80_M3_33AY_Supabase_Updated.html"
       };
 
+      // Show the G80 card even before all variants have been imported.
+      if (!summary["G80 M3"]) summary["G80 M3"] = { total:0, years:{} };
+      const g80Trims = [
+        { code:"33AY", label:"Competition RWD" },
+        { code:"43AY", label:"Competition xDrive" },
+        { code:"53AY", label:"6-Speed Manual" }
+      ];
+      const g80TrimMarkup = () => g80Trims.map(trim => {
+        const rows = g80BreakdownRows.filter(r => String(r.model_code || "").toUpperCase() === trim.code);
+        const count = rows.reduce((sum,r) => sum + (Number(r.total)||0), 0);
+        const chips = rows.slice().sort((a,b)=>Number(a.year)-Number(b.year)).map(r =>
+          `<span>${escapeHtml(r.year)}: ${(Number(r.total)||0).toLocaleString()}</span>`).join("");
+        return `<div class="g80-trim-card"><div class="g80-trim-label">${escapeHtml(trim.label)} · ${trim.code}</div><div class="g80-trim-number">${count.toLocaleString()}</div><div class="g80-trim-note">${count ? "Vehicles archived" : "Awaiting import"}</div><div class="g80-trim-years">${chips}</div></div>`;
+      }).join("");
       grid.innerHTML = order.filter(name => summary[name]).map(name => {
         const item = summary[name];
         const years = Object.keys(item.years).sort((a, b) => Number(a) - Number(b));
@@ -2258,6 +2283,20 @@
           lciYearsLabel = "2011–2013";
         }
 
+        if (name === "G80 M3") {
+          item.total = g80BreakdownRows.reduce((sum,r) => sum+(Number(r.total)||0),0);
+          item.years = {};
+          g80BreakdownRows.forEach(r => { item.years[String(r.year)] = (item.years[String(r.year)]||0) + (Number(r.total)||0); });
+          const pre = g80BreakdownRows.filter(r=>Number(r.year)>=2021 && Number(r.year)<=2024).reduce((n,r)=>n+(Number(r.total)||0),0);
+          const lci = g80BreakdownRows.filter(r=>Number(r.year)>=2025 && Number(r.year)<=2027).reduce((n,r)=>n+(Number(r.total)||0),0);
+          return `<div class="archive-series-card" style="grid-column:1/-1">
+            <div class="archive-series-head"><div class="archive-series-name">G80 M3 Sedan</div><div class="archive-series-count">${item.total.toLocaleString()}</div></div>
+            <div class="archive-era-breakdown"><div class="archive-era-box"><div class="archive-era-info"><div class="archive-era-title">Pre-LCI</div><div class="archive-era-years">2021–2024</div></div><div class="archive-era-total">${pre.toLocaleString()}</div></div>
+            <div class="archive-era-box lci"><div class="archive-era-info"><div class="archive-era-title">LCI</div><div class="archive-era-years">2025–2027</div></div><div class="archive-era-total">${lci.toLocaleString()}</div></div></div>
+            <div class="g80-trim-grid">${g80TrimMarkup()}</div>
+            <div class="archive-series-linkhint">33AY Competition RWD database available · other variants coming soon</div>
+          </div>`;
+        }
         return `
           <div class="archive-series-card${clickable}"${attrs}>
             <div class="archive-series-head">
@@ -2497,8 +2536,19 @@
           if (!Array.isArray(summary)) throw new Error("Invalid summary response");
           try { sessionStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), rows: summary })); } catch (_) {}
         }
+        // Separate RPC keeps existing archive totals and year breakdown unchanged.
+        try {
+          const g80Response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/g80_model_breakdown`, {
+            method:"POST", headers:{ apikey:SUPABASE_PUBLISHABLE_KEY, "Content-Type":"application/json", Accept:"application/json" }, body:"{}"
+          });
+          if (g80Response.ok) {
+            const data = await g80Response.json();
+            g80BreakdownRows = Array.isArray(data) ? data : [];
+          } else console.warn("G80 breakdown RPC not installed yet:",g80Response.status);
+        } catch(e) { console.warn("G80 breakdown unavailable",e); }
         archiveSummaryRows = summary;
         archiveTotal = summary.reduce((sum, row) => sum + (Number(row.total) || 0), 0);
+        if (!summary.some(r=>r.series === "G80 M3")) archiveTotal += g80BreakdownRows.reduce((n,r)=>n+(Number(r.total)||0),0);
         loadingStatus.classList.add("hidden");
         emptyState.classList.add("hidden");
         renderArchiveSummary();
