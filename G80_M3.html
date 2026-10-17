@@ -3398,7 +3398,7 @@
         for (let offset = 0; ; offset += 1000) {
           const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
           url.searchParams.set("select", "*");
-          url.searchParams.set("model", "eq.G80 M3 Competition RWD");
+          // Model labels vary across imports; model_code identifies this G80 variant.
           url.searchParams.set("model_code", "eq.33AY");
           url.searchParams.set("model_year", `eq.${year}`);
           url.searchParams.set("order", "vin.asc");
