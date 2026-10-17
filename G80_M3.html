@@ -3399,6 +3399,7 @@
           const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
           url.searchParams.set("select", "*");
           url.searchParams.set("model", "eq.G80");
+          url.searchParams.set("model_code", "eq.33AY");
           url.searchParams.set("model_year", `eq.${year}`);
           url.searchParams.set("order", "vin.asc");
           url.searchParams.set("limit", "1000");
