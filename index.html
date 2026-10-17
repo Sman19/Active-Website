@@ -586,6 +586,11 @@
     .archive-year-chip.clickable:focus { outline: 2px solid rgba(31,115,255,.30); outline-offset: 2px; }
     .archive-year-chip strong { color: #202124; }
 
+    .g80-open-link { color:#1f73ff; text-decoration:none; display:inline-block; font-weight:800; cursor:pointer; }
+    .g80-open-link:hover,.g80-year-link:hover { text-decoration:underline; }
+    .g80-year-link { color:#1f73ff; text-decoration:none; display:inline-block; font-size:11px; padding:4px 6px; background:white; border:1px solid #e2e6ec; border-radius:6px; }
+    .g80-era-link { text-decoration:none; color:inherit; cursor:pointer; }
+    .g80-era-link:hover { border-color:#93b8ff; background:#edf4ff; }
     .g80-trim-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:14px; }
     .g80-trim-card { border:1px solid #e1e6ed; background:#f8fafc; padding:12px; border-radius:11px; }
     .g80-trim-label { font-size:12px; font-weight:800; margin-bottom:6px; }
@@ -2216,7 +2221,7 @@
         summary[series].years[String(year)] = (summary[series].years[String(year)] || 0) + count;
       });
 
-      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "G80 M3", "Other BMW"];
+      const order = ["F87 M2", "E82 1M", "E90 M3", "E92 M3", "F97 X3M", "G80 M3"];
       const grid = document.getElementById("archiveSeriesGrid");
       const total = document.getElementById("archiveSummaryTotal");
       const box = document.getElementById("archiveSummary");
@@ -2243,8 +2248,8 @@
         const rows = g80BreakdownRows.filter(r => String(r.model_code || "").toUpperCase() === trim.code);
         const count = rows.reduce((sum,r) => sum + (Number(r.total)||0), 0);
         const chips = rows.slice().sort((a,b)=>Number(a.year)-Number(b.year)).map(r =>
-          `<span>${escapeHtml(r.year)}: ${(Number(r.total)||0).toLocaleString()}</span>`).join("");
-        return `<div class="g80-trim-card"><div class="g80-trim-label">${escapeHtml(trim.label)} · ${trim.code}</div><div class="g80-trim-number">${count.toLocaleString()}</div><div class="g80-trim-note">${count ? "Vehicles archived" : "Awaiting import"}</div><div class="g80-trim-years">${chips}</div></div>`;
+          `<a class="g80-year-link" href="${escapeHtml(seriesLinks["G80 M3"])}?file=${encodeURIComponent(r.year + " G80 M3.csv")}" aria-label="Open ${escapeHtml(r.year)} ${escapeHtml(trim.label)} vehicles">${escapeHtml(r.year)}: ${(Number(r.total)||0).toLocaleString()}</a>`).join("");
+        return `<div class="g80-trim-card"><a class="g80-trim-label g80-open-link" href="${escapeHtml(seriesLinks["G80 M3"])}" aria-label="Open ${escapeHtml(trim.label)} database">${escapeHtml(trim.label)} · ${trim.code} →</a><div class="g80-trim-number">${count.toLocaleString()}</div><div class="g80-trim-note">${count ? "Vehicles archived" : "Awaiting import"}</div><div class="g80-trim-years">${chips}</div></div>`;
       }).join("");
       grid.innerHTML = order.filter(name => summary[name]).map(name => {
         const item = summary[name];
@@ -2291,10 +2296,10 @@
           const lci = g80BreakdownRows.filter(r=>Number(r.year)>=2025 && Number(r.year)<=2027).reduce((n,r)=>n+(Number(r.total)||0),0);
           return `<div class="archive-series-card" style="grid-column:1/-1">
             <div class="archive-series-head"><div class="archive-series-name">G80 M3 Sedan</div><div class="archive-series-count">${item.total.toLocaleString()}</div></div>
-            <div class="archive-era-breakdown"><div class="archive-era-box"><div class="archive-era-info"><div class="archive-era-title">Pre-LCI</div><div class="archive-era-years">2021–2024</div></div><div class="archive-era-total">${pre.toLocaleString()}</div></div>
-            <div class="archive-era-box lci"><div class="archive-era-info"><div class="archive-era-title">LCI</div><div class="archive-era-years">2025–2027</div></div><div class="archive-era-total">${lci.toLocaleString()}</div></div></div>
+            <div class="archive-era-breakdown"><a class="archive-era-box g80-era-link" href="${escapeHtml(target)}"><div class="archive-era-info"><div class="archive-era-title">Pre-LCI</div><div class="archive-era-years">2021–2024</div></div><div class="archive-era-total">${pre.toLocaleString()}</div></a>
+            <a class="archive-era-box lci g80-era-link" href="${escapeHtml(target)}?file=2025%20G80%20M3.csv"><div class="archive-era-info"><div class="archive-era-title">LCI</div><div class="archive-era-years">2025–2027</div></div><div class="archive-era-total">${lci.toLocaleString()}</div></a></div>
             <div class="g80-trim-grid">${g80TrimMarkup()}</div>
-            <div class="archive-series-linkhint">33AY Competition RWD database available · other variants coming soon</div>
+            <a class="archive-series-linkhint g80-open-link" href="${escapeHtml(target)}">VIEW G80 M3 DATABASE →</a>
           </div>`;
         }
         return `
