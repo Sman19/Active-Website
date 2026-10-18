@@ -2214,6 +2214,14 @@
       });
     }
 
+    // Display currency without changing numeric Supabase values or MSRP sorting.
+    function formatMSRP(value) {
+      if (value === null || value === undefined || String(value).trim() === "" || String(value).trim() === "-") return "-";
+      const amount = Number(String(value).replace(/[$,\s]/g, ""));
+      if (!Number.isFinite(amount)) return String(value);
+      return amount.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
     function parseMoneyValue(value) {
       const number = Number(String(value || "").replace(/[^0-9.-]/g, ""));
       return Number.isFinite(number) ? number : 0;
@@ -3302,7 +3310,7 @@
             </div>
           </div>
 
-          <div class="cell cell-msrp">${escapeHtml(vehicle.msrp || "-")}</div>
+          <div class="cell cell-msrp">${escapeHtml(formatMSRP(vehicle.msrp))}</div>
 
           <div class="cell cell-dealer">
             <div class="tooltip">
