@@ -2802,7 +2802,7 @@
       }
     }
 
-    const CONFIGURATOR_URL = "https://sman19.github.io/2011-E90-M3-Configurator/";
+    const CONFIGURATOR_URL = "https://bmwmarchiv.com/E90-Configurator-Organized/";
 
     // Easy PDF / Window Sticker pull alert.
     // Replace this with your Google Apps Script Web App URL after you deploy it.
@@ -3127,7 +3127,7 @@
     }
 
     window.addEventListener("message", function(event) {
-      if (event.origin !== "https://sman19.github.io") return;
+      if (event.origin !== new URL(CONFIGURATOR_URL).origin) return;
       const data = event.data || {};
 
 
