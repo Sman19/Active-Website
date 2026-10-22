@@ -803,7 +803,7 @@ async function handleBackgroundSpecSheet(){
   });
 }
 window.addEventListener("message",event=>{
-  if(event.origin!=="https://sman19.github.io")return;
+  if(event.origin!==new URL(CONFIGURATOR_URL).origin)return;
   const data=event.data||{};
   if(data.type==="e90-pdf-data-url"){
     const a=document.createElement("a");
