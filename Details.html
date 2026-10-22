@@ -379,7 +379,7 @@ async function exportDetailsInstagram(){
     stage.innerHTML='';
     const frame=document.createElement('div');
     frame.style.width='1080px';
-    frame.style.minHeight='1920px';
+    frame.style.minHeight='0';
     frame.style.background='#ffffff';
     frame.style.overflow='hidden';
     frame.appendChild(clone);
@@ -389,25 +389,44 @@ async function exportDetailsInstagram(){
     await new Promise(resolve=>setTimeout(resolve,200));
 
     const vin=(detailsVehicle&&detailsVehicle.vin?detailsVehicle.vin:'vehicle').replace(/[^A-Za-z0-9_-]/g,'');
-    // Export two independently sized stories, splitting at the Pricing section.
-    // This avoids shrinking the entire Details page onto one unreadable story.
-    for(let page=1;page<=1;page++){
+    // Two purpose-designed pages. Preserve all sections without squeezing the whole page.
+    const storyStyle=document.createElement('style');
+    storyStyle.textContent=`
+      .topbar{height:auto!important;min-height:78px!important;padding:16px 34px!important;}
+      .title{gap:12px!important;flex-wrap:wrap!important;height:auto!important;}
+      .title h1{font-size:25px!important;}
+      .meta{font-size:14px!important;gap:10px!important;max-width:100%!important;}
+      .shell, main, #content, #detailPanel{width:100%!important;max-width:none!important;min-width:0!important;}
+      main{padding:0 38px!important;}
+      .hero{margin:12px auto 14px!important;max-width:100%!important;}
+      .hero img{max-height:440px!important;object-fit:contain!important;}
+      .section{padding-top:16px!important;padding-bottom:16px!important;margin-top:0!important;}
+      .heading{font-size:25px!important;margin-bottom:12px!important;}
+      .summary-row,.details-grid,.colors,.pills,.pricing,.dealer-preview,.card{font-size:17px!important;}
+      .dealer-map{max-height:205px!important;}
+      .dealer-card-actions{display:flex!important;flex-wrap:wrap!important;}
+      #pricing .pricing{font-size:16px!important;}
+      #comments{margin-top:12px!important;}
+    `;
+    frame.appendChild(storyStyle);
+    for(let page=1;page<=2;page++){
       const hero=frame.querySelector('.hero');
       const basics=frame.querySelector('#basics');
       const comments=frame.querySelector('#comments');
       const secondPageSections=['pricing','packages','options','dealer'];
-      [hero,basics,comments].forEach(el=>{if(el)el.style.display=page===1?'':'none';});
+      [hero,basics].forEach(el=>{if(el)el.style.display=page===1?'':'none';});
+      if(comments)comments.style.display=page===2?'':'none';
       secondPageSections.forEach(id=>{
         const el=frame.querySelector('#'+id);
         if(el)el.style.display=page===2?'':'none';
       });
       await new Promise(resolve=>requestAnimationFrame(resolve));
       const naturalHeight=Math.max(frame.scrollHeight,1);
-      const scale=Math.min(0.88,1700/naturalHeight);
+      const scale=Math.min(1,1650/naturalHeight);
       const renderedWidth=Math.round(1080*scale);
       const renderedHeight=Math.round(naturalHeight*scale);
       const offsetX=Math.floor((1080-renderedWidth)/2);
-      const offsetY=Math.max(120,Math.floor((1920-renderedHeight)/2));
+      const offsetY=Math.max(130,Math.floor((1920-renderedHeight)/2));
       const fullCanvas=await html2canvas(frame,{
         backgroundColor:'#ffffff',scale:2,useCORS:true,allowTaint:false,
         logging:false,width:1080,height:naturalHeight,
@@ -421,7 +440,7 @@ async function exportDetailsInstagram(){
         offsetX,offsetY,renderedWidth,renderedHeight);
       const a=document.createElement('a');
       a.href=out.toDataURL('image/png');
-      a.download=`E90-M3-${vin}-Instagram-Story-TEST.png`;
+      a.download=`E90-M3-${vin}-Instagram-Story-${page}-TEST.png`;
       document.body.appendChild(a);a.click();a.remove();
       // Give the browser a moment to register each separate download.
       await new Promise(resolve=>setTimeout(resolve,350));
