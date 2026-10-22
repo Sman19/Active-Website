@@ -217,7 +217,7 @@
       <button class="quick-item" type="button" onclick="triggerDocument('stickerButton')"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
       <button class="quick-item" id="quickOem" type="button" onclick="triggerDocument('oemButton')"><span class="quick-icon">🏷️</span><span>OEM Sticker</span></button>
       <button class="quick-item" id="quickInvoice" type="button" onclick="triggerDocument('invoiceButton')"><span class="quick-icon">📄</span><span>Invoice</span></button>
-      <button class="quick-item" id="quickInstagram" type="button" onclick="exportDetailsInstagram()"><span class="quick-icon">↓</span><span>Instagram Story</span><span class="quick-note">1080 × 1920 PNG</span></button>
+      <button class="quick-item" id="quickInstagram" type="button" onclick="exportDetailsInstagram()"><span class="quick-icon">↓</span><span>Instagram Story</span><span class="quick-note">TEST · 1 × 1080 × 1920 PNG</span></button>
     </div>
   </div>
 </header>
@@ -388,42 +388,44 @@ async function exportDetailsInstagram(){
     await waitForDetailsImages(frame);
     await new Promise(resolve=>setTimeout(resolve,200));
 
-    const naturalHeight=Math.max(frame.scrollHeight,1080);
-    const scale=Math.min(1,1920/naturalHeight);
-    const renderedWidth=Math.round(1080*scale);
-    const renderedHeight=Math.round(naturalHeight*scale);
-    const offsetX=Math.max(0,Math.floor((1080-renderedWidth)/2));
-    const offsetY=Math.max(0,Math.floor((1920-renderedHeight)/2));
-
-    const fullCanvas=await html2canvas(frame,{
-      backgroundColor:'#ffffff',
-      scale:2,
-      useCORS:true,
-      allowTaint:false,
-      logging:false,
-      width:1080,
-      height:naturalHeight,
-      windowWidth:1080,
-      windowHeight:naturalHeight,
-      scrollX:0,
-      scrollY:0
-    });
-
-    const out=document.createElement('canvas');
-    out.width=1080;
-    out.height=1920;
-    const ctx=out.getContext('2d');
-    ctx.fillStyle='#ffffff';
-    ctx.fillRect(0,0,out.width,out.height);
-    ctx.drawImage(fullCanvas,0,0,fullCanvas.width,fullCanvas.height,offsetX,offsetY,renderedWidth,renderedHeight);
-
     const vin=(detailsVehicle&&detailsVehicle.vin?detailsVehicle.vin:'vehicle').replace(/[^A-Za-z0-9_-]/g,'');
-    const a=document.createElement('a');
-    a.href=out.toDataURL('image/png');
-    a.download=`E90-M3-${vin}-Instagram-Story.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    // Export two independently sized stories, splitting at the Pricing section.
+    // This avoids shrinking the entire Details page onto one unreadable story.
+    for(let page=1;page<=1;page++){
+      const hero=frame.querySelector('.hero');
+      const basics=frame.querySelector('#basics');
+      const comments=frame.querySelector('#comments');
+      const secondPageSections=['pricing','packages','options','dealer'];
+      [hero,basics,comments].forEach(el=>{if(el)el.style.display=page===1?'':'none';});
+      secondPageSections.forEach(id=>{
+        const el=frame.querySelector('#'+id);
+        if(el)el.style.display=page===2?'':'none';
+      });
+      await new Promise(resolve=>requestAnimationFrame(resolve));
+      const naturalHeight=Math.max(frame.scrollHeight,1);
+      const scale=Math.min(0.88,1700/naturalHeight);
+      const renderedWidth=Math.round(1080*scale);
+      const renderedHeight=Math.round(naturalHeight*scale);
+      const offsetX=Math.floor((1080-renderedWidth)/2);
+      const offsetY=Math.max(120,Math.floor((1920-renderedHeight)/2));
+      const fullCanvas=await html2canvas(frame,{
+        backgroundColor:'#ffffff',scale:2,useCORS:true,allowTaint:false,
+        logging:false,width:1080,height:naturalHeight,
+        windowWidth:1080,windowHeight:naturalHeight,scrollX:0,scrollY:0
+      });
+      const out=document.createElement('canvas');
+      out.width=1080;out.height=1920;
+      const ctx=out.getContext('2d');
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1080,1920);
+      ctx.drawImage(fullCanvas,0,0,fullCanvas.width,fullCanvas.height,
+        offsetX,offsetY,renderedWidth,renderedHeight);
+      const a=document.createElement('a');
+      a.href=out.toDataURL('image/png');
+      a.download=`E90-M3-${vin}-Instagram-Story-TEST.png`;
+      document.body.appendChild(a);a.click();a.remove();
+      // Give the browser a moment to register each separate download.
+      await new Promise(resolve=>setTimeout(resolve,350));
+    }
     stage.innerHTML='';
   }catch(error){
     console.error(error);
