@@ -472,7 +472,7 @@ const COLORS={
 "448":{rgb:"0,145,193",name:"Laguna Seca Blue",image:"https://github.com/Sman19/E90-ext.380x260px/blob/b9094b424abfef2586265286f36777848f8068b4/Laguna%20Seca%20Blue%20-%20E90.png?raw=true"},
 "B05":{rgb:"5,97,191",name:"Monte Carlo Blue Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/b9094b424abfef2586265286f36777848f8068b4/Laguna%20Seca%20Blue%20-%20E90.png?raw=true"},
 "W73":{rgb:"174,177,178",name:"Polar Silver Metallic",image:"https://github.com/Sman19/E90-ext.380x260px/blob/11c318b8d79cf1a4c3e9aa6a332cf4f5c044bc0e/CRT.png?raw=true"}, 
-"337":{rgb:"238,216,96",name:"IND. Dakar Yellow II",image:"https://bmwmarchiv.com/E90-Configurator-Organized/images/exterior/1Dakar%20Yellow%20ZCP.png"}
+"337":{rgb:"238,216,96",name:"IND. Dakar Yellow II",image:"/E90-Configurator-Organized/images/exterior/1Dakar%20Yellow%20ZCP.png"}
 };
 
 // High-resolution exterior images copied from the BMW E90 M3 Configurator.
@@ -529,8 +529,8 @@ const CONFIGURATOR_EXTERIOR_PHOTOS = {
 
 const CONFIGURATOR_INDIVIDUAL_EXTERIOR_PHOTOS = {
   "337": {
-    DEFAULT: "https://bmwmarchiv.com/E90-Configurator-Organized/images/exterior/1Dakar%20Yellow%20ZCP.png",
-    ZCP: "https://bmwmarchiv.com/E90-Configurator-Organized/images/exterior/1Dakar%20Yellow%20ZCP.png"
+    DEFAULT: "/E90-Configurator-Organized/images/exterior/1Dakar%20Yellow%20ZCP.png",
+    ZCP: "/E90-Configurator-Organized/images/exterior/1Dakar%20Yellow%20ZCP.png"
   },
   "448": {
     DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/db3141d6bda1a9fa985054af05e4921a6b790eb4/1Laguna%20Seca%20Blue.png"
@@ -1188,7 +1188,7 @@ async function init(){
     // Match either full VIN or last seven characters without relying on old CSV files.
     url.searchParams.set("vin",`ilike.*${wantedVin.replace(/[^A-Z0-9]/g,"")}*`);
     url.searchParams.set("limit","100");
-    const response=await fetch(url.href,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Accept:"application/json"}});
+    const response=await fetch(url.href,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Accept:"application/json"},signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw new Error(`Supabase vehicle lookup failed (HTTP ${response.status}).`);
     const records=await response.json();
     const match=records.find(r=>{
@@ -1197,7 +1197,7 @@ async function init(){
     });
     if(!match)throw new Error(`VIN ${wantedVin} was not found in Supabase.`);
     render(mapSupabaseDetailsRow(match));
-  }catch(err){console.error(err);showError(err.message||String(err))}
+  }catch(err){console.error(err);showError(err.name==="TimeoutError"?"Supabase lookup timed out after 15 seconds. Check network access and the VIN in the URL.":(err.message||String(err)))}
 }
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
 
@@ -1252,6 +1252,14 @@ if(copyVinButton){
 
 async function initializeAuthenticatedDetails(){
   const loading=document.getElementById("loading");
+  const authWatchdog=setTimeout(()=>{
+    const overlay=document.getElementById("authLoading");
+    if(overlay && !overlay.hidden){
+      document.getElementById("authLoadingCaption").textContent="Authentication is taking too long. Reload or check the browser console.";
+      document.querySelector("#authLoading .auth-loading-spinner").style.display="none";
+      document.getElementById("authRetry").style.display="block";
+    }
+  },15000);
   try{
     const publishableKey="pk_live_Y2xlcmsuYm13bWFyY2hpdi5jb20k";
     const domain=atob(publishableKey.split("_")[2]).replace(/\$$/, "");
@@ -1279,9 +1287,11 @@ async function initializeAuthenticatedDetails(){
     window.Clerk.addListener(({user})=>{
       if(!user)redirectToHomepageLogin();
     });
+    clearTimeout(authWatchdog);
     document.getElementById("authLoading").hidden=true;
     await init();
   }catch(error){
+    clearTimeout(authWatchdog);
     console.error("Authentication initialization failed:",error);
     if(loading)loading.textContent="Authentication could not be verified.";
     document.getElementById("authLoadingCaption").textContent="Unable to connect. Please try again.";
