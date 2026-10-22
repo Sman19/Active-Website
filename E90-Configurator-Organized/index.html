@@ -4840,12 +4840,7 @@ $("copyBuildBtn").onclick = async () => {
   btn.textContent = "Checking...";
 
   try {
-    const limitResult = await requestDocumentPermission("BMW Spec Sheet");
-    if (!limitResult.allowed) {
-      btn.textContent = "▣ BMW Spec Sheet PDF";
-      return;
-    }
-
+    // Restore immediate PDF download without requiring Clerk or quota verification.
     btn.textContent = "Downloading...";
     await downloadBMWBuildSheetPDF();
     sendPdfAlert("BMW Spec Sheet", state.vin);
