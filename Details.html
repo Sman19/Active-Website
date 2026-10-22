@@ -1132,15 +1132,26 @@ function render(row){
   document.getElementById("loading").style.display="none";document.getElementById("content").style.display="block";
 }
 async function init(){
-  if(!wantedVin){showError("No VIN was supplied. Open this page from the Details button using ?vin=FULLVIN&file=YEAR%20E90%20M3%20Sedan.csv");return}
+  if(!wantedVin){showError("No VIN was supplied. Open Details with ?vin=FULLVIN&file=YEAR%20E90%20M3%20Sedan.csv");return}
   try{
-    const sheet=sheetNameFromFile(fileName);
-    const url=`${GOOGLE_SHEET_CSV_URL}?sheetName=${encodeURIComponent(sheet)}&t=${Date.now()}`;
-    const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("Could not load Google Sheet CSV.");
+    // Load the CSV directly from the same GitHub Pages site as Details.html.
+    // The `file` URL parameter is supplied by the vehicle chart.
+    const safeFile=fileName.replace(/\\/g,"/");
+    if(safeFile.startsWith("/") || safeFile.split("/").includes("..") || !safeFile.toLowerCase().endsWith(".csv")){
+      throw new Error("Invalid CSV file path.");
+    }
+    const csvUrl=new URL(safeFile.split("/").map(encodeURIComponent).join("/"),window.location.href);
+    const response=await fetch(csvUrl.href,{cache:"no-store"});
+    if(!response.ok)throw new Error(`CSV not found (${response.status}): ${safeFile}. Confirm the file is uploaded to GitHub in the correct folder.`);
     const rows=parseCSV(await response.text());
-    const row=rows.find(r=>getField(r,["VIN","Vin","Full VIN","Full VIN Number"]).trim().toUpperCase()===wantedVin);
-    if(!row)throw new Error(`VIN ${wantedVin} was not found in ${sheet}.`);
-    render(row)
+    if(!rows.length)throw new Error(`CSV is empty: ${safeFile}`);
+    const row=rows.find(r=>{
+      const vin=getField(r,["VIN","Vin","Full VIN","Full VIN Number"]).trim().toUpperCase();
+      const last7=getField(r,["Last 7","Last7","Last Seven","VIN Last 7"]).trim().toUpperCase();
+      return vin===wantedVin || (wantedVin.length===7 && (last7===wantedVin || vin.endsWith(wantedVin)));
+    });
+    if(!row)throw new Error(`VIN ${wantedVin} was not found in ${safeFile}.`);
+    render(row);
   }catch(err){console.error(err);showError(err.message||String(err))}
 }
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
