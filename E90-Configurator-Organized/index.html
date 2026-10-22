@@ -829,7 +829,7 @@ html.silent-generator-mode body::before {
 <div class="page">
   <header class="topbar">
     <div class="topbar-left">
-      <a class="config-home-btn" href="https://sman19.github.io/Active-Website/">
+      <a class="config-home-btn" href="https://bmwmarchiv.com/">
         ← Home
       </a>
 
@@ -1051,7 +1051,7 @@ async function requireDocumentUsername() {
   try {
     clerk = await initializeConfiguratorClerk();
   } catch (err) {
-    throw new Error("Clerk could not start on this GitHub Pages address: " + (err?.message || err) + ". Open this vehicle through BMW M ARCHIV, or check the allowed domains in Clerk.");
+    throw new Error("Clerk could not start on this address: " + (err?.message || err) + ". Open this vehicle through BMW M ARCHIV, or check the allowed domains in Clerk.");
   }
   username = getDocumentUsername();
   if (username) return username;
@@ -4911,10 +4911,10 @@ $("resetBtn").onclick = () => {
 function postGeneratorMessage(payload) {
   try {
     if (window.parent && window.parent !== window) {
-      window.parent.postMessage(payload, "https://sman19.github.io");
+      window.parent.postMessage(payload, "https://bmwmarchiv.com");
     }
     if (window.opener && !window.opener.closed) {
-      window.opener.postMessage(payload, "https://sman19.github.io");
+      window.opener.postMessage(payload, "https://bmwmarchiv.com");
     }
   } catch (err) {
     console.error("Unable to post generator message", err);
