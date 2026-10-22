@@ -1244,7 +1244,19 @@ async function initializeAuthenticatedDetails(){
     document.getElementById("authRetry").style.display="block";
   }
 }
-initializeAuthenticatedDetails();
+// Clerk production keys only authorize bmwmarchiv.com. Preserve the vehicle
+// query parameters while moving legacy GitHub Pages links to that domain.
+if (window.location.hostname === "sman19.github.io") {
+  const destination = new URL(window.location.href);
+  destination.protocol = "https:";
+  destination.hostname = "bmwmarchiv.com";
+  // GitHub project-site links may include the repository prefix; remove it
+  // only when it points to the main website repository.
+  destination.pathname = destination.pathname.replace(/^\/Functioning-Website(?=\/|$)/i, "") || "/";
+  window.location.replace(destination.href);
+} else {
+  initializeAuthenticatedDetails();
+}
 </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6wmsZHv6hoIzkt5eIcm5NVVqxQHoThcA&callback=initDetailsGoogleMaps"></script>
 </body>
