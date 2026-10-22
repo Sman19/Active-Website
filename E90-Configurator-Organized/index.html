@@ -1128,64 +1128,64 @@ function sendPdfAlert(documentType, vinOverride = "") {
 }
 
 const WHEEL_IMAGES = {
-  STD18: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3c4b917036c8f991807d13f0618a73511f4f22d7/images/wheels/18_%20Standard.png",
-  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3c4b917036c8f991807d13f0618a73511f4f22d7/images/wheels/2MT%2019_%20Wheels.png",
-  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/e18bff0e746f3948a76c666eb9cd13fbbee991cc/images/wheels/19_%20ZCP.png"
+  STD18: "images/wheels/18_%20Standard.png",
+  "2MT": "images/wheels/2MT%2019_%20Wheels.png",
+  ZCP: "images/wheels/19_%20ZCP.png"
 };
 
 const TRANSMISSION_IMAGES = {
-  "6MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0d692ed53ac4001fa27e647f0e0ccec0f8c1db08/images/transmission/6-speed%20manual.jpg",
-  "2MK": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0d692ed53ac4001fa27e647f0e0ccec0f8c1db08/images/transmission/M%20DCT.jpg"
+  "6MT": "images/transmission/6-speed%20manual.jpg",
+  "2MK": "images/transmission/M%20DCT.jpg"
 };
 
 const EXTERIOR_PHOTOS = {
   "300": {
-    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/73906b8165407bd85f9bcc23c5250d7fef48ebba/images/exterior/1Alpine%20White%2018_.png",
-    "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/30cdd37c98f6b2c60065ccb155658bfaae48fccd/images/exterior/1Alpine%20White%2019_%202MT.png",
-    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/30cdd37c98f6b2c60065ccb155658bfaae48fccd/images/exterior/1Alpine%20White%20ZCP.png"
+    STD: "images/exterior/1Alpine%20White%2018_.png",
+    "2MT": "images/exterior/1Alpine%20White%2019_%202MT.png",
+    ZCP: "images/exterior/1Alpine%20White%20ZCP.png"
   },
   "668": {
-    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c5aa00fdb42e94a96d279ae7d5a56f83a4feae09/images/exterior/1Jet%20Black%2018_.png",
-    "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c5aa00fdb42e94a96d279ae7d5a56f83a4feae09/images/exterior/1Jet%20Black%2019_%202MT.png",
-    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c5aa00fdb42e94a96d279ae7d5a56f83a4feae09/images/exterior/1Jet%20Black%20ZCP.png"
+    STD: "images/exterior/1Jet%20Black%2018_.png",
+    "2MT": "images/exterior/1Jet%20Black%2019_%202MT.png",
+    ZCP: "images/exterior/1Jet%20Black%20ZCP.png"
   },
   "A73": {
-     STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/459b6c9bc1f42230d293b0f00e38ea066eac9a11/images/exterior/1Jerez%20Black%20Met.18_.png",
-      "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/459b6c9bc1f42230d293b0f00e38ea066eac9a11/images/exterior/1Jerez%20Black%20Met.%2019_%202MT.png",
-      ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/459b6c9bc1f42230d293b0f00e38ea066eac9a11/images/exterior/1Jerez%20Black%20Met.%20ZCP.png"
+     STD: "images/exterior/1Jerez%20Black%20Met.18_.png",
+      "2MT": "images/exterior/1Jerez%20Black%20Met.%2019_%202MT.png",
+      ZCP: "images/exterior/1Jerez%20Black%20Met.%20ZCP.png"
   },
   "A29": {
-    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/069106f7539802f61fa86b0a288e2efd5696b3ea/1SIlverstone%20met.%2018%22.png",
-    "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/069106f7539802f61fa86b0a288e2efd5696b3ea/images/exterior/1Silverstone%20Met.%2019_%202MT.png",
-    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/069106f7539802f61fa86b0a288e2efd5696b3ea/images/exterior/1Silverstone%20Met.%20ZCP.png"
+    STD: "images/exterior/1SIlverstone%20met.%2018%22.png",
+    "2MT": "images/exterior/1Silverstone%20Met.%2019_%202MT.png",
+    ZCP: "images/exterior/1Silverstone%20Met.%20ZCP.png"
   },
   "IND": {
-  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3dca600b412d6e6f2b4b002b755520646e43e9e5/images/exterior/IND.png",
-  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3dca600b412d6e6f2b4b002b755520646e43e9e5/images/exterior/IND%202MT.png",
-  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/3dca600b412d6e6f2b4b002b755520646e43e9e5/IND%20ZCP.png"
+  STD: "images/exterior/IND.png",
+  "2MT": "images/exterior/IND%202MT.png",
+  ZCP: "images/exterior/IND%20ZCP.png"
   },
   "381": {
-  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0e7e7cdc94bbd7423b04be9a18e7bfd1661ea5fd/images/exterior/1Le%20Mans%20Blue%20Met.%2018_.png",
-  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0e7e7cdc94bbd7423b04be9a18e7bfd1661ea5fd/images/exterior/1Le%20Mans%20Blue%20Met.%2019_%202MT.png",
-  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/0e7e7cdc94bbd7423b04be9a18e7bfd1661ea5fd/images/exterior/1Le%20Mans%20Blue%20Met.%20ZCP.png"
+  STD: "images/exterior/1Le%20Mans%20Blue%20Met.%2018_.png",
+  "2MT": "images/exterior/1Le%20Mans%20Blue%20Met.%2019_%202MT.png",
+  ZCP: "images/exterior/1Le%20Mans%20Blue%20Met.%20ZCP.png"
 },
 
 "A30": {
-  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/9676eb2c5cf47e56aff36bd0480575395b9d0065/images/branding/1Interlogos%20Blue%20Met.%2018_.png",
-  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/9676eb2c5cf47e56aff36bd0480575395b9d0065/images/branding/1Interlogos%20Blue%20Met.%2019_%202MT.png",
-  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/9676eb2c5cf47e56aff36bd0480575395b9d0065/images/branding/1Interlogos%20Blue%20Met.%20ZCP.png"
+  STD: "images/branding/1Interlogos%20Blue%20Met.%2018_.png",
+  "2MT": "images/branding/1Interlogos%20Blue%20Met.%2019_%202MT.png",
+  ZCP: "images/branding/1Interlogos%20Blue%20Met.%20ZCP.png"
 },
 
 "A52": {
-  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/4035ad5c29b03a9f5a356b376fc72d380d3e3241/images/exterior/1Space%20Gray%2018_.png",
-  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/4035ad5c29b03a9f5a356b376fc72d380d3e3241/images/exterior/1Space%20Gray%2019_%202MT.png",
-  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/4035ad5c29b03a9f5a356b376fc72d380d3e3241/images/exterior/1Space%20Gray%20ZCP.png"
+  STD: "images/exterior/1Space%20Gray%2018_.png",
+  "2MT": "images/exterior/1Space%20Gray%2019_%202MT.png",
+  ZCP: "images/exterior/1Space%20Gray%20ZCP.png"
 },
 
 "A75": {
-  STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/b646c4487f73820c67e50a721192e942840fcf4c/images/exterior/1Melbourne%20Red%20Met.%2018_.png",
-  "2MT": "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/b646c4487f73820c67e50a721192e942840fcf4c/images/exterior/1Melbourne%20Red%20Met.%2019_%202MT.png",
-  ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/b646c4487f73820c67e50a721192e942840fcf4c/images/exterior/1Melbourne%20Red%20Met.%20ZCP.png"
+  STD: "images/exterior/1Melbourne%20Red%20Met.%2018_.png",
+  "2MT": "images/exterior/1Melbourne%20Red%20Met.%2019_%202MT.png",
+  ZCP: "images/exterior/1Melbourne%20Red%20Met.%20ZCP.png"
 }
 };
 
@@ -1193,54 +1193,54 @@ const EXTERIOR_PHOTOS = {
 // A single DEFAULT image can temporarily be used for every wheel option.
 const INDIVIDUAL_EXTERIOR_PHOTOS = {
   "448": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/db3141d6bda1a9fa985054af05e4921a6b790eb4/images/exterior/1Laguna%20Seca%20Blue.png"
+    DEFAULT: "images/exterior/1Laguna%20Seca%20Blue.png"
   },
   
   "896": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/1c15b14957c7a61c9443b2b23f6f493e67787648/images/exterior/1Blue%20Water.png"
+    DEFAULT: "images/exterior/1Blue%20Water.png"
   },
   
   "A32": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/fb0260e908e4d831727362e42e27412898b859d9/images/exterior/1Sepang%20Bronze.png"
+    DEFAULT: "images/exterior/1Sepang%20Bronze.png"
   },
 
   "A39": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/f6d769ebeefbaea087ee06cae8695727ff55cf6b/images/exterior/1Barbera%20Red%20Metallic.png"
+    DEFAULT: "images/exterior/1Barbera%20Red%20Metallic.png"
   },
   
    "B21": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/59ceb50e6fb714993f0b13c8a2a77159dab1b452/images/exterior/1Atacama%20Yellow.png"
+    DEFAULT: "images/exterior/1Atacama%20Yellow.png"
   },
 
   "S34": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/20b5ab6b8789980f85806637ffb1a3171dbfe7f6/images/exterior/1Azurite%20Met.%2019_.png"
+    DEFAULT: "images/exterior/1Azurite%20Met.%2019_.png"
     },
 
    "U83": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/33e01dbd3dea69687254da31d3257f6ea149d462/images/exterior/1Frozen%20Black.png"
+    DEFAULT: "images/exterior/1Frozen%20Black.png"
     },
   
    "U91": {
-    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/624b355c98dc64302b3f802753298cf371598d94/images/exterior/1Frozen%20Grey%20Metallic%2018.png",
-    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/624b355c98dc64302b3f802753298cf371598d94/images/exterior/1Frozen%20Grey%20Metallic%20ZCP.png"
+    STD: "images/exterior/1Frozen%20Grey%20Metallic%2018.png",
+    ZCP: "images/exterior/1Frozen%20Grey%20Metallic%20ZCP.png"
    },
 
   "U94": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/93f61a36c75b9bf7c8da64e04a4fcf962655b7b3/images/exterior/1Fire%20Orange.png"
+    DEFAULT: "images/exterior/1Fire%20Orange.png"
     },
 
   "W32": {
-    DEFAULT: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/341987f0efff098416ee8331c9da34d566df6bf5/images/exterior/1Black%20Blue.png"
+    DEFAULT: "images/exterior/1Black%20Blue.png"
   },
   
    "X04": {
-    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/5a447136731690ab86f9e0eee6ab93812a5ce4e9/images/exterior/1Moonstone%20Met.%2018_.png",
-    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/5a447136731690ab86f9e0eee6ab93812a5ce4e9/images/exterior/1Moonstone%20Met.%20ZCP.png"
+    STD: "images/exterior/1Moonstone%20Met.%2018_.png",
+    ZCP: "images/exterior/1Moonstone%20Met.%20ZCP.png"
    },
 
    "B05": {
-    STD: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/03dbae8695a753bcdd84b64fefd62c21165cf18d/images/exterior/Monte%20carlo%20blue%20stand.png",
-    ZCP: "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/03dbae8695a753bcdd84b64fefd62c21165cf18d/images/exterior/Monte%20Carlo%20Blue%20ZCP.png"
+    STD: "images/exterior/Monte%20carlo%20blue%20stand.png",
+    ZCP: "images/exterior/Monte%20Carlo%20Blue%20ZCP.png"
    },
 };
 
@@ -3919,7 +3919,7 @@ async function buildBMWBuildSheetPDFBlob() {
   renderAll();
 
   const c = calculate();
-  const logoUrl = "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/cd7f09d386c00ecd7635438940d543a256b54a47/images/branding/Carboi-creations%20logo.png";
+  const logoUrl = "images/branding/Carboi-creations%20logo.png";
   const pdfLogoImageData = await loadPdfImageData(logoUrl, 220);
   const pdfCarImageData = await loadPdfImageData(getPdfCarImageUrl(c), 1000);
   const pdfInteriorImageData = await loadPdfSquareThumbData(getPdfInteriorImageUrl(c), 20);
@@ -4109,7 +4109,7 @@ function buildPowerPointStyleWindowStickerHTML() {
   const vin=esc(build.vin||"VIN not supplied");
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${getModelYear()} BMW M3 Sedan Monroney</title><style>
 @page{size:17in 11in;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#d9dde2;color:#000;font-family:"Arial Narrow",Arial,sans-serif}.toolbar{width:min(17in,calc(100vw - 24px));margin:12px auto;text-align:center}.toolbar button{border:0;border-radius:7px;background:#172033;color:#fff;padding:10px 17px;font-weight:800;cursor:pointer;margin:0 4px}.toolbar-note{font:700 13px Arial,sans-serif;margin-bottom:8px}.preview{display:flex;justify-content:center;transform-origin:top center}.preview.fit{transform:scale(var(--scale,1));margin-bottom:calc((11in * var(--scale,1)) - 11in + 16px)}
-.sheet{position:relative;width:17in;height:11in;margin:0 auto 18px;overflow:hidden;background:#eef2eb url("https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c2036974236a6db54ff15881caed2af631da40bd/MONRONEY%20BACKGROUND.jpg") center/cover no-repeat}.layout{position:absolute;left:.68in;right:.68in;top:.50in;bottom:.36in}.box{border:2px solid #111;background:rgba(255,255,255,.10);overflow:hidden}.head{position:absolute;left:0;top:0;width:4.23in;height:.70in;padding:.03in .05in}.tag{font:700 19.9pt Arial,sans-serif;line-height:1}.model{font:700 15.1pt Arial,sans-serif;margin-top:.06in}.pricing{position:absolute;left:0;top:.78in;width:4.34in;height:8.31in;padding:.05in .09in;display:flex;flex-direction:column;font-size:8.55pt;line-height:1.02}.pricing-title{font-weight:700;font-size:11.4pt}.pricing-note{font-size:8.6pt;margin-bottom:.04in}.price-body{flex:1;overflow:hidden}.price-row{display:grid;grid-template-columns:minmax(0,1fr) 1.05in;gap:.04in;margin:.008in 0}.price-row>strong{text-align:right;white-space:nowrap}.price-row span{display:block;padding-left:.09in;font-size:7.65pt;font-weight:400}.totals{display:grid;grid-template-columns:1fr auto;font-weight:700;margin-top:.018in}.vin{font:700 13.2pt Arial,sans-serif;margin-top:.08in;white-space:nowrap}
+.sheet{position:relative;width:17in;height:11in;margin:0 auto 18px;overflow:hidden;background:#eef2eb url("MONRONEY%20BACKGROUND.jpg") center/cover no-repeat}.layout{position:absolute;left:.68in;right:.68in;top:.50in;bottom:.36in}.box{border:2px solid #111;background:rgba(255,255,255,.10);overflow:hidden}.head{position:absolute;left:0;top:0;width:4.23in;height:.70in;padding:.03in .05in}.tag{font:700 19.9pt Arial,sans-serif;line-height:1}.model{font:700 15.1pt Arial,sans-serif;margin-top:.06in}.pricing{position:absolute;left:0;top:.78in;width:4.34in;height:8.31in;padding:.05in .09in;display:flex;flex-direction:column;font-size:8.55pt;line-height:1.02}.pricing-title{font-weight:700;font-size:11.4pt}.pricing-note{font-size:8.6pt;margin-bottom:.04in}.price-body{flex:1;overflow:hidden}.price-row{display:grid;grid-template-columns:minmax(0,1fr) 1.05in;gap:.04in;margin:.008in 0}.price-row>strong{text-align:right;white-space:nowrap}.price-row span{display:block;padding-left:.09in;font-size:7.65pt;font-weight:400}.totals{display:grid;grid-template-columns:1fr auto;font-weight:700;margin-top:.018in}.vin{font:700 13.2pt Arial,sans-serif;margin-top:.08in;white-space:nowrap}
 .standard{position:absolute;left:4.43in;top:.06in;width:6.72in;height:3.06in;padding:.05in .10in;font-size:7.9pt;line-height:1.05}.standard h2{font-size:10.4pt;margin:0 0 .04in}.features{display:grid;grid-template-columns:1fr 1fr;gap:.20in}.features div div{margin:.012in 0}.quality{position:absolute;left:4.43in;top:3.17in;width:6.72in;height:1.32in;padding:.07in .10in;font-size:8.3pt;line-height:1.06}.quality-head,.quality-copy{display:grid;grid-template-columns:1fr 1fr;gap:.18in}.quality-head{font-weight:700;font-size:9.4pt;margin-bottom:.04in}
 .epa{position:absolute;left:4.43in;top:4.58in;width:6.75in;height:3.92in;border:2px solid #111;display:grid;grid-template-rows:.48in 1fr}.blackbar{background:#050505;color:#fff;text-align:center;font:700 25.5pt Arial,sans-serif;line-height:.48in}.epa-body{display:grid;grid-template-columns:1.25in 1fr 1.25in;align-items:center;text-align:center;padding:.15in}.mpg-label{font-size:15.1pt}.mpg{font:700 56.8pt Arial,sans-serif;line-height:.9}.small{font-size:8.8pt;line-height:1.1}.fuel{font-size:11.8pt;font-weight:700}.fuel strong{display:block;font-size:19.9pt;margin:.05in}.guzzler{margin-top:.20in;font-weight:700;font-size:11.8pt}.guzzler strong{display:block;font-size:18.9pt}
 .parts{position:absolute;left:11.25in;top:.05in;width:4.30in;height:2.54in;padding:.08in .12in;font-size:10.7pt;line-height:1.06}.center{text-align:center;font-weight:700;font-size:12.3pt}.parts hr{border:0;border-top:2px solid #111;margin:.07in 0}.labelgrid{display:grid;grid-template-columns:1fr auto;gap:.02in .08in}.safety{position:absolute;left:11.25in;top:2.68in;width:4.30in;height:3.15in;font-size:10.1pt;line-height:1.05;overflow:visible}.safetybar{background:#050505;color:#fff;text-align:center;font-size:11.8pt;font-weight:700;padding:.035in}.safety-body{padding:.06in .12in}.rating{display:grid;grid-template-columns:1fr .75in 1in;border-bottom:1px solid #111;padding:.055in 0;font-weight:700}.note{font-size:7.5pt}.environment{position:absolute;left:-2px;top:3.76in;width:4.30in;height:2.13in;margin:0;border:2px solid #28b96b;background:rgba(255,255,255,.65)}.greenbar{background:#2bc071;color:#fff;text-align:center;font:18.9pt Arial,sans-serif}.env{padding:.08in .12in;font-size:8.6pt}.scores{display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:11.3pt}.score{font-size:13.4pt;font-weight:700}.scale{height:.11in;margin:.04in auto;border-bottom:2px solid #111;width:1.65in;background:linear-gradient(90deg,#111 0 13%,transparent 13%)}
@@ -4147,7 +4147,7 @@ function buildFixedSvgWindowStickerHTML(){
   }).join("");
   const dealer=esc(build.sellingDealer||"BMW Center"),dealerLines=getDealerDisplayLines(build).slice(1).map(esc);
   const vin=esc(build.vin||"VIN not supplied");
-  const bg="https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/c2036974236a6db54ff15881caed2af631da40bd/MONRONEY%20BACKGROUND.jpg";
+  const bg="MONRONEY%20BACKGROUND.jpg";
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${getModelYear()} BMW M3 Sedan Monroney</title><style>
 @page{size:17in 11in;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#d9dde2;font-family:Arial,sans-serif}.tools{text-align:center;padding:10px;font-weight:700}.tools button{border:0;border-radius:7px;background:#172033;color:#fff;padding:10px 18px;margin:0 5px;font-weight:800}.wrap{width:100%;display:flex;justify-content:center;transform-origin:top center}.wrap.fit{transform:scale(var(--scale));margin-bottom:calc((1056px * var(--scale)) - 1056px)}svg{width:17in;height:11in;display:block;background:#fff}.n{font-family:"Arial Narrow",Arial,sans-serif;fill:#000}.bold{font-weight:700}.end{text-anchor:end}.tiny{font-size:7px}.small{font-size:9px}.body{font-size:11px}.opt{font-size:11px}.child{font-size:9px}.head{font-size:20px;font-weight:700}.title{font-size:16px;font-weight:700}.bar{fill:#000}.white{fill:#fff}.line{fill:none;stroke:#000;stroke-width:3}.thin{stroke-width:1.5}.green{fill:#31bf6b}.greenline{fill:none;stroke:#31bf6b;stroke-width:3}@media print{html,body{width:17in;height:11in;background:#fff}.tools{display:none}.wrap,.wrap.fit{display:block;transform:none!important;margin:0!important}svg{width:17in;height:11in}}
 </style></head><body><div class="tools">Exact 11×17 preview <button onclick="fitPage()">Fit Screen</button><button onclick="window.print()">Print / Save PDF</button></div><div class="wrap" id="wrap"><svg viewBox="0 0 1632 1056" xmlns="http://www.w3.org/2000/svg"><image href="${bg}" x="0" y="0" width="1632" height="1056" preserveAspectRatio="none"/>
@@ -4203,8 +4203,8 @@ function buildWindowStickerHTML() {
   const premiumTrim = selectedPremiumTrim();
   const epa = getEPADataForModelYear(getModelYear());
   const exteriorImage = build.exteriorPreviewImage || build.previewImage || "";
-  const bmwLogo = "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/490e21bfd7448f44b3acad6bbf70c1b041b72ecc/images/branding/Carboi-creations%20logo.png";
-  const mLogo = "https://raw.githubusercontent.com/Sman19/2011-E90-M3-Configurator/aeb4f20926e624ef390e5887fef2b5affbf0e96d/images/branding/bmw%20m%20logo.png";
+  const bmwLogo = "images/branding/Carboi-creations%20logo.png";
+  const mLogo = "images/branding/bmw%20m%20logo.png";
 
   const esc = value => stickerEscape(value);
   const moneyFull = value => Number(value || 0).toLocaleString("en-US", {
