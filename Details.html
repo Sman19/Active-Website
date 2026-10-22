@@ -1131,27 +1131,46 @@ function render(row){
 
   document.getElementById("loading").style.display="none";document.getElementById("content").style.display="block";
 }
+// Public Supabase configuration shared with the BMW M ARCHIV homepage.
+const SUPABASE_URL="https://qaikzwqdjdxkhhzscish.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
+
+function mapSupabaseDetailsRow(record){
+  const original=(record.original_csv_data && typeof record.original_csv_data==="object" && !Array.isArray(record.original_csv_data))?record.original_csv_data:{};
+  const row={...original};
+  const assign=(key,value)=>{if(value!==undefined && value!==null && String(value).trim()!=="")row[key]=String(value)};
+  assign("VIN",record.vin);
+  assign("Year",record.model_year);
+  assign("Model",record.model);
+  assign("Exterior",record.exterior_color);
+  assign("Interior",record.interior_color);
+  assign("Packages",record.package_codes);
+  assign("MSRP",record.msrp);
+  assign("Dealer Name",record.dealer_name);
+  assign("Production Date",record.production_date);
+  assign("Monroney",record.monroney_url);
+  // Preserve legacy positional values used for production dates and comments.
+  if(!Array.isArray(row.__values))row.__values=[];
+  if(!row.__values[10] && record.production_date)row.__values[10]=String(record.production_date);
+  return row;
+}
 async function init(){
-  if(!wantedVin){showError("No VIN was supplied. Open Details with ?vin=FULLVIN&file=YEAR%20E90%20M3%20Sedan.csv");return}
+  if(!wantedVin){showError("No VIN supplied. Open this page with ?vin=FULLVIN.");return}
   try{
-    // Load the CSV directly from the same GitHub Pages site as Details.html.
-    // The `file` URL parameter is supplied by the vehicle chart.
-    const safeFile=fileName.replace(/\\/g,"/");
-    if(safeFile.startsWith("/") || safeFile.split("/").includes("..") || !safeFile.toLowerCase().endsWith(".csv")){
-      throw new Error("Invalid CSV file path.");
-    }
-    const csvUrl=new URL(safeFile.split("/").map(encodeURIComponent).join("/"),window.location.href);
-    const response=await fetch(csvUrl.href,{cache:"no-store"});
-    if(!response.ok)throw new Error(`CSV not found (${response.status}): ${safeFile}. Confirm the file is uploaded to GitHub in the correct folder.`);
-    const rows=parseCSV(await response.text());
-    if(!rows.length)throw new Error(`CSV is empty: ${safeFile}`);
-    const row=rows.find(r=>{
-      const vin=getField(r,["VIN","Vin","Full VIN","Full VIN Number"]).trim().toUpperCase();
-      const last7=getField(r,["Last 7","Last7","Last Seven","VIN Last 7"]).trim().toUpperCase();
-      return vin===wantedVin || (wantedVin.length===7 && (last7===wantedVin || vin.endsWith(wantedVin)));
+    const url=new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
+    url.searchParams.set("select","*");
+    // Match either full VIN or last seven characters without relying on old CSV files.
+    url.searchParams.set("vin",`ilike.*${wantedVin.replace(/[^A-Z0-9]/g,"")}*`);
+    url.searchParams.set("limit","100");
+    const response=await fetch(url.href,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Accept:"application/json"}});
+    if(!response.ok)throw new Error(`Supabase vehicle lookup failed (HTTP ${response.status}).`);
+    const records=await response.json();
+    const match=records.find(r=>{
+      const vin=String(r.vin||"").trim().toUpperCase();
+      return vin===wantedVin || (wantedVin.length===7 && vin.endsWith(wantedVin));
     });
-    if(!row)throw new Error(`VIN ${wantedVin} was not found in ${safeFile}.`);
-    render(row);
+    if(!match)throw new Error(`VIN ${wantedVin} was not found in Supabase.`);
+    render(mapSupabaseDetailsRow(match));
   }catch(err){console.error(err);showError(err.message||String(err))}
 }
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
