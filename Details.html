@@ -1067,7 +1067,7 @@ function render(row){
   set("topModel",model);
   currentDisplayedVin=vin;
   set("topVin",`VIN: ${vin}`);
-  set("topDealer",dealer?`Current Dealer: ${dealer}`:"Dealer not listed");
+  set("topDealer",dealer?`Selling Dealer: ${dealer}`:"Dealer not listed");
   set("basePrice",money(base));set("optionPrice",money(optionsTotal));set("destinationPrice",money(destination));set("gasPrice",money(gas));set("totalPrice",money(total));
   set("exteriorText",`${exteriorCode}${color.name?` – ${color.name}`:""}`);set("interiorText",`${interiorCode}${interior.name?` – ${interior.name}`:""}`);
   document.getElementById("exteriorSwatch").style.background=`rgb(${color.rgb})`;
