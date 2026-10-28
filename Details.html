@@ -1064,8 +1064,7 @@ function render(row){
   detailsVehicle=vehicle;
 
   document.title=`${year} BMW M3 Sedan – ${vin}`;
-  set("topTitle",`${year} BMW M3 Sedan`);
-  set("topModel",`${model} • E90 M3 Sedan`);
+  set("topModel",model);
   currentDisplayedVin=vin;
   set("topVin",`VIN: ${vin}`);
   set("topDealer",dealer?`Current Dealer: ${dealer}`:"Dealer not listed");
