@@ -1538,7 +1538,7 @@
   </header>
 
   <section class="hero">
-    <video id="heroVideo" class="hero-video video-visible" autoplay muted playsinline preload="auto" aria-hidden="true"><source src="https://raw.githubusercontent.com/Sman19/G80-ext.380x260px/12cc1b78b815804a064c97bb23ca971231c2b7c5/G8-%20Ruby%20Star%20Marketing.mp4" type="video/mp4"></video>
+    <video id="heroVideo" class="hero-video video-visible" autoplay muted playsinline preload="metadata" aria-hidden="true"><source src="https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4" type="video/mp4"></video>
     <video id="heroVideoNext" class="hero-video video-hidden" muted playsinline preload="none" aria-hidden="true"></video>
     <button id="heroPanelToggle" class="hero-panel-toggle" type="button" aria-expanded="true" aria-controls="heroSearchPanel">− Hide VIN Search</button>
     <div class="search-panel" id="heroSearchPanel">
@@ -3209,110 +3209,65 @@
     })();
   </script>
   <script>
-    // Buffered, double-layer hero playback with a reliable fallback for slow MP4 hosts.
+    // Double-buffer videos: keep the previous frame visible while the next MP4 loads.
     (() => {
       const first = document.getElementById('heroVideo');
       const second = document.getElementById('heroVideoNext');
       if (!first || !second) return;
       const videos = [
-        'https://raw.githubusercontent.com/Sman19/G80-ext.380x260px/12cc1b78b815804a064c97bb23ca971231c2b7c5/G8-%20Ruby%20Star%20Marketing.mp4',
+        'https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4',
         'https://webfrontend.evecp.bmw.cloud/trunks/012a75f7b974d371dc7e14664119d34d86363c48b35a34fcfa9dff48/G80_us_CapeTown_day_EXT.mp4',
         'https://webfrontend.evecp.bmw.cloud/trunks/01e64b3248158833bf8730137c1bfc3110f49c66c771492bc90e3cee/G80_us_Villa_day_EXT.mp4',
         'https://webfrontend.evecp.bmw.cloud/trunks/1227f1966f04c10d245a5ea236ccca783ebc50b041fdaa77a6f97421/G80_us_BMWWelt_day_EXT.mp4'
       ];
-      const fallbackIndex = 3;
-      let active = first, standby = second, index = 0, switching = false;
-      let bufferTimer = null, startupTimer = null, transitionTimer = null;
-      const setSource = (video, url) => {
-        video.pause();
-        video.src = url;
-        video.preload = 'auto';
-        video.muted = true;
-        video.playsInline = true;
-        video.load();
-      };
-      function clearTimers() {
-        clearTimeout(bufferTimer);
-        clearTimeout(startupTimer);
-        clearTimeout(transitionTimer);
-      }
-      function advance(targetIndex = (index + 1) % videos.length) {
-        if (switching || document.hidden) return;
+      let active = first;
+      let standby = second;
+      let index = 0;
+      let switching = false;
+
+      function advance() {
+        if (switching) return;
         switching = true;
-        clearTimers();
-        const incoming = standby, outgoing = active;
-        let done = false;
-        const clean = () => {
+        const nextIndex = (index + 1) % videos.length;
+        const incoming = standby;
+        const outgoing = active;
+        let finished = false;
+
+        function cleanup() {
           incoming.removeEventListener('playing', reveal);
-          incoming.removeEventListener('error', fail);
-        };
+          incoming.removeEventListener('error', failed);
+        }
         function reveal() {
-          if (done) return;
-          done = true;
-          clean();
-          clearTimeout(startupTimer);
+          if (finished) return;
+          finished = true;
+          cleanup();
+          // New video is already rendering; crossfade over the frozen previous frame.
           incoming.classList.replace('video-hidden', 'video-visible');
           outgoing.classList.replace('video-visible', 'video-hidden');
           active = incoming;
           standby = outgoing;
-          index = targetIndex;
-          transitionTimer = setTimeout(() => {
+          index = nextIndex;
+          window.setTimeout(() => {
             standby.pause();
             standby.removeAttribute('src');
             standby.load();
             switching = false;
           }, 650);
         }
-        function fail() {
-          if (done) return;
-          done = true;
-          clean();
-          clearTimeout(startupTimer);
-          incoming.pause();
+        function failed() {
+          cleanup();
           incoming.removeAttribute('src');
           incoming.load();
           switching = false;
-          if (targetIndex !== fallbackIndex) setTimeout(() => advance(fallbackIndex), 0);
         }
         incoming.addEventListener('playing', reveal);
-        incoming.addEventListener('error', fail);
-        setSource(incoming, videos[targetIndex]);
-        startupTimer = setTimeout(fail, 12000);
-        incoming.play().catch(fail);
+        incoming.addEventListener('error', failed);
+        incoming.src = videos[nextIndex];
+        incoming.load();
+        incoming.play().catch(failed);
       }
-      function monitor(video) {
-        video.addEventListener('ended', () => {
-          if (video === active) advance();
-        });
-        video.addEventListener('waiting', () => {
-          if (video !== active || switching || document.hidden) return;
-          clearTimeout(bufferTimer);
-          // If Ruby Star stalls for more than 4 seconds, switch to the BMW-hosted fallback.
-          bufferTimer = setTimeout(() => {
-            if (video === active && !switching && !document.hidden && video.readyState < 3)
-              advance(index === 0 ? fallbackIndex : (index + 1) % videos.length);
-          }, index === 0 ? 4000 : 8000);
-        });
-        video.addEventListener('playing', () => clearTimeout(bufferTimer));
-        video.addEventListener('canplay', () => clearTimeout(bufferTimer));
-        video.addEventListener('error', () => {
-          if (video === active && !switching) advance(index === 0 ? fallbackIndex : (index + 1) % videos.length);
-        });
-      }
-      monitor(first);
-      monitor(second);
-      // Catch initial buffering, before the first 'playing' event.
-      startupTimer = setTimeout(() => {
-        if (active === first && first.readyState < 3 && !switching) advance(fallbackIndex);
-      }, 12000);
-      first.addEventListener('playing', () => clearTimeout(startupTimer), { once: true });
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          clearTimeout(bufferTimer);
-        } else if (!switching && active.paused && !active.ended) {
-          active.play().catch(() => advance(fallbackIndex));
-        }
-      });
+      first.addEventListener('ended', () => { if (active === first) advance(); });
+      second.addEventListener('ended', () => { if (active === second) advance(); });
     })();
   </script>
 </body>
