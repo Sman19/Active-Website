@@ -1324,6 +1324,10 @@
       .homepage-ad-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
       .homepage-ad-pending { font-size: 12px; line-height: 1.5; }
     }
+    .hero > .youtube-intro { position:absolute; inset:0; z-index:1; overflow:hidden; background:#111; pointer-events:none; }
+    .youtube-intro iframe { position:absolute; top:50%; left:50%; width:max(100%,177.78vh); height:max(100%,56.25vw); transform:translate(-50%,-50%); border:0; pointer-events:none; }
+    .hero > .youtube-intro-play { position:absolute; z-index:5; bottom:26px; right:24px; padding:13px 19px; border:1px solid #fff8; border-radius:999px; background:#161b24e8; color:#fff; font-weight:700; cursor:pointer; }
+    .hero > .youtube-intro[hidden], .hero > .youtube-intro-play[hidden] { display:none!important; }
   </style>
 
   <style>
@@ -1538,6 +1542,8 @@
   </header>
 
   <section class="hero">
+    <div id="youtubeIntro" class="youtube-intro"><div id="youtubeIntroPlayer"></div></div>
+    <button id="youtubeIntroPlay" class="youtube-intro-play" type="button">▶ Play introduction with sound</button>
     <video id="heroVideo" class="hero-video video-visible" autoplay muted playsinline preload="metadata" aria-hidden="true"><source src="https://webfrontend.evecp.bmw.cloud/trunks/c02972c1c1b50cb00dc314c19372fe1566b96b9a4d5e387bdb7821e2/G80_us_BMWWelt_day_EXT.mp4" type="video/mp4"></video>
     <video id="heroVideoNext" class="hero-video video-hidden" muted playsinline preload="none" aria-hidden="true"></video>
     <button id="heroPanelToggle" class="hero-panel-toggle" type="button" aria-expanded="true" aria-controls="heroSearchPanel">− Hide VIN Search</button>
@@ -3224,6 +3230,39 @@
       let standby = second;
       let index = 0;
       let switching = false;
+      first.pause();
+      first.currentTime = 0;
+      const intro = document.getElementById('youtubeIntro');
+      const introButton = document.getElementById('youtubeIntroPlay');
+      let introDone = false;
+      function finishIntro() {
+        if (introDone) return;
+        introDone = true;
+        if (intro) intro.hidden = true;
+        if (introButton) introButton.hidden = true;
+        first.play().catch(() => {});
+      }
+      window.onYouTubeIframeAPIReady = () => {
+        const player = new YT.Player('youtubeIntroPlayer', {
+          videoId: 'Q7vDutRDXko',
+          playerVars: { start:5, autoplay:0, controls:0, playsinline:1, rel:0, modestbranding:1 },
+          events: {
+            onReady: () => {
+              introButton.addEventListener('click', () => {
+                introButton.hidden = true;
+                player.unMute();
+                player.setVolume(100);
+                player.playVideo();
+              });
+            },
+            onStateChange: (e) => { if (e.data === YT.PlayerState.ENDED) finishIntro(); },
+            onError: finishIntro
+          }
+        });
+      };
+      const ytApi = document.createElement('script');
+      ytApi.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(ytApi);
 
       function advance() {
         if (switching) return;
