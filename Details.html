@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>G80 M3 Vehicle Details</title>
+  <title>BMW M Vehicle Details</title>
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
   <style>
     :root{
@@ -195,7 +195,7 @@
 <header class="topbar">
   <button class="back" onclick="goBackToChart()" aria-label="Back to chart">‹</button>
   <div class="title">
-    <h1 id="topTitle">G80 M3 Vehicle Details</h1>
+    <h1 id="topTitle">BMW M Vehicle Details</h1>
     <div class="meta">
       <span id="topModel">BMW M3 Sedan</span><span>•</span><span class="vin-meta-wrap">
         <span id="topVin">VIN</span>
@@ -440,7 +440,7 @@ async function exportDetailsInstagram(){
         offsetX,offsetY,renderedWidth,renderedHeight);
       const a=document.createElement('a');
       a.href=out.toDataURL('image/png');
-      a.download=`G80-M3-${vin}-Instagram-Story-${page}-TEST.png`;
+      a.download=`E90-M3-${vin}-Instagram-Story-${page}-TEST.png`;
       document.body.appendChild(a);a.click();a.remove();
       // Give the browser a moment to register each separate download.
       await new Promise(resolve=>setTimeout(resolve,350));
@@ -1027,7 +1027,100 @@ async function copyCurrentVin(){
   },1200);
 }
 
-function render(row){
+
+function isG80Record(row){
+ const model=String(getField(row,["Model Code","Type Code","Model","Trim"])||"").toUpperCase();
+ const vin=String(getField(row,["VIN"])||"").toUpperCase();
+ const original=row.__original||{};
+ const type=String(original.model_code||original['Model Code']||"").toUpperCase();
+ return /G80|G81|G82|G83|43AY|33AY|53AY|31AY|32AY/.test(model+" "+type) || /^(WBS)(?:[0-9A-Z]{2}AY)/.test(vin);
+}
+const G80_COLORS = {
+      "300": { rgb: "244,244,236", name: "Alpine White", image: "https://github.com/Sman19/G80-ext.380x260px/blob/36d4aef551b3e005238bc5b534438d04114a0ec3/G80%20Alpine%20White.png?raw=true" },
+      "475": { rgb: "8,10,12", name: "Black Sapphire Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/36d4aef551b3e005238bc5b534438d04114a0ec3/G80%20Black%20Saphire%20Metallic.png.png?raw=true" },
+      "C4G": { rgb: "1,172,160", name: "Isle of Man Green Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/36d4aef551b3e005238bc5b534438d04114a0ec3/G80%20Isle%20of%20Man%20Green%20Met.png?raw=true" },
+      "C4H": { rgb: "226,225,75", name: "Sao Paulo Yellow", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Sao%20Paulo%20Yellow.jpeg?raw=true" },
+      "C31": { rgb: "50,91,154", name: "Portimao Blue Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Portimao%20Blue%20Metallic.jpeg?raw=true" },
+      "C3Z": { rgb: "32,60,108", name: "Tanzanite Blue II Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/36d4aef551b3e005238bc5b534438d04114a0ec3/G80%20Tanzinite%20Blue%20Met.peg.png?raw=true" },
+      "C4P": { rgb: "132,138,147", name: "Brooklyn Grey Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Brooklyn%20Grey%20Metallic.jpeg?raw=true" },
+      "C36": { rgb: "91,91,92", name: "Dravit Grey Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Dravit%20Grey%20Metallic.jpeg?raw=true" },
+      "C3G": { rgb: "184,27,35", name: "Toronto Red Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/36d4aef551b3e005238bc5b534438d04114a0ec3/G80%20Toronoto%20Red%20Met.jpeg?raw=true" },
+      "C4A": { rgb: "133,127,106", name: "Oxide Grey Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/a367993b16bf506cbf95e61647f7387b710593f8/G80%20Oxide%20Grey%20Metallic.jpeg?raw=true" },
+      "C4W": { rgb: "112,121,140", name: "Skyskraper Grey Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/c7c869e5061b1321d3fefe6b329fd2cdf734a99b/G80%20SkyScraper%20Grey%20Metallic.jpeg?raw=true" },
+      "C1K": { rgb: "23,68,170", name: "Marina Bay Blue Metallic", image: "" },
+      "C68": { rgb: "185,35,38", name: "Fire Red Metallic", image: "" },
+      "490": { rgb: "150,150,150", name: "BMW Individual Paint", image: "" },
+      "P6K": { rgb: "145,150,156", name: "IND. Nardo Grey", image: "" },
+      "B51": { rgb: "0,33,148", name: "IND. San Marino Blue Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/0690ae17b5ce104961b4a9795bbb5061d99029fb/G80%20San%20Marino%20Blue.jpeg?raw=true" },
+      "312": { rgb: "32,74,74", name: "IND. British Racing Green", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20British%20Racing%20Green.jpeg?raw=true" },
+      "283": { rgb: "134,107,172", name: "IND. Daytona Violet Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Daytona%20Violet%20Metallic.jpeg?raw=true" },
+      "A04": { rgb: "134,131,82", name: "IND. Urban Green", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Urban%20Green.jpeg?raw=true" },
+      "P7X": { rgb: "93,101,109", name: "Frozen Deep Grey Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Frozen%20Deep%20Grey%20Metallic.jpeg?raw=true" },
+      "X16": { rgb: "237,239,235", name: "Frozen Brilliant White", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Frozen%20Brilliant%20White.jpeg?raw=true" },
+      "X1E": { rgb: "74,103,153", name: "Frozen Portimao Blue", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3aedb96114dd4333dcc421fc28a8dd0403a55b40/G80%20Frozen%20Portimao%20Blue.jpeg?raw=true" },
+      "P7E": { rgb: "252,98,3", name: "IND. Fire Orange III", image: "https://github.com/Sman19/G80-ext.380x260px/blob/c9da7711be99a6ff43d3d32f9b45108236ac1d03/G80%20Fire%20Orange%20III.jpeg?raw=true" },
+      "P5A": { rgb: "9,142,207", name: "IND. Mexico Blue", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3f7daef710106eb048b8855b40e9d48bffad052c/G80%20Mexico%20Blue.jpeg?raw=true" },
+      "P7T": { rgb: "158,168,41", name: "IND. Verde Ermes", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3f7daef710106eb048b8855b40e9d48bffad052c/G80%20Verde%20Ermes.jpeg?raw=true" },
+      "A31": { rgb: "170,46,67", name: "IND. Indianapolis Red Metallic", image: "" },
+      "P28": { rgb: "109,62,105", name: "IND. Twilight Purple Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/41e8c7239ac415b4cef15da31838a255ce97afe6/G80%20Twilight%20Purple%20Metallic%20.jpg?raw=true" },
+      "W37": { rgb: "0,107,252", name: "IND. Gentian Blue", image: "https://github.com/Sman19/G80-ext.380x260px/blob/adc30ad5f2167cd2a6d84a13bff5dd2d25e4760b/G80%20Gentian%20Blue.jpg?raw=true" },
+      "B45": { rgb: "72,128,205", name: "IND. Estroil Blue II Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/348ceab69037a3c0df979d9c760a2c1307330320/G80%20Estroil%20Blue%20II%20Metallic%20.jpg?raw=true" },
+      "327": { rgb: "72,128,205", name: "IND. Santorini Blue", image: "https://github.com/Sman19/G80-ext.380x260px/blob/348ceab69037a3c0df979d9c760a2c1307330320/G80%20Estroil%20Blue%20II%20Metallic%20.jpg?raw=true" },
+      "U91": { rgb: "91,91,89", name: "IND. Frozen Black", image: "https://github.com/Sman19/G80-ext.380x260px/blob/d1f8a1a6668813cd4ffc6b5e61d7c4ffd36ed1e2/G80%20Frozen%20Black.jpg?raw=true" },
+      "P6N": { rgb: "126,126,128", name: "IND. Frozen Dark Grey Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/d1f8a1a6668813cd4ffc6b5e61d7c4ffd36ed1e2/G80%20Frozen%20Deep%20Grey%20Metallic.jpeg?raw=true" },
+      "P56": { rgb: "68,210,103", name: "IND. Signal Green Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/0969e0321526f21272fd5aba9f38ccb86e88efb3/G80%20Signal%20Green.jpg?raw=true" },
+      "P7L": { rgb: "57,131,194", name: "IND. Voodoo Blue", image: "https://github.com/Sman19/G80-ext.380x260px/blob/626b72d391b8721f838c9ea273a41fd5f5d7837c/G80%20Voodoo%20Blu.jpg?raw=true" },
+      "P7B": { rgb: "203,201,197", name: "IND. Chalk", image: "https://github.com/Sman19/G80-ext.380x260px/blob/9a447bc92dfba6b38114d516db1648d6d9c4ff21/P7B%20Chalk.jpg?raw=true" },
+      "399": { rgb: "0,189,239", name: "IND. Atlantis Blue Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/0e5dd91984f7b3df3cee208184570637abbae347/G80%20Atlantis%20Blue%20Metallic.jpg?raw=true" },
+      "337": { rgb: "242,214,88", name: "IND. Dakar Yellow II", image: "https://github.com/Sman19/G80-ext.380x260px/blob/5f1f1ef376c04ee7f611d4ad50aec336aaec8143/G80%20Dakar%20Yellow.jpg?raw=true" },
+      "P7K": { rgb: "180,32,49", name: "IND. Rosso Corsa", image: "https://github.com/Sman19/G80-ext.380x260px/blob/34c8aaa136eb285508383dcc0934b3e76625a664/G80%20Rossa%20Corsa.jpg?raw=true" },
+      "R61": { rgb: "131,96,127", name: "IND. Purple Silk Metalic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/d74b7d64d77d2378e170749efce7b2d490a9736f/G80%20Purple%20SIlk%20Metallic.jpg?raw=true" },
+      "P5N": { rgb: "62,204,8", name: "IND. Verde Mantis", image: "https://github.com/Sman19/G80-ext.380x260px/blob/60c29eeaa91ae5c7116de1dc1309b870fbc55c33/G80%20Verde%20Mantis%20.png?raw=true" },
+      "L74": { rgb: "181,138,163", name: "IND. Velvet Orchid II", image: "https://github.com/Sman19/G80-ext.380x260px/blob/b5aef87e141b7d769e13f0c4f5723cd8dc3127a0/G80%20Velvet%20Orchid%20.png?raw=true" },
+      "381": { rgb: "3,87,236", name: "IND. Le Mans Blue Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/5fe82f92287ba6ac9cca26dcca30ad5313451c89/G80%20LE%20MANS%20Blue%20Metallic%20.png?raw=true" },
+      "P60": { rgb: "90,95,105", name: "IND. Grey Black", image: "https://github.com/Sman19/G80-ext.380x260px/blob/32469c225462326f746a4f1d24fa02205732bb56/G80%20Grey%20Black.png?raw=true" },
+      "250": { rgb: "80,104,149", name: "IND. Macao Blue", image: "https://github.com/Sman19/G80-ext.380x260px/blob/cfcb11d5c611e807bc143140cd21c56ff363e38e/G80%20Macao%20Blue%20.png?raw=true" },
+      "W97": { rgb: "80,213,223", name: "IND. Mint Green", image: "https://github.com/Sman19/G80-ext.380x260px/blob/21a9843d0e500785bd279421134ad3c9101c6d8e/G80%20Mint%20Green.jpeg?raw=true" },
+      "U96": { rgb: "229,190,24", name: "IND. Speed Yellow", image: "https://github.com/Sman19/G80-ext.380x260px/blob/527c18884544ea1d0a69614dba0ff1ca13a9eca9/Speed%20Yellow.jpeg?raw=true" },
+      "405": { rgb: "206,65,97", name: "IND. Imola Red", image: "https://github.com/Sman19/G80-ext.380x260px/blob/ddb6ff66797ca543020ef47f86e0b37bf1ce871b/G80%20Imola%20Red.jpeg?raw=true" },
+      "B38": { rgb: "2,65,120", name: "IND. Midnight Blue Metallic", image: "https://github.com/Sman19/G80-ext.380x260px/blob/ee61117c914e7a586afee097712f9c454c32299f/G80%20Midnight%20Blue%20Metallic%20.png?raw=true" },
+      "P9L": { rgb: "213,33,122", name: "IND. Ruby Star Neo", image: "https://github.com/Sman19/G80-ext.380x260px/blob/1ee72f18156e15697c3cbdd700c3fec893a3a326/G80%20Ruby%20Star%20neo.jpeg?raw=true" },
+      "C57": { rgb: "114,21,27", name: "Aventurine Red Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/83eed0f9525e32525a5497d07bcfc951f4d4e339/G80%20aventurine%20red%20metallic.jpeg?raw=true" },
+      "T09": { rgb: "119,49,94", name: "IND. Wildberry Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/34a0ce5b015737f9c75b978ce6cdd8b3fa4d2780/G80%20WIldberry%20metallic.jpeg?raw=true" },
+      "W69": { rgb: "52,44,86", name: "IND. Venetian Violet Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/1f60da61dde3d9ee450ccd2dbcb2124a99f809ac/G80%20Venetian%20Violet%20Metallic.jpeg?raw=true" },
+      "336": { rgb: "11,68,110", name: "IND. Aegean Blue ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/9598bf2a9e3d29ea8dbacc896b03091a5ae2aee1/G80%20Aegean%20Blue.jpeg?raw=true" },
+      "A75": { rgb: "179,14,15", name: "IND. Melbourne Red Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/cd1b50733120498fb93562340404c59035a43e5c/G80%20Melbourne%20Red%20Metallic.jpeg?raw=true" },
+      "406": { rgb: "35,69,100", name: "IND. Orinoco Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/4126e9bb7b6251126093e1ec87c48b3b121b2d49/G80%20Orinico%20Metallic.jpeg?raw=true" },
+      "205": { rgb: "113,126,83", name: "IND. Malachite Green Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/072bcfc929757ac19484560e8cdb2e836661e0c0/G80%20Malchite%20Green%20Metallic.jpeg?raw=true" },
+      "P85": { rgb: "113,126,83", name: "IND. Malachite Green II Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/072bcfc929757ac19484560e8cdb2e836661e0c0/G80%20Malchite%20Green%20Metallic.jpeg?raw=true" },
+      "P6M": { rgb: "115,131,151", name: "IND. Grigio Telesto Pearl Effect ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/18d34505faf1e8dfb8bbe3ac1ea129f3649bbe70/G80%20Grigio%20Telesto%20Pearl%20Effect.jpeg?raw=true" },
+      "299": { rgb: "101,77,119", name: "IND. Techno Violet Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/9358512abe31ace214fffd1afb20cb0175313044/G80%20Techno%20Violet.jpeg?raw=true" },
+      "A30": { rgb: "1,26,130", name: "IND. Interlogos Blue Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/2dfeadf42a27e1442cf12dcd061f94f748a0cb9e/G80%20Interlgos%20Blue%20Metallic.jpg?raw=true" },
+      "X1F": { rgb: "131,150,170", name: "IND. Frozen Pure Grey II Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/769b51a93278170e8bc27b1b20bb6419217547e1/G80%20Frozen%20Pure%20Grey%202.jpeg?raw=true" },
+      "P7G": { rgb: "10,121,56", name: "IND. Irish Green ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/3b44d549175de92d1147534c476137ce2dd46a41/G80%20Irish%20Green.jpeg?raw=true" },
+      "138": { rgb: "240,2,18", name: "IND. Cinabar Red ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/799c8507ff1d3127d69adb038ee4838f86d2518b/G80%20Cinabar%20Red.jpeg?raw=true" },
+      "P7Z": { rgb: "223,101,76", name: "IND. Frozen Orange II ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/90af182dea75a1160548580f0e66cca31a838b3c/G80%20Frozen%20Orange%20II.jpeg?raw=true" },
+      "430": { rgb: "1,110,103", name: "IND. Oxford Green II Metallic ", image: "https://github.com/Sman19/G80-ext.380x260px/blob/db5eb55b9afd583ae4b4bb84c0c3df8d96345909/G80%20Oxford%20Green%20II%20Metallic.jpg?raw=true" },
+    };
+const G80_INTERIORS = {
+      "LKSW": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/f86848d457335738221ba4d7a24d8e573b86fd03/%20Black%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Black Extended Merino Leather" },
+      "LKIA": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/f86848d457335738221ba4d7a24d8e573b86fd03/Silverstone%3ABlack%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Silverstone/Black Extended Merino Leather" },
+      "LKG5": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/f86848d457335738221ba4d7a24d8e573b86fd03/Yas%20Marina%20Blue%3ABlack%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Yas Marina Blue/Black Extended Merino Leather" },
+      "LKKX": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/9e2a4bdf9d2abfd33164ef5d072730645cc98abf/Kyalami%20Orange%3ABlack%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Kyalami Orange/Black Extended Merino Leather" },
+      "X3SW": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/f86848d457335738221ba4d7a24d8e573b86fd03/%20Black%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Black Full Merino Leather" },
+      "X3IA": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/f86848d457335738221ba4d7a24d8e573b86fd03/Silverstone%3ABlack%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Silverstone/Black Full Merino Leather" },
+      "X3G5": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/f86848d457335738221ba4d7a24d8e573b86fd03/Yas%20Marina%20Blue%3ABlack%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Yas Marina Blue/Black Full Merino Leather" },
+      "X3KX": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/9e2a4bdf9d2abfd33164ef5d072730645cc98abf/Kyalami%20Orange%3ABlack%20Extended%20Merino%20Leather.jpeg?raw=true", description: "Kyalami Orange/Black Full Merino Leather" },
+      "ZAFV": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/8d8224776d132bf43d8edc81bdc14467c073cf60/Fjord%20Blue%3ABlack%20Merino%20Leather.jpeg?raw=true", description: "Fjord Blue/Black Extended Merino Leather" },
+      "ZBFV": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/8d8224776d132bf43d8edc81bdc14467c073cf60/Fjord%20Blue%3ABlack%20Merino%20Leather.jpeg?raw=true", description: "Fjord Blue/Black Full Merino Leather" },
+      "VATQ": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/aa531c84896fbf8bcb0315a817b88333a03ed8aa/Tartufo%20Leather.jpeg?raw=true", description: "Tartufo Extended Merino Leather" },
+      "VBFQ": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/aa531c84896fbf8bcb0315a817b88333a03ed8aa/Tartufo%20Leather.jpeg?raw=true", description: "Tartufo Full Merino Leather" },
+      "ZAEW": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/56fe61dd754d2170cb380282dfdb8fd0d1dcac5d/Ivory%20White%20.jpeg?raw=true", description: "Ivory White Extended Merino Leather" },
+      "ZBEW": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/56fe61dd754d2170cb380282dfdb8fd0d1dcac5d/Ivory%20White%20.jpeg?raw=true", description: "Ivory White Full Merino Leather" },
+      "VAHZ": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/900eee130eb812a11541d63c22a4b34980b5d1c6/fiona%20red%3Ablack.jpeg?raw=true", description: "Fiona Red/Black Extended Merino Leather" },
+      "VBHZ": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/900eee130eb812a11541d63c22a4b34980b5d1c6/fiona%20red%3Ablack.jpeg?raw=true", description: "Fiona Red/Black Full Merino Leather" }
+    };
+function renderG80(row){
   const raw=(names)=>getField(row,names);
   const vin=raw(["VIN"]),year=raw(["Year","Model Year","YEAR"]);
   const model=raw(["Model","Trim","MODEL"])||"BMW M3";
@@ -1041,7 +1134,7 @@ function render(row){
   const lookup=(...keys)=>{for(const key of keys){const found=Object.keys(extras).find(k=>k.toLowerCase()===key.toLowerCase());if(found&&extras[found]!=null&&String(extras[found]).trim())return String(extras[found]);}return "";};
   detailsVehicle={vin,year,model,codes};
   document.title=`${year} BMW M3 – ${vin}`;
-  set("topTitle","G80 M3 Vehicle Details");
+  set("topTitle",`${model.includes("M4")?"G82 M4":"G80 M3"} Vehicle Details`);
   set("topModel",model);
   currentDisplayedVin=vin;
   set("topVin",`VIN: ${vin}`);
@@ -1052,7 +1145,15 @@ function render(row){
   document.getElementById("exteriorSwatch").style.background="#e6e8eb";
   document.getElementById("interiorImage").style.background="#e6e8eb";
   const car=document.getElementById("vehicleImage");
-  const image=raw(["Vehicle Image","Image URL","Photo URL","Exterior Image"])||lookup("Vehicle Image","Image URL","Photo URL");
+  const paintCode=codeOf(exterior);
+  const g80Color=G80_COLORS[paintCode];
+  const image=raw(["Vehicle Image","Image URL","Photo URL","Exterior Image"])||lookup("Vehicle Image","Image URL","Photo URL")||(g80Color?.image||"");
+  if(g80Color?.rgb)document.getElementById("exteriorSwatch").style.background=`rgb(${g80Color.rgb})`;
+  if(g80Color?.name)set("exteriorText",`${paintCode} - ${g80Color.name}`);
+  const interiorCode=codeOf(interior);
+  const g80Interior=G80_INTERIORS[interiorCode];
+  if(g80Interior?.image)document.getElementById("interiorImage").style.backgroundImage=`url("${g80Interior.image}")`;
+  if(g80Interior?.description)set("interiorText",`${interiorCode} - ${g80Interior.description}`);
   if(image&&/^https:\/\//i.test(image)){car.src=image;car.style.display="block";}
   else {car.style.display="none";const note=document.querySelector(".hero-note");if(note)note.textContent="G80 vehicle image not yet available";}
   const dg=document.getElementById("detailsGrid");dg.innerHTML="";
@@ -1086,6 +1187,137 @@ function render(row){
   document.getElementById("loading").style.display="none";
   document.getElementById("content").style.display="block";
 }
+
+function render(row){
+  if(isG80Record(row))return renderG80(row);
+  const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
+  const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
+  const year=getField(row,["YEAR","Year","Model Year","MY"])||params.get("year")||"";
+  const vin=getField(row,["VIN","Vin","Full VIN","Full VIN Number"]).trim();
+  const model=getField(row,["MODEL","Model"])||"M3";
+  const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
+  const totalMsrpRaw=getField(row,["MSRP","msrp","Total MSRP","TOTAL MSRP","Retail Price","Vehicle MSRP"]);
+  // Prefer the production date passed directly from E90.html.
+  // Fallback to column K of the CSV loaded by this page.
+  const prod=String(params.get("prod")||"").trim() ||
+    String(
+      (row.__values && row.__values.length > 10 ? row.__values[10] : "") || ""
+    ).trim() ||
+    getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
+  const oem=getField(row,["STICKER","Monroney","Window Sticker"]);
+  const invoice=getField(row,["INVOICE","Invoice"]);
+  const details=getField(row,["DETAILS","Details"]);
+  const rawCodes=getField(row,["Package Codes","PACKAGE CODES","PACKAGES","Packages"]);
+  const codes=passedPackages.length?passedPackages:parseCodes(rawCodes);
+  const exteriorCode=codeOf(exteriorRaw),interiorCode=codeOf(interiorRaw);
+  const cleanExteriorFallbackName=String(exteriorRaw||exteriorCode)
+    .replace(new RegExp("^"+exteriorCode+"\\s*-\\s*","i"),"")
+    .replace(/\s*\|\s*\$[\d,]+(?:\.\d{2})?\s*$/,"")
+    .trim();
+  const color=COLORS[exteriorCode]||{rgb:"190,190,190",name:cleanExteriorFallbackName||exteriorCode,image:""};
+  const interior=INTERIORS[interiorCode]||{image:"",name:interiorRaw||interiorCode};
+  const base=getBaseFromCodes(codes,year),destination=destinationForYear(year),gas=1300;
+  const optionCodes=codes.filter(c=>!c.startsWith("MSRP"));
+  const optionsTotal=optionCodes.reduce((s,c)=>s+getPriceForCode(c,year),0);
+  const calculated=base+optionsTotal+destination+gas;
+  const csvTotal=numberFromMoney(totalMsrpRaw);
+  const total=csvTotal||calculated;
+  const vehicle={vin,year,model,codes};
+  detailsVehicle=vehicle;
+
+  document.title=`${year} BMW M3 Sedan – ${vin}`;
+  set("topModel",model);
+  currentDisplayedVin=vin;
+  set("topVin",`VIN: ${vin}`);
+  set("topDealer",dealer?`Selling Dealer: ${dealer}`:"Dealer not listed");
+  set("basePrice",money(base));set("optionPrice",money(optionsTotal));set("destinationPrice",money(destination));set("gasPrice",money(gas));set("totalPrice",money(total));
+  set("exteriorText",`${exteriorCode}${color.name?` – ${color.name}`:""}`);set("interiorText",`${interiorCode}${interior.name?` – ${interior.name}`:""}`);
+  document.getElementById("exteriorSwatch").style.background=`rgb(${color.rgb})`;
+  const intEl=document.getElementById("interiorImage");if(interior.image)intEl.style.backgroundImage=`url("${interior.image}")`;else intEl.style.background="#222";
+  const car=document.getElementById("vehicleImage");
+  const configuratorExteriorImage=getConfiguratorExteriorPhoto(exteriorCode,codes);
+  const selectedExteriorImage=configuratorExteriorImage||color.image||"";
+
+  if(selectedExteriorImage){
+    car.src=selectedExteriorImage;
+    car.style.display="block";
+  }else{
+    car.style.display="none";
+    car.parentElement.insertAdjacentHTML("beforeend","<div style='font-size:18px;color:#777'>Vehicle image not yet mapped for this paint code.</div>");
+  }
+
+  const dg=document.getElementById("detailsGrid");
+  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Exterior Code",exteriorCode],["Interior Code",interiorCode]].forEach((x)=>dg.appendChild(detail(x[0],x[1])));
+  set("commentsText",getComments(row)||"No comments entered.");
+
+  const pricing=document.getElementById("pricingRows");
+  pricing.innerHTML=`<tr><td>Base MSRP</td><td>${money(base)}</td></tr>`;
+  let lastCategory="";
+  optionCodes.forEach(code=>{
+    const cat=PACKAGE_CODES.has(code)?"PACKAGES":"FACTORY INSTALLED";
+    if(cat!==lastCategory){pricing.insertAdjacentHTML("beforeend",`<tr class="category"><td colspan="2">${cat}</td></tr>`);lastCategory=cat}
+    pricing.insertAdjacentHTML("beforeend",`<tr><td><span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year).replace(/^.*? - /,""))}</td><td>${money(getPriceForCode(code,year))}</td></tr>`)
+  });
+  pricing.insertAdjacentHTML("beforeend",`<tr><td>Destination Charge</td><td>${money(destination)}</td></tr><tr><td>Gas-Guzzler Tax</td><td>${money(gas)}</td></tr><tr class="total"><td>Total MSRP</td><td>${money(total)}</td></tr>`);
+
+  const packs=document.getElementById("packageList"),opts=document.getElementById("optionList");
+  packs.innerHTML="";
+  opts.innerHTML="";
+
+  // Anything carrying a retail cost belongs in Packages, even when it is a
+  // standalone factory option. Standard Options is reserved for no-cost /
+  // standard-equipment items so it can mirror the informational content used
+  // at the bottom of the BMW PDF.
+  optionCodes.forEach(code=>{
+    const el=document.createElement("div");
+    el.className="pill";
+    el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;
+    const hasCost=getPriceForCode(code,year)>0;
+    (hasCost?packs:opts).appendChild(el);
+  });
+
+  if(!packs.children.length)packs.innerHTML="<div class='pill'>No priced packages or options listed.</div>";
+  if(!opts.children.length)opts.innerHTML="<div class='pill'>Standard-equipment details will appear here when available.</div>";
+
+  const dealerGrid=document.getElementById("dealerGrid");
+  [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
+
+  loadDealerRecord(dealer)
+    .then(record=>{
+      renderDealerPreview(record,dealer);
+
+      if(record){
+        dealerGrid.innerHTML="";
+        [
+          ["Dealer Name",record.name],
+          ["Dealer Code",record.code],
+          ["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],
+          ["Phone",record.phone],
+          ["Country",record.country],
+          ["Production Date",prod],
+          ["VIN",vin]
+        ].forEach((item,index)=>dealerGrid.appendChild(detail(item[0],item[1],index===6)));
+      }
+    })
+    .catch(error=>{
+      console.error(error);
+      renderDealerPreview(null,dealer);
+    });
+
+  document.getElementById("specButton").onclick=handleBackgroundSpecSheet;
+  document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
+  const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
+  oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
+  const quickOem=document.getElementById("quickOem"),quickInvoice=document.getElementById("quickInvoice");
+  quickOem.classList.toggle("disabled",!available(oem));
+  quickInvoice.classList.toggle("disabled",!available(invoice));
+  quickOem.disabled=!available(oem);
+  quickInvoice.disabled=!available(invoice);
+  oemBtn.onclick=()=>available(oem)&&window.open(oem,"_blank","noopener,noreferrer");
+  invBtn.onclick=()=>available(invoice)&&window.open(invoice,"_blank","noopener,noreferrer");
+
+  document.getElementById("loading").style.display="none";document.getElementById("content").style.display="block";
+}
 // Public Supabase configuration shared with the BMW M ARCHIV homepage.
 const SUPABASE_URL="https://qaikzwqdjdxkhhzscish.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
@@ -1098,6 +1330,8 @@ function mapSupabaseDetailsRow(record){
   assign("Year",record.model_year);
   assign("Model",record.trim||record.model||record.model_name);
   assign("Model Code",record.model_code||record.type_code);
+  assign("Comments",record.comments);
+  assign("Invoice",record.invoice_url);
   assign("Exterior",record.exterior_color);
   assign("Interior",record.interior_color);
   assign("Packages",record.package_codes);
@@ -1105,8 +1339,6 @@ function mapSupabaseDetailsRow(record){
   assign("Dealer Name",record.dealer_name);
   assign("Production Date",record.production_date);
   assign("Monroney",record.monroney_url);
-  assign("Invoice",record.invoice_url);
-  assign("Comments",record.comments);
   // Preserve legacy positional values used for production dates and comments.
   if(!Array.isArray(row.__values))row.__values=[];
   if(!row.__values[10] && record.production_date)row.__values[10]=String(record.production_date);
@@ -1154,7 +1386,7 @@ function goBackToChart(){
   }
 
   // Final same-folder fallback.
-  const fallbackUrl=new URL("G80-M3.html",window.location.href);
+  const fallbackUrl=new URL("E90%20Sedan.html",window.location.href);
   fallbackUrl.searchParams.set("file",fileName);
   window.location.replace(fallbackUrl.toString());
 }
