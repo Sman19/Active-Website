@@ -1148,6 +1148,37 @@ const G80_2024_43AY={
     "048C":["M Carbon Bucket Seats",4500],
     "071C":["M Carbon Exterior Package",4700],
   },
+  // 2024 US 43AY paint pricing, keyed by BMW paint code.
+  paint:{
+    "300":["Alpine White",0],"C4H":["Sao Paulo Yellow",0],
+    "475":["Black Sapphire Metallic",650],"C31":["Portimao Blue Metallic",650],
+    "C36":["IND. Dravit Grey Metallic",1950],"C3G":["Toronto Red Metallic",650],
+    "C3Z":["IND. Tanzanite Blue II Metallic",1950],
+    "C4G":["Isle of Man Green Metallic",650],"C4P":["Brooklyn Grey Metallic",650],
+    "C4W":["Skyscraper Grey Metallic",650],"C57":["Aventurine Red Metallic",1950],
+    "X16":["Frozen Brilliant White Metallic",3600],
+    "X1E":["Frozen Portimao Blue Metallic",3600],
+    "X1F":["Frozen Pure Grey II Metallic",3600],
+    "490":["Special Order Color",4500]
+  },
+  interior:{
+    "LKG5":["Yas Marina Blue/Black Extended Merino Leather",0],
+    "LKIA":["Silverstone/Black Extended Merino Leather",0],
+    "LKKX":["Kyalami Orange/Black Extended Merino Leather",0],
+    "LKSW":["Black Extended Merino Leather",0],
+    "VAHZ":["Fiona Red/Black Extended Merino Leather",0],
+    "VATQ":["Tartufo Extended Merino Leather",0],
+    "VBHZ":["Fiona Red/Black Full Merino Leather",2550],
+    "VBTQ":["Tartufo Full Merino Leather",2550],
+    "X3G5":["Yas Marina Blue/Black Full Merino Leather",2550],
+    "X3IA":["Silverstone/Black Full Merino Leather",2550],
+    "X3KX":["Kyalami Orange/Black Full Merino Leather",2550],
+    "X3SW":["Black Full Merino Leather",2550],
+    "ZAEW":["Ivory White Extended Merino Leather",0],
+    "ZAFV":["Fjord Blue/Black Extended Merino Leather",0],
+    "ZBEW":["Ivory White Full Merino Leather",2550],
+    "ZBFV":["Fjord Blue/Black Full Merino Leather",2550]
+  },
   // Standard features are descriptions, not additional charges.
   standard:[
     "3.0-liter BMW M TwinPower Turbo inline 6-cylinder engine",
@@ -1174,20 +1205,36 @@ function normalizedG80Code(code){
   return s.length===3&&/^[A-Z0-9]{3}$/.test(s)?"0"+s:s;
 }
 function getG802024Pricing(codes,exterior,interior){
-  const map=G80_2024_43AY.options;
+  const ref=G80_2024_43AY;
   const selected=new Map();
+  const normalizedCodes=new Set(codes.map(normalizedG80Code));
   for(const raw of codes){
     const key=normalizedG80Code(raw);
-    if(map[key]){
-      const [name,price]=map[key];
-      // A package and its constituent equipment must not be double-counted.
+    if(ref.options[key]){
+      const [name,price]=ref.options[key];
+      // Retain the existing package/equipment pricing behavior.
       if(!selected.has(name))selected.set(name,price);
     }
   }
-  // Paint and upholstery are separate columns, not necessarily package codes.
-  const paint=codeOf(exterior),trim=codeOf(interior);
-  if(paint==="C36")selected.set("Dravit Grey Metallic",1950);
-  if(trim==="VBHZ")selected.set("Fiona Red/Black Full Merino Leather",2300);
+  const paintCode=codeOf(exterior);
+  const interiorCode=codeOf(interior);
+  // 490 is a special-order surcharge, not the actual exterior color code.
+  // It can be present as a separate option even if the paint column contains
+  // the actual Individual paint code.
+  const specialOrder=normalizedCodes.has("0490") || paintCode==="490";
+  const paint=ref.paint[paintCode];
+  if(specialOrder){
+    selected.set("Special Order Color (490)",4500);
+  }else if(paint){
+    selected.set(`${paintCode} - ${paint[0]}`,paint[1]);
+  }
+  const upholstery=ref.interior[interiorCode];
+  if(upholstery){
+    const hasExecutive=normalizedCodes.has("0ZPX");
+    const isFullMerino=/Full Merino Leather/i.test(upholstery[0]);
+    const price=isFullMerino&&hasExecutive?2300:upholstery[1];
+    selected.set(`${interiorCode} - ${upholstery[0]}`,price);
+  }
   return selected;
 }
 function renderG80(row){
@@ -1220,7 +1267,7 @@ function renderG80(row){
   set("gasPrice","—");
   // A stored factory total is authoritative; otherwise show only a mapped subtotal,
   // not a potentially misleading complete MSRP for unmapped option codes.
-  set("totalPrice",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—");
+  set("totalPrice",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):(is2024_43AY?money(knownTotal)+" (estimated)":"—"));
   set("exteriorText",exterior||"—");set("interiorText",interior||"—");
   document.getElementById("exteriorSwatch").style.background="#e6e8eb";
   document.getElementById("interiorImage").style.background="#e6e8eb";
@@ -1231,6 +1278,7 @@ function renderG80(row){
   const image=raw(["Vehicle Image","Image URL","Photo URL","Exterior Image"])||lookup("Vehicle Image","Image URL","Photo URL")||(g80Color?.image||"");
   if(g80Color?.rgb)document.getElementById("exteriorSwatch").style.background=`rgb(${g80Color.rgb})`;
   if(g80Color?.name)set("exteriorText",`${paintCode} - ${g80Color.name}`);
+  else if(is2024_43AY&&G80_2024_43AY.paint[paintCode])set("exteriorText",`${paintCode} - ${G80_2024_43AY.paint[paintCode][0]}`);
   const interiorCode=codeOf(interior);
   const g80Interior=G80_INTERIORS[interiorCode];
   if(g80Interior?.image){
@@ -1244,6 +1292,7 @@ function renderG80(row){
     swatch.title=g80Interior.description||interior;
   }
   if(g80Interior?.description)set("interiorText",`${interiorCode} - ${g80Interior.description}`);
+  else if(is2024_43AY&&G80_2024_43AY.interior[interiorCode])set("interiorText",`${interiorCode} - ${G80_2024_43AY.interior[interiorCode][0]}`);
   if(image&&/^https:\/\//i.test(image)){car.src=image;car.style.display="block";}
   else {car.style.display="none";const note=document.querySelector(".hero-note");if(note)note.textContent="G80 vehicle image not yet available";}
   const dg=document.getElementById("detailsGrid");dg.innerHTML="";
