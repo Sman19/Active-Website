@@ -263,7 +263,7 @@
               <div class="summary-row"><span>Installed packages / options</span><strong id="optionPrice">—</strong></div>
               <div class="summary-row"><span>Destination charge</span><strong id="destinationPrice">—</strong></div>
               <div class="summary-row"><span>Gas-guzzler tax</span><strong id="gasPrice">—</strong></div>
-              <div class="summary-row total"><span>Total MSRP</span><strong id="totalPrice">—</strong></div>
+              <div class="summary-row total"><span>MSRP</span><strong id="totalPrice">—</strong></div>
               <div class="bar" style="margin-top:22px">COLOR</div>
               <div class="colors">
                 <div class="color-card"><div class="swatch" id="exteriorSwatch"></div><div><div class="small-label">Exterior color</div><div class="value" id="exteriorText">—</div></div></div>
@@ -1245,7 +1245,7 @@ function renderG80(row){
   const exterior=raw(["Exterior","Exterior Color","EXTERIOR"]);
   const interior=raw(["Interior","Interior Color","INTERIOR"]);
   const production=raw(["Production Date","PROD","Build Date"]);
-  const msrp=raw(["MSRP","Total MSRP"]);
+  const msrp=raw(["MSRP","MSRP"]);
   const codes=parseCodes(raw(["Packages","Package Codes","PACKAGE CODES"]));
   const extras=row.__original||{};
   const lookup=(...keys)=>{for(const key of keys){const found=Object.keys(extras).find(k=>k.toLowerCase()===key.toLowerCase());if(found&&extras[found]!=null&&String(extras[found]).trim())return String(extras[found]);}return "";};
