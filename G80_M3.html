@@ -2709,7 +2709,7 @@
       const documentsAvailable = CONFIGURATOR_ACTIVE && hasValidVin && !isDocumentGenerationLocked();
       const documentReason = CONFIGURATOR_ACTIVE && hasValidVin && isDocumentGenerationLocked() ? "limit" : "";
 
-      setMenuItemAvailability("menu-details", isAvailableLink(vehicleInfo && vehicleInfo.details));
+      setMenuItemAvailability("menu-details", hasValidVin);
       setMenuItemAvailability("menu-bmw-spec", documentsAvailable, documentReason);
       setMenuItemAvailability("menu-sticker", documentsAvailable, documentReason);
       setMenuItemAvailability("menu-oem-sticker", isAvailableLink(vehicleInfo && vehicleInfo.sticker));
@@ -2734,8 +2734,10 @@
 
     function handleDetailsClick() {
       const vehicle = getSelectedVehicle();
-      if (!vehicle || !isAvailableLink(vehicle.details)) return;
-      window.open(vehicle.details, "_blank", "noopener,noreferrer");
+      if (!vehicle || !isAvailableLink(vehicle.vin)) return;
+      const url = new URL("G80-M3-Details.html", window.location.href);
+      url.searchParams.set("vin", vehicle.vin);
+      window.open(url.href, "_blank", "noopener,noreferrer");
     }
 
     // G80 document generation stays blank/inactive until the G80 configurator is ready.
