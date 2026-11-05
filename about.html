@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Learn about BMW M Archiv, an independent research project documenting BMW M vehicle configurations, production information and factory specifications.">
+  <meta name="robots" content="index,follow">
+  <title>About BMW M Archiv | Independent BMW M Research</title>
+  <style>
+    :root { color-scheme: light; --ink:#202124; --muted:#596373; --blue:#1f73ff; --line:#dce1e8; --bg:#f3f3f3; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:16px/1.65 Arial,Helvetica,sans-serif; background:var(--bg); color:var(--ink); }
+    header { background:#3f444d; color:#fff; padding:20px max(24px,calc((100vw - 1060px)/2)); display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+    .brand { font-size:21px; font-weight:800; letter-spacing:.04em; }
+    header a { color:#fff; text-decoration:none; font-weight:700; }
+    main { max-width:1060px; margin:36px auto; padding:0 22px; }
+    .hero { background:linear-gradient(120deg,#111827,#283b58); color:#fff; border-radius:18px; padding:clamp(28px,6vw,64px); }
+    .eyebrow { color:#9cc3ff; font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+    h1 { font-size:clamp(34px,5vw,54px); line-height:1.1; margin:12px 0 20px; }
+    .hero p { max-width:720px; color:#e2e9f3; font-size:18px; }
+    .button { display:inline-block; margin-top:12px; background:var(--blue); color:#fff; padding:12px 20px; border-radius:9px; font-weight:800; text-decoration:none; }
+    section { background:#fff; border:1px solid var(--line); border-radius:16px; padding:clamp(22px,4vw,38px); margin-top:22px; }
+    h2 { margin:0 0 14px; font-size:25px; line-height:1.25; }
+    h3 { margin:0 0 8px; font-size:18px; }
+    p { margin:0 0 14px; }
+    p:last-child { margin-bottom:0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .tile { background:#f7f9fc; border:1px solid var(--line); border-radius:12px; padding:19px; }
+    .tile p { color:var(--muted); font-size:15px; }
+    .small { font-size:14px; color:var(--muted); }
+    footer { max-width:1060px; margin:30px auto 50px; padding:0 22px; color:var(--muted); font-size:13px; }
+    @media(max-width:680px) { .grid { grid-template-columns:1fr; } main { margin-top:20px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">BMW M ARCHIV</div>
+    <nav aria-label="Main navigation"><a href="/">Member sign in / Archive</a></nav>
+  </header>
+  <main>
+    <div class="hero">
+      <div class="eyebrow">Independent automotive research</div>
+      <h1>About BMW M Archiv</h1>
+      <p>BMW M Archiv is an independently developed project dedicated to documenting BMW M vehicles and making their factory configurations, model differences, and production history easier to explore.</p>
+      <a class="button" href="/">Enter the member archive</a>
+    </div>
+    <section>
+      <h2>Why the archive exists</h2>
+      <p>BMW M vehicles can vary considerably even within the same model year. Body styles, drivetrains, factory colors, interiors, equipment packages, and individual options all contribute to what makes a particular vehicle distinct.</p>
+      <p>BMW M Archiv brings those details into a consistent research environment so enthusiasts can study how vehicles were configured and compare differences across model generations. The project is built around careful organization of vehicle information rather than a conventional classified listing or dealership inventory.</p>
+    </section>
+    <section>
+      <h2>Vehicles and generations covered</h2>
+      <div class="grid">
+        <div class="tile"><h3>E9x M3</h3><p>Research into the V8-generation M3, including E90 sedan and E92 coupe configurations, model-year distinctions, and factory equipment.</p></div>
+        <div class="tile"><h3>E82 1 Series M Coupe</h3><p>Factory configurations and production-related research for the limited-production 1 Series M Coupe.</p></div>
+        <div class="tile"><h3>F87 M2</h3><p>Documentation of early F87 M2 vehicles and their model-specific configurations.</p></div>
+        <div class="tile"><h3>G80 M3</h3><p>Research into the modern M3 sedan, including trim and drivetrain differences, exterior and interior choices, and factory option terminology.</p></div>
+      </div>
+      <p class="small" style="margin-top:16px">Coverage is developed over time. Availability and completeness of individual records may differ by model and model year.</p>
+    </section>
+    <section>
+      <h2>What members can explore</h2>
+      <p>Within the member archive, the project provides tools for examining vehicle-specific records, searching supported models, reviewing available factory specifications, and comparing configurations. Some models also include equipment and historical MSRP references where available.</p>
+      <p>Vehicle information is compiled and organized for enthusiast research. Historical pricing and equipment references may vary by market, production date, and source; they should not be treated as a substitute for original manufacturer documentation.</p>
+    </section>
+    <section>
+      <h2>How the information is organized</h2>
+      <p>BMW M Archiv aims to preserve useful distinctions such as model codes, production years, paint and upholstery descriptions, and factory option identifiers. These details help avoid confusing similarly named vehicles or assuming that every car within a generation was built alike.</p>
+      <p>Records may be refined as additional source information becomes available. The archive is an ongoing independent research project, not an official BMW factory database.</p>
+    </section>
+    <section>
+      <h2>Why membership is required</h2>
+      <p>Detailed vehicle-level research and database tools are available through a member sign-in. Public pages introduce the project and its research focus, while membership helps manage access to the underlying collection and its interactive features.</p>
+      <a class="button" href="/">Sign in to BMW M Archiv</a>
+    </section>
+    <section>
+      <h2>Independent project notice</h2>
+      <p>BMW M Archiv is an independent enthusiast project and is not affiliated with, endorsed by, or operated by BMW AG or BMW of North America. BMW and associated model names are trademarks of their respective owners.</p>
+    </section>
+  </main>
+  <footer>© <span id="year">2026</span> BMW M Archiv · Independent BMW M research · <a href="/">Member archive</a></footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
