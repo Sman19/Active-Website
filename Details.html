@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E90 M3 Vehicle Details</title>
+  <title>G80 M3 Vehicle Details</title>
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Sman19/Functioning-Website/ac241a80e9369136c2629f014a56dfff7f28fa03/carbo-insta_1080x1080%20Favicon.png">
   <style>
     :root{
@@ -195,7 +195,7 @@
 <header class="topbar">
   <button class="back" onclick="goBackToChart()" aria-label="Back to chart">‹</button>
   <div class="title">
-    <h1 id="topTitle">E90 M3 Vehicle Details</h1>
+    <h1 id="topTitle">G80 M3 Vehicle Details</h1>
     <div class="meta">
       <span id="topModel">BMW M3 Sedan</span><span>•</span><span class="vin-meta-wrap">
         <span id="topVin">VIN</span>
@@ -440,7 +440,7 @@ async function exportDetailsInstagram(){
         offsetX,offsetY,renderedWidth,renderedHeight);
       const a=document.createElement('a');
       a.href=out.toDataURL('image/png');
-      a.download=`E90-M3-${vin}-Instagram-Story-${page}-TEST.png`;
+      a.download=`G80-M3-${vin}-Instagram-Story-${page}-TEST.png`;
       document.body.appendChild(a);a.click();a.remove();
       // Give the browser a moment to register each separate download.
       await new Promise(resolve=>setTimeout(resolve,350));
@@ -1028,133 +1028,63 @@ async function copyCurrentVin(){
 }
 
 function render(row){
-  const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
-  const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
-  const year=getField(row,["YEAR","Year","Model Year","MY"])||params.get("year")||"";
-  const vin=getField(row,["VIN","Vin","Full VIN","Full VIN Number"]).trim();
-  const model=getField(row,["MODEL","Model"])||"M3";
-  const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
-  const totalMsrpRaw=getField(row,["MSRP","msrp","Total MSRP","TOTAL MSRP","Retail Price","Vehicle MSRP"]);
-  // Prefer the production date passed directly from E90.html.
-  // Fallback to column K of the CSV loaded by this page.
-  const prod=String(params.get("prod")||"").trim() ||
-    String(
-      (row.__values && row.__values.length > 10 ? row.__values[10] : "") || ""
-    ).trim() ||
-    getField(row,["PROD","Prod","Production Date","Build Date","Production"]);
-  const oem=getField(row,["STICKER","Monroney","Window Sticker"]);
-  const invoice=getField(row,["INVOICE","Invoice"]);
-  const details=getField(row,["DETAILS","Details"]);
-  const rawCodes=getField(row,["Package Codes","PACKAGE CODES","PACKAGES","Packages"]);
-  const codes=passedPackages.length?passedPackages:parseCodes(rawCodes);
-  const exteriorCode=codeOf(exteriorRaw),interiorCode=codeOf(interiorRaw);
-  const cleanExteriorFallbackName=String(exteriorRaw||exteriorCode)
-    .replace(new RegExp("^"+exteriorCode+"\\s*-\\s*","i"),"")
-    .replace(/\s*\|\s*\$[\d,]+(?:\.\d{2})?\s*$/,"")
-    .trim();
-  const color=COLORS[exteriorCode]||{rgb:"190,190,190",name:cleanExteriorFallbackName||exteriorCode,image:""};
-  const interior=INTERIORS[interiorCode]||{image:"",name:interiorRaw||interiorCode};
-  const base=getBaseFromCodes(codes,year),destination=destinationForYear(year),gas=1300;
-  const optionCodes=codes.filter(c=>!c.startsWith("MSRP"));
-  const optionsTotal=optionCodes.reduce((s,c)=>s+getPriceForCode(c,year),0);
-  const calculated=base+optionsTotal+destination+gas;
-  const csvTotal=numberFromMoney(totalMsrpRaw);
-  const total=csvTotal||calculated;
-  const vehicle={vin,year,model,codes};
-  detailsVehicle=vehicle;
-
-  document.title=`${year} BMW M3 Sedan – ${vin}`;
+  const raw=(names)=>getField(row,names);
+  const vin=raw(["VIN"]),year=raw(["Year","Model Year","YEAR"]);
+  const model=raw(["Model","Trim","MODEL"])||"BMW M3";
+  const dealer=raw(["Dealer Name","Selling Dealer","DEALER NAME"]);
+  const exterior=raw(["Exterior","Exterior Color","EXTERIOR"]);
+  const interior=raw(["Interior","Interior Color","INTERIOR"]);
+  const production=raw(["Production Date","PROD","Build Date"]);
+  const msrp=raw(["MSRP","Total MSRP"]);
+  const codes=parseCodes(raw(["Packages","Package Codes","PACKAGE CODES"]));
+  const extras=row.__original||{};
+  const lookup=(...keys)=>{for(const key of keys){const found=Object.keys(extras).find(k=>k.toLowerCase()===key.toLowerCase());if(found&&extras[found]!=null&&String(extras[found]).trim())return String(extras[found]);}return "";};
+  detailsVehicle={vin,year,model,codes};
+  document.title=`${year} BMW M3 – ${vin}`;
+  set("topTitle","G80 M3 Vehicle Details");
   set("topModel",model);
   currentDisplayedVin=vin;
   set("topVin",`VIN: ${vin}`);
   set("topDealer",dealer?`Selling Dealer: ${dealer}`:"Dealer not listed");
-  set("basePrice",money(base));set("optionPrice",money(optionsTotal));set("destinationPrice",money(destination));set("gasPrice",money(gas));set("totalPrice",money(total));
-  set("exteriorText",`${exteriorCode}${color.name?` – ${color.name}`:""}`);set("interiorText",`${interiorCode}${interior.name?` – ${interior.name}`:""}`);
-  document.getElementById("exteriorSwatch").style.background=`rgb(${color.rgb})`;
-  const intEl=document.getElementById("interiorImage");if(interior.image)intEl.style.backgroundImage=`url("${interior.image}")`;else intEl.style.background="#222";
+  set("basePrice","—");set("optionPrice","—");set("destinationPrice","—");set("gasPrice","—");
+  set("totalPrice",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—");
+  set("exteriorText",exterior||"—");set("interiorText",interior||"—");
+  document.getElementById("exteriorSwatch").style.background="#e6e8eb";
+  document.getElementById("interiorImage").style.background="#e6e8eb";
   const car=document.getElementById("vehicleImage");
-  const configuratorExteriorImage=getConfiguratorExteriorPhoto(exteriorCode,codes);
-  const selectedExteriorImage=configuratorExteriorImage||color.image||"";
-
-  if(selectedExteriorImage){
-    car.src=selectedExteriorImage;
-    car.style.display="block";
-  }else{
-    car.style.display="none";
-    car.parentElement.insertAdjacentHTML("beforeend","<div style='font-size:18px;color:#777'>Vehicle image not yet mapped for this paint code.</div>");
-  }
-
-  const dg=document.getElementById("detailsGrid");
-  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Exterior Code",exteriorCode],["Interior Code",interiorCode]].forEach((x)=>dg.appendChild(detail(x[0],x[1])));
-  set("commentsText",getComments(row)||"No comments entered.");
-
-  const pricing=document.getElementById("pricingRows");
-  pricing.innerHTML=`<tr><td>Base MSRP</td><td>${money(base)}</td></tr>`;
-  let lastCategory="";
-  optionCodes.forEach(code=>{
-    const cat=PACKAGE_CODES.has(code)?"PACKAGES":"FACTORY INSTALLED";
-    if(cat!==lastCategory){pricing.insertAdjacentHTML("beforeend",`<tr class="category"><td colspan="2">${cat}</td></tr>`);lastCategory=cat}
-    pricing.insertAdjacentHTML("beforeend",`<tr><td><span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year).replace(/^.*? - /,""))}</td><td>${money(getPriceForCode(code,year))}</td></tr>`)
-  });
-  pricing.insertAdjacentHTML("beforeend",`<tr><td>Destination Charge</td><td>${money(destination)}</td></tr><tr><td>Gas-Guzzler Tax</td><td>${money(gas)}</td></tr><tr class="total"><td>Total MSRP</td><td>${money(total)}</td></tr>`);
-
+  const image=raw(["Vehicle Image","Image URL","Photo URL","Exterior Image"])||lookup("Vehicle Image","Image URL","Photo URL");
+  if(image&&/^https:\/\//i.test(image)){car.src=image;car.style.display="block";}
+  else {car.style.display="none";const note=document.querySelector(".hero-note");if(note)note.textContent="G80 vehicle image not yet available";}
+  const dg=document.getElementById("detailsGrid");dg.innerHTML="";
+  [["VIN",vin],["Model Year",year],["Model",model],["Model Code",raw(["Model Code","Type Code"])],["Production Date",production],["Exterior",exterior],["Interior",interior]].forEach(x=>dg.appendChild(detail(...x)));
+  set("commentsText",raw(["Comments","Notes","COMMENTS"])||lookup("Notes","COMMENTS")||"No comments entered.");
+  const pricing=document.getElementById("pricingRows");pricing.innerHTML="";
+  const addPrice=(label,value,total=false)=>{const tr=document.createElement("tr");if(total)tr.className="total";const a=document.createElement("td"),b=document.createElement("td");a.textContent=label;b.textContent=value||"—";tr.append(a,b);pricing.append(tr)};
+  addPrice("Base MSRP",raw(["Base MSRP"])||lookup("Base MSRP"));
+  addPrice("Factory installed options",raw(["Options Price"])||lookup("Options Price"));
+  addPrice("Destination charge",raw(["Destination"])||lookup("Destination"));
+  addPrice("Total MSRP",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—",true);
   const packs=document.getElementById("packageList"),opts=document.getElementById("optionList");
-  packs.innerHTML="";
-  opts.innerHTML="";
-
-  // Anything carrying a retail cost belongs in Packages, even when it is a
-  // standalone factory option. Standard Options is reserved for no-cost /
-  // standard-equipment items so it can mirror the informational content used
-  // at the bottom of the BMW PDF.
-  optionCodes.forEach(code=>{
-    const el=document.createElement("div");
-    el.className="pill";
-    el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;
-    const hasCost=getPriceForCode(code,year)>0;
-    (hasCost?packs:opts).appendChild(el);
-  });
-
-  if(!packs.children.length)packs.innerHTML="<div class='pill'>No priced packages or options listed.</div>";
-  if(!opts.children.length)opts.innerHTML="<div class='pill'>Standard-equipment details will appear here when available.</div>";
-
-  const dealerGrid=document.getElementById("dealerGrid");
-  [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
-
-  loadDealerRecord(dealer)
-    .then(record=>{
-      renderDealerPreview(record,dealer);
-
-      if(record){
-        dealerGrid.innerHTML="";
-        [
-          ["Dealer Name",record.name],
-          ["Dealer Code",record.code],
-          ["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],
-          ["Phone",record.phone],
-          ["Country",record.country],
-          ["Production Date",prod],
-          ["VIN",vin]
-        ].forEach((item,index)=>dealerGrid.appendChild(detail(item[0],item[1],index===6)));
-      }
-    })
-    .catch(error=>{
-      console.error(error);
-      renderDealerPreview(null,dealer);
-    });
-
-  document.getElementById("specButton").onclick=handleBackgroundSpecSheet;
-  document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
-  const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
-  oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
-  const quickOem=document.getElementById("quickOem"),quickInvoice=document.getElementById("quickInvoice");
-  quickOem.classList.toggle("disabled",!available(oem));
-  quickInvoice.classList.toggle("disabled",!available(invoice));
-  quickOem.disabled=!available(oem);
-  quickInvoice.disabled=!available(invoice);
-  oemBtn.onclick=()=>available(oem)&&window.open(oem,"_blank","noopener,noreferrer");
-  invBtn.onclick=()=>available(invoice)&&window.open(invoice,"_blank","noopener,noreferrer");
-
-  document.getElementById("loading").style.display="none";document.getElementById("content").style.display="block";
+  packs.innerHTML="";opts.innerHTML="";
+  if(codes.length){codes.forEach(code=>{const pill=document.createElement("div");pill.className="pill";pill.textContent=code;packs.appendChild(pill)})}
+  else packs.textContent="No package information recorded.";
+  opts.textContent="Standard equipment details are not yet mapped for this vehicle.";
+  const dealerGrid=document.getElementById("dealerGrid");dealerGrid.innerHTML="";
+  [["Dealer Name",dealer],["Production Date",production],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
+  loadDealerRecord(dealer).then(record=>{renderDealerPreview(record,dealer);if(record){dealerGrid.innerHTML="";[["Dealer Name",record.name],["Dealer Code",record.code],["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],["Phone",record.phone],["Country",record.country],["Production Date",production],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===6)))}}).catch(()=>renderDealerPreview(null,dealer));
+  const spec=document.getElementById("specButton"),sticker=document.getElementById("stickerButton"),oem=document.getElementById("oemButton"),invoice=document.getElementById("invoiceButton");
+  [spec,sticker,oem,invoice].forEach(b=>{b.disabled=true;b.onclick=null});
+  const oemUrl=raw(["Monroney","OEM Sticker","Sticker URL"]);
+  const invoiceUrl=raw(["Invoice","Invoice URL"]);
+  if(/^https:\/\//i.test(oemUrl)){oem.disabled=false;oem.onclick=()=>window.open(oemUrl,"_blank","noopener,noreferrer")}
+  if(/^https:\/\//i.test(invoiceUrl)){invoice.disabled=false;invoice.onclick=()=>window.open(invoiceUrl,"_blank","noopener,noreferrer")}
+  [["quickOem",oem],["quickInvoice",invoice]].forEach(([id,b])=>{const q=document.getElementById(id);q.disabled=b.disabled;q.classList.toggle("disabled",b.disabled)});
+  const quickSpec=document.querySelector('[onclick="triggerDocument(\'specButton\')"]');
+  const quickSticker=document.querySelector('[onclick="triggerDocument(\'stickerButton\')"]');
+  [quickSpec,quickSticker].forEach(q=>{if(q){q.disabled=true;q.classList.add("disabled")}});
+  document.getElementById("historyPanel").querySelector(".card").textContent="No separate G80 vehicle-history records are available on this page.";
+  document.getElementById("loading").style.display="none";
+  document.getElementById("content").style.display="block";
 }
 // Public Supabase configuration shared with the BMW M ARCHIV homepage.
 const SUPABASE_URL="https://qaikzwqdjdxkhhzscish.supabase.co";
@@ -1162,11 +1092,12 @@ const SUPABASE_PUBLISHABLE_KEY="sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
 
 function mapSupabaseDetailsRow(record){
   const original=(record.original_csv_data && typeof record.original_csv_data==="object" && !Array.isArray(record.original_csv_data))?record.original_csv_data:{};
-  const row={...original};
+  const row={...original,__original:original};
   const assign=(key,value)=>{if(value!==undefined && value!==null && String(value).trim()!=="")row[key]=String(value)};
   assign("VIN",record.vin);
   assign("Year",record.model_year);
-  assign("Model",record.model);
+  assign("Model",record.trim||record.model||record.model_name);
+  assign("Model Code",record.model_code||record.type_code);
   assign("Exterior",record.exterior_color);
   assign("Interior",record.interior_color);
   assign("Packages",record.package_codes);
@@ -1174,6 +1105,8 @@ function mapSupabaseDetailsRow(record){
   assign("Dealer Name",record.dealer_name);
   assign("Production Date",record.production_date);
   assign("Monroney",record.monroney_url);
+  assign("Invoice",record.invoice_url);
+  assign("Comments",record.comments);
   // Preserve legacy positional values used for production dates and comments.
   if(!Array.isArray(row.__values))row.__values=[];
   if(!row.__values[10] && record.production_date)row.__values[10]=String(record.production_date);
@@ -1221,7 +1154,7 @@ function goBackToChart(){
   }
 
   // Final same-folder fallback.
-  const fallbackUrl=new URL("E90%20Sedan.html",window.location.href);
+  const fallbackUrl=new URL("G80-M3.html",window.location.href);
   fallbackUrl.searchParams.set("file",fileName);
   window.location.replace(fallbackUrl.toString());
 }
