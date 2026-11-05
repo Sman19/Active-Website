@@ -1381,6 +1381,22 @@ async function init(){
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
 
 function goBackToChart(){
+  // G8X vehicles always return to the G80 inventory unless a valid inventory
+  // return URL was explicitly supplied by the originating page.
+  if(detailsVehicle && isG80Record(detailsVehicle)){
+    const returnUrl=params.get("return");
+    if(returnUrl){
+      try{
+        const target=new URL(returnUrl,window.location.href);
+        if(target.origin===window.location.origin && target.pathname!==window.location.pathname && /G8[0-9X]|G80/i.test(target.pathname)){
+          window.location.assign(target.href);
+          return;
+        }
+      }catch(error){console.warn("Invalid G8X return URL",error);}
+    }
+    window.location.assign(new URL("G80-M3.html",window.location.href).href);
+    return;
+  }
   // Prefer the inventory URL explicitly supplied by the source page.
   const returnUrl=params.get("return");
   if(returnUrl){
