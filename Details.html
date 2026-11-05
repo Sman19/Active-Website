@@ -1548,7 +1548,10 @@ function goBackToChart(){
         }
       }catch(error){console.warn("Invalid G8X return URL",error);}
     }
-    window.location.assign(new URL("G80_M3.html",window.location.href).href);
+    const fallback=new URL("G80_M3.html",window.location.href);
+    const modelCode=params.get("model_code") || String(detailsVehicle?.model_code || detailsVehicle?.["Model Code"] || detailsVehicle?.type_code || "").toUpperCase();
+    if(["33AY","43AY","53AY"].includes(modelCode))fallback.searchParams.set("model_code",modelCode);
+    window.location.assign(fallback.href);
     return;
   }
   // Prefer the inventory URL explicitly supplied by the source page.

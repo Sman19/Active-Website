@@ -2737,6 +2737,9 @@
       if (!vehicle || !isAvailableLink(vehicle.vin)) return;
       const url = new URL("Details.html", window.location.href);
       url.searchParams.set("vin", vehicle.vin);
+      // Preserve the selected G80 model code, year dataset, and current filters.
+      url.searchParams.set("return", window.location.pathname + window.location.search);
+      url.searchParams.set("model_code", G80_SELECTED_MODEL_CODE);
       window.open(url.href, "_blank", "noopener,noreferrer");
     }
 
