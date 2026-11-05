@@ -861,7 +861,10 @@ function buildConfiguratorUrl(mode,v){
 function openConfigurator(mode,v){window.open(buildConfiguratorUrl(mode,v),"_blank","noopener,noreferrer")}
 
 function normalizeDealerName(value){
+  // Match dealership names using only the text before the first comma.
+  // Example: "Steve Thomas BMW, Camarillo, US" matches "Steve Thomas BMW".
   return String(value||"")
+    .split(",")[0]
     .toLowerCase()
     .replace(/&/g,"and")
     .replace(/\b(incorporated|inc|llc|ltd|limited|company|corp|corporation)\b/g,"")
