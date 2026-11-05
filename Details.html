@@ -861,10 +861,7 @@ function buildConfiguratorUrl(mode,v){
 function openConfigurator(mode,v){window.open(buildConfiguratorUrl(mode,v),"_blank","noopener,noreferrer")}
 
 function normalizeDealerName(value){
-  // Match dealership names using only the text before the first comma.
-  // Example: "Steve Thomas BMW, Camarillo, US" matches "Steve Thomas BMW".
   return String(value||"")
-    .split(",")[0]
     .toLowerCase()
     .replace(/&/g,"and")
     .replace(/\b(incorporated|inc|llc|ltd|limited|company|corp|corporation)\b/g,"")
@@ -1155,7 +1152,16 @@ function renderG80(row){
   if(g80Color?.name)set("exteriorText",`${paintCode} - ${g80Color.name}`);
   const interiorCode=codeOf(interior);
   const g80Interior=G80_INTERIORS[interiorCode];
-  if(g80Interior?.image)document.getElementById("interiorImage").style.backgroundImage=`url("${g80Interior.image}")`;
+  if(g80Interior?.image){
+    const swatch=document.getElementById("interiorImage");
+    // Use the same upholstery image URL as the G80 inventory, with a visible fallback.
+    swatch.style.backgroundColor="#d1d5db";
+    swatch.style.backgroundImage=`url("${g80Interior.image}")`;
+    swatch.style.backgroundPosition="center";
+    swatch.style.backgroundSize="cover";
+    swatch.style.backgroundRepeat="no-repeat";
+    swatch.title=g80Interior.description||interior;
+  }
   if(g80Interior?.description)set("interiorText",`${interiorCode} - ${g80Interior.description}`);
   if(image&&/^https:\/\//i.test(image)){car.src=image;car.style.display="block";}
   else {car.style.display="none";const note=document.querySelector(".hero-note");if(note)note.textContent="G80 vehicle image not yet available";}
