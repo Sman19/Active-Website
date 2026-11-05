@@ -1124,6 +1124,64 @@ const G80_INTERIORS = {
       "VAHZ": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/900eee130eb812a11541d63c22a4b34980b5d1c6/fiona%20red%3Ablack.jpeg?raw=true", description: "Fiona Red/Black Extended Merino Leather" },
       "VBHZ": { image: "https://github.com/Sman19/G80-ext.380x260px/blob/900eee130eb812a11541d63c22a4b34980b5d1c6/fiona%20red%3Ablack.jpeg?raw=true", description: "Fiona Red/Black Full Merino Leather" }
     };
+// 2024 US-market 43AY reference pricing. Other years/model codes are unchanged.
+const G80_2024_43AY={
+  base:84300,destination:995,
+  // Supabase may use BMW AIR's leading-zero format (e.g. 0ZPX).
+  options:{
+    "0ZPX":["Executive Package",1700],
+    "0ZPK":["Parking Assistance Package",700],
+    "07ME":["M Drive Professional",900],
+    "05AZ":["Icon Adaptive LED Headlights",1000],
+    "05AC":["Automatic High Beams",0],
+    "05DR":["Drive Recorder",100],
+    "04MC":["Carbon Fiber Trim",950],
+    "048C":["M Carbon Bucket Seats",4500],
+    "03MF":["M Shadowline Lights",300],
+    "0C36":["Dravit Grey Metallic",1950]
+  },
+  // Standard features are descriptions, not additional charges.
+  standard:[
+    "3.0-liter BMW M TwinPower Turbo inline 6-cylinder engine",
+    "8-speed M STEPTRONIC automatic transmission with Drivelogic",
+    "M xDrive and M Driving Dynamics Control",
+    "Adaptive M Suspension and M Sport Differential",
+    "M Compound brakes with ABS, DBC and CBC",
+    "Dynamic Stability Control with M Dynamic Mode",
+    "Apple CarPlay and Android Auto compatibility",
+    "Wireless Device Charging",
+    "Harman Kardon Surround Sound Audio System",
+    "BMW Curved Display with Navigation",
+    "Comfort Access keyless entry",
+    "Heated front M Sport seats",
+    "Multi-zone Climate Control",
+    "LED headlights",
+    "Front and rear Park Distance Control",
+    "Active Driving Assistant with Active Blind Spot Detection",
+    "4-year/50,000-mile New Vehicle Limited Warranty (2024 model year)"
+  ]
+};
+function normalizedG80Code(code){
+  const s=String(code||"").trim().toUpperCase();
+  return s.length===3&&/^[A-Z0-9]{3}$/.test(s)?"0"+s:s;
+}
+function getG802024Pricing(codes,exterior,interior){
+  const map=G80_2024_43AY.options;
+  const selected=new Map();
+  for(const raw of codes){
+    const key=normalizedG80Code(raw);
+    if(map[key]){
+      const [name,price]=map[key];
+      // A package and its constituent equipment must not be double-counted.
+      if(!selected.has(name))selected.set(name,price);
+    }
+  }
+  // Paint and upholstery are separate columns, not necessarily package codes.
+  const paint=codeOf(exterior),trim=codeOf(interior);
+  if(paint==="C36")selected.set("Dravit Grey Metallic",1950);
+  if(trim==="VBHZ")selected.set("Fiona Red/Black Full Merino Leather",2300);
+  return selected;
+}
 function renderG80(row){
   const raw=(names)=>getField(row,names);
   const vin=raw(["VIN"]),year=raw(["Year","Model Year","YEAR"]);
@@ -1143,7 +1201,17 @@ function renderG80(row){
   currentDisplayedVin=vin;
   set("topVin",`VIN: ${vin}`);
   set("topDealer",dealer?`Selling Dealer: ${dealer}`:"Dealer not listed");
-  set("basePrice","—");set("optionPrice","—");set("destinationPrice","—");set("gasPrice","—");
+  const is2024_43AY=String(year).trim()==="2024" &&
+    String(raw(["Model Code","Type Code"])).trim().toUpperCase().replace(/^0+/,"")==="43AY";
+  const pricedOptions=is2024_43AY?getG802024Pricing(codes,exterior,interior):new Map();
+  const pricedOptionTotal=[...pricedOptions.values()].reduce((sum,price)=>sum+price,0);
+  const knownTotal=is2024_43AY?G80_2024_43AY.base+G80_2024_43AY.destination+pricedOptionTotal:0;
+  set("basePrice",is2024_43AY?money(G80_2024_43AY.base):"—");
+  set("optionPrice",is2024_43AY?money(pricedOptionTotal):"—");
+  set("destinationPrice",is2024_43AY?money(G80_2024_43AY.destination):"—");
+  set("gasPrice","—");
+  // A stored factory total is authoritative; otherwise show only a mapped subtotal,
+  // not a potentially misleading complete MSRP for unmapped option codes.
   set("totalPrice",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—");
   set("exteriorText",exterior||"—");set("interiorText",interior||"—");
   document.getElementById("exteriorSwatch").style.background="#e6e8eb";
@@ -1175,15 +1243,31 @@ function renderG80(row){
   set("commentsText",raw(["Comments","Notes","COMMENTS"])||lookup("Notes","COMMENTS")||"No comments entered.");
   const pricing=document.getElementById("pricingRows");pricing.innerHTML="";
   const addPrice=(label,value,total=false)=>{const tr=document.createElement("tr");if(total)tr.className="total";const a=document.createElement("td"),b=document.createElement("td");a.textContent=label;b.textContent=value||"—";tr.append(a,b);pricing.append(tr)};
-  addPrice("Base MSRP",raw(["Base MSRP"])||lookup("Base MSRP"));
-  addPrice("Factory installed options",raw(["Options Price"])||lookup("Options Price"));
-  addPrice("Destination charge",raw(["Destination"])||lookup("Destination"));
-  addPrice("Total MSRP",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—",true);
+  if(is2024_43AY){
+    addPrice("Base MSRP",money(G80_2024_43AY.base));
+    for(const [name,price] of pricedOptions)addPrice(name,price?money(price):"Included");
+    addPrice("Destination charge",money(G80_2024_43AY.destination));
+    addPrice("Mapped-options subtotal (not final MSRP)",money(knownTotal));
+    if(msrp)addPrice("Recorded total MSRP",money(numberFromMoney(msrp)),true);
+  }else{
+    addPrice("Base MSRP",raw(["Base MSRP"])||lookup("Base MSRP"));
+    addPrice("Factory installed options",raw(["Options Price"])||lookup("Options Price"));
+    addPrice("Destination charge",raw(["Destination"])||lookup("Destination"));
+    addPrice("Total MSRP",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—",true);
+  }
   const packs=document.getElementById("packageList"),opts=document.getElementById("optionList");
   packs.innerHTML="";opts.innerHTML="";
-  if(codes.length){codes.forEach(code=>{const pill=document.createElement("div");pill.className="pill";pill.textContent=code;packs.appendChild(pill)})}
-  else packs.textContent="No package information recorded.";
-  opts.textContent="Standard equipment details are not yet mapped for this vehicle.";
+  if(codes.length){codes.forEach(code=>{
+    const pill=document.createElement("div");pill.className="pill";
+    const item=is2024_43AY?G80_2024_43AY.options[normalizedG80Code(code)]:null;
+    pill.textContent=item?`${code} — ${item[0]}${item[1]?" — "+money(item[1]):" (Included)"}`:code;
+    packs.appendChild(pill);
+  })}else packs.textContent="No package information recorded.";
+  if(is2024_43AY){
+    G80_2024_43AY.standard.forEach(name=>{
+      const pill=document.createElement("div");pill.className="pill";pill.textContent=name;opts.appendChild(pill);
+    });
+  }else opts.textContent="Standard equipment details are not yet mapped for this vehicle.";
   const dealerGrid=document.getElementById("dealerGrid");dealerGrid.innerHTML="";
   [["Dealer Name",dealer],["Production Date",production],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
   loadDealerRecord(dealer).then(record=>{renderDealerPreview(record,dealer);if(record){dealerGrid.innerHTML="";[["Dealer Name",record.name],["Dealer Code",record.code],["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],["Phone",record.phone],["Country",record.country],["Production Date",production],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===6)))}}).catch(()=>renderDealerPreview(null,dealer));
@@ -1394,7 +1478,7 @@ function goBackToChart(){
         }
       }catch(error){console.warn("Invalid G8X return URL",error);}
     }
-    window.location.assign(new URL("G80_M3.html", window.location.href).href);
+    window.location.assign(new URL("G80_M3.html",window.location.href).href);
     return;
   }
   // Prefer the inventory URL explicitly supplied by the source page.
