@@ -1366,29 +1366,41 @@ async function init(){
 function showError(message){document.getElementById("loading").style.display="none";const e=document.getElementById("error");e.style.display="block";e.innerHTML=`<h2>Vehicle could not be loaded</h2><p>${escapeHtml(message)}</p>`}
 
 function goBackToChart(){
-  // Best behavior when Details was opened from the E90 chart:
-  // focus the original chart tab, then close this Details tab.
+  // Prefer the inventory URL explicitly supplied by the source page.
+  const returnUrl=params.get("return");
+  if(returnUrl){
+    try{
+      const target=new URL(returnUrl,window.location.href);
+      if(target.origin===window.location.origin && target.pathname!==window.location.pathname){
+        window.location.assign(target.href);
+        return;
+      }
+    }catch(error){console.warn("Invalid inventory return URL",error);}
+  }
+
+  // When Details was opened in a new tab, return to its originating inventory.
   try{
     if(window.opener && !window.opener.closed){
       window.opener.focus();
       window.close();
       return;
     }
-  }catch(error){
-    console.warn("Could not access the chart tab:", error);
-  }
+  }catch(error){console.warn("Could not focus inventory tab",error);}
 
-  // Fallback when the browser removed window.opener.
-  const returnUrl=params.get("return");
-  if(returnUrl){
-    window.location.replace(returnUrl);
-    return;
+  // Follow the actual inventory link rather than assuming every car is an E90.
+  if(document.referrer){
+    try{
+      const previous=new URL(document.referrer);
+      if(previous.origin===window.location.origin && previous.pathname!==window.location.pathname){
+        window.location.assign(previous.href);
+        return;
+      }
+    }catch(error){console.warn("Invalid referring page",error);}
   }
+  if(window.history.length>1){window.history.back();return;}
 
-  // Final same-folder fallback.
-  const fallbackUrl=new URL("E90%20Sedan.html",window.location.href);
-  fallbackUrl.searchParams.set("file",fileName);
-  window.location.replace(fallbackUrl.toString());
+  // Direct/bookmarked visits without a known origin return to the main archive.
+  window.location.assign(new URL("/",window.location.origin).href);
 }
 function toggleQuickActions(event){
   if(event)event.stopPropagation();
