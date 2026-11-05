@@ -149,6 +149,10 @@
     .tab{height:100%;padding:20px 0 14px;border:0;border-bottom:3px solid transparent;background:transparent;font-weight:750;cursor:pointer}.tab.active{color:var(--red);border-bottom-color:var(--red)}
     .loading-page,.error-page{padding:70px 30px;text-align:center}.spinner{width:48px;height:48px;border:4px solid #e4e7eb;border-top-color:var(--red);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 18px}@keyframes spin{to{transform:rotate(360deg)}}
     #content{display:none}.hero{position:relative;min-height:500px;display:flex;align-items:center;justify-content:center;padding:45px 80px 36px;background:#f2f4f5}.hero img{width:min(900px,78%);height:390px;object-fit:contain;filter:drop-shadow(0 18px 10px rgba(0,0,0,.13))}
+    /* G80 only: enlarge the vehicle photo while preserving the E90 layout. */
+    .hero.g80-hero{overflow:hidden}
+    .hero.g80-hero #vehicleImage{transform:scale(1.30);transform-origin:center center}
+    @media(max-width:720px){.hero.g80-hero #vehicleImage{transform:scale(1.12)}}
     .hero-note{position:absolute;right:20px;bottom:15px;color:#999;font-size:13px}.section{scroll-margin-top:145px;padding:38px 7% 48px;border-bottom:1px solid #edf0f2}.heading{margin:0 0 25px;font-size:24px;letter-spacing:.04em;font-weight:650}
     .two-col{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,.85fr);gap:65px}.bar{padding:10px 16px;border-radius:5px;background:#eceff2;font-size:13px;font-weight:850;letter-spacing:.11em}
     .summary-row{display:grid;grid-template-columns:1fr auto;gap:20px;padding:15px 16px;border-bottom:1px solid var(--line);color:#4a5561}.summary-row strong{font-weight:750}.summary-row.total{color:var(--red);font-weight:850}
@@ -1145,6 +1149,7 @@ function renderG80(row){
   document.getElementById("exteriorSwatch").style.background="#e6e8eb";
   document.getElementById("interiorImage").style.background="#e6e8eb";
   const car=document.getElementById("vehicleImage");
+  car.closest(".hero")?.classList.add("g80-hero");
   const paintCode=codeOf(exterior);
   const g80Color=G80_COLORS[paintCode];
   const image=raw(["Vehicle Image","Image URL","Photo URL","Exterior Image"])||lookup("Vehicle Image","Image URL","Photo URL")||(g80Color?.image||"");
@@ -1244,6 +1249,7 @@ function render(row){
   document.getElementById("exteriorSwatch").style.background=`rgb(${color.rgb})`;
   const intEl=document.getElementById("interiorImage");if(interior.image)intEl.style.backgroundImage=`url("${interior.image}")`;else intEl.style.background="#222";
   const car=document.getElementById("vehicleImage");
+  car.closest(".hero")?.classList.remove("g80-hero");
   const configuratorExteriorImage=getConfiguratorExteriorPhoto(exteriorCode,codes);
   const selectedExteriorImage=configuratorExteriorImage||color.image||"";
 
