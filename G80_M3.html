@@ -2735,7 +2735,7 @@
     function handleDetailsClick() {
       const vehicle = getSelectedVehicle();
       if (!vehicle || !isAvailableLink(vehicle.vin)) return;
-      const url = new URL("G80-M3-Details.html", window.location.href);
+      const url = new URL("Details.html", window.location.href);
       url.searchParams.set("vin", vehicle.vin);
       window.open(url.href, "_blank", "noopener,noreferrer");
     }
