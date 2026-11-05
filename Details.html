@@ -1318,7 +1318,7 @@ function renderG80(row){
     }
     addPrice("Destination charge",money(G80_2024_43AY.destination));
     addPrice("Mapped-options subtotal (not final MSRP)",money(knownTotal));
-    if(msrp)addPrice("Recorded total MSRP",money(numberFromMoney(msrp)),true);
+    if(msrp)addPrice("Total MSRP",money(numberFromMoney(msrp)),true);
   }else{
     addPrice("Base MSRP",raw(["Base MSRP"])||lookup("Base MSRP"));
     addPrice("Factory installed options",raw(["Options Price"])||lookup("Options Price"));
