@@ -1302,7 +1302,20 @@ function renderG80(row){
   const addPrice=(label,value,total=false)=>{const tr=document.createElement("tr");if(total)tr.className="total";const a=document.createElement("td"),b=document.createElement("td");a.textContent=label;b.textContent=value||"—";tr.append(a,b);pricing.append(tr)};
   if(is2024_43AY){
     addPrice("Base MSRP",money(G80_2024_43AY.base));
-    for(const [name,price] of pricedOptions)addPrice(name,price?money(price):"Included");
+    // Show paint and upholstery directly beneath Base MSRP, before other options.
+    const paintItem=G80_2024_43AY.paint[codeOf(exterior)];
+    const interiorItem=G80_2024_43AY.interior[codeOf(interior)];
+    const orderedEntries=[...pricedOptions.entries()];
+    const paintLabel=paintItem?`${codeOf(exterior)} - ${paintItem[0]}`:null;
+    const interiorLabel=interiorItem?`${codeOf(interior)} - ${interiorItem[0]}`:null;
+    for(const label of [paintLabel,interiorLabel]){
+      const match=orderedEntries.find(([name])=>name===label);
+      if(match)addPrice(match[0],match[1]?money(match[1]):"Included");
+    }
+    for(const [name,price] of orderedEntries){
+      if(name===paintLabel||name===interiorLabel)continue;
+      addPrice(name,price?money(price):"Included");
+    }
     addPrice("Destination charge",money(G80_2024_43AY.destination));
     addPrice("Mapped-options subtotal (not final MSRP)",money(knownTotal));
     if(msrp)addPrice("Recorded total MSRP",money(numberFromMoney(msrp)),true);
