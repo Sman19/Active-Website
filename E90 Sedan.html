@@ -2076,7 +2076,7 @@
         case "model":
           return vehicle.model || "";
         case "exterior":
-          return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""}`;
+          return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""} ${vehicle.exteriorData?.name || ""}`;
         case "interior":
           return `${vehicle.interior || ""} ${vehicle.interiorCode || ""} ${vehicle.interiorData.description || ""}`;
         case "year":
