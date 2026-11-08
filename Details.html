@@ -1237,6 +1237,12 @@ function getG802024Pricing(codes,exterior,interior){
   }
   return selected;
 }
+const G80_BASE_MSRP_BY_YEAR = {
+  "2021": {"33AY":72800,"53AY":69900},
+  "2022": {"33AY":72800,"43AY":76900,"53AY":69900},
+  "2023": {"33AY":76700,"43AY":80800,"53AY":72800},
+  "2024": {"33AY":80200,"43AY":84300,"53AY":76000}
+};
 function renderG80(row){
   const raw=(names)=>getField(row,names);
   const vin=raw(["VIN"]),year=raw(["Year","Model Year","YEAR"]);
@@ -1258,10 +1264,12 @@ function renderG80(row){
   set("topDealer",dealer?`Selling Dealer: ${dealer}`:"Dealer not listed");
   const is2024_43AY=String(year).trim()==="2024" &&
     String(raw(["Model Code","Type Code"])).trim().toUpperCase().replace(/^0+/,"")==="43AY";
+  const modelCode=String(raw(["Model Code","Type Code"])||lookup("model_code","type_code","Model Code","Type Code")).trim().toUpperCase().replace(/^0+(?=[0-9])/,'');
+  const g80Base=G80_BASE_MSRP_BY_YEAR[String(year).trim()]?.[modelCode];
   const pricedOptions=is2024_43AY?getG802024Pricing(codes,exterior,interior):new Map();
   const pricedOptionTotal=[...pricedOptions.values()].reduce((sum,price)=>sum+price,0);
   const knownTotal=is2024_43AY?G80_2024_43AY.base+G80_2024_43AY.destination+pricedOptionTotal:0;
-  set("basePrice",is2024_43AY?money(G80_2024_43AY.base):"—");
+  set("basePrice",g80Base!==undefined?money(g80Base):"—");
   set("optionPrice",is2024_43AY?money(pricedOptionTotal):"—");
   set("destinationPrice",is2024_43AY?money(G80_2024_43AY.destination):"—");
   set("gasPrice","—");
@@ -1320,7 +1328,7 @@ function renderG80(row){
     addPrice("Mapped-options subtotal (not final MSRP)",money(knownTotal));
     if(msrp)addPrice("Total MSRP",money(numberFromMoney(msrp)),true);
   }else{
-    addPrice("Base MSRP",raw(["Base MSRP"])||lookup("Base MSRP"));
+    addPrice("Base MSRP",g80Base!==undefined?money(g80Base):(raw(["Base MSRP"])||lookup("Base MSRP")));
     addPrice("Factory installed options",raw(["Options Price"])||lookup("Options Price"));
     addPrice("Destination charge",raw(["Destination"])||lookup("Destination"));
     addPrice("Total MSRP",msrp?(numberFromMoney(msrp)?money(numberFromMoney(msrp)):msrp):"—",true);
