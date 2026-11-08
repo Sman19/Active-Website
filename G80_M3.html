@@ -2096,8 +2096,11 @@
       switch (field) {
         case "model":
           return `${vehicle.modelName || vehicle.model || ""} ${vehicle.modelCode || ""}`;
-        case "exterior":
-          return `${vehicle.exterior || ""} ${vehicle.exteriorCode || ""}`;
+        case "exterior": {
+          const colorName = vehicle.exteriorData?.name || vehicle.exterior || "";
+          const colorCode = vehicle.exteriorCode || "";
+          return `${colorName} ${colorCode}`;
+        }
         case "interior":
           return `${vehicle.interior || ""} ${vehicle.interiorCode || ""} ${vehicle.interiorData.description || ""}`;
         case "year":
