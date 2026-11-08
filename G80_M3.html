@@ -1432,9 +1432,14 @@
       "04ML": "Piano Black Finish Trim", "0XED": "Individual Aluminum Fabric Trim",
       "0XEU": "Individual Fine Wood Fineline Trim"
     };
-    // Verified reference only: 2021 US Competition RWD base MSRP, excluding destination.
-    // Never substitute base MSRP for a vehicle's actual total MSRP.
-    const baseMSRPByYear = { "2021": { "33AY": 72800 } };
+    // US base MSRP by model year and model code, excluding destination and options.
+    // Keep actual vehicle MSRP separate from these base-price references.
+    const baseMSRPByYear = {
+      "2021": { "33AY": 72800, "53AY": 69900 },
+      "2022": { "33AY": 72800, "43AY": 76900, "53AY": 69900 },
+      "2023": { "33AY": 76700, "43AY": 80800, "53AY": 72800 },
+      "2024": { "33AY": 80200, "43AY": 84300, "53AY": 76000 }
+    };
     const packagePrices2009 = {};
 
     function normalize(text) {
