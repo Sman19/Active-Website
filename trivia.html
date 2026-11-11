@@ -30,6 +30,23 @@
 <aside><section class="panel" style="margin-top:24px"><h2>Monthly leaderboard</h2><p class="subtle" id="monthLabel">—</p><div class="spotlight"><strong>Top 3 usernames</strong><div id="leaderboard"><p class="subtle">Leaderboard will appear after the public Top 3 endpoint is connected.</p></div><p class="notice">Only the top three usernames and their scores will be public.</p></div></section>
 <section class="panel"><h2>Community Spotlight</h2><p>Each month's top eligible player gets the opportunity to feature a photo of their BMW on BMW M Archiv.</p><div class="spotlight"><strong>Featured BMW of the Month</strong><p class="subtle">Winner's approved car photo, model, year, and story will appear here.</p></div><p class="notice">One scored attempt per weekly round. Tie-break rules will be published before prizes are offered. Photo submissions require permission to publish and moderator approval.</p></section></aside>
 </div>
+<section class="panel" id="winnerPanel" aria-labelledby="winnerTitle" aria-live="polite">
+  <span class="pill">Monthly Champion</span>
+  <h2 id="winnerTitle" style="margin-top:12px">Congratulations! You won the monthly challenge.</h2>
+  <p id="winnerDetails" class="status"></p>
+  <div id="winnerFormWrap">
+    <p>Submit one photo of your BMW for the Community Spotlight. Your photo will be reviewed before publication.</p>
+    <form id="winnerForm" class="winner-fields">
+      <label for="winnerYear">Model year<input id="winnerYear" type="number" min="1920" max="2100" required placeholder="e.g. 2011"></label>
+      <label for="winnerModel">BMW model<input id="winnerModel" type="text" maxlength="100" required placeholder="e.g. M3 Sedan"></label>
+      <label for="winnerStory">Your BMW story (optional)<textarea id="winnerStory" maxlength="1000" placeholder="Tell us about your BMW"></textarea></label>
+      <label for="winnerPhoto">Photo (JPG, PNG, or WebP, maximum 3 MB)<input id="winnerPhoto" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+      <img id="winnerPreview" alt="Preview of your selected BMW photo">
+      <button class="btn" id="winnerSubmit" type="submit">Submit Photo for Approval</button>
+    </form>
+  </div>
+  <p id="winnerSubmissionStatus" class="status" role="status" aria-live="polite"></p>
+</section>
 <section class="panel" aria-labelledby="rulesTitle"><h2 id="rulesTitle">Official Rules &amp; Scoring</h2>
 <p><strong>Schedule:</strong> Each round opens Monday at 9:00 AM and closes Friday at 12:00 PM (noon), Central Time (America/Chicago). Five BMW M history questions are published per round.</p>
 <p><strong>Current live scoring:</strong> +20 points per correct answer, −10 points per incorrect answer, and +25 bonus points for answering all five correctly. Maximum: 125 points per round. Each enrolled member may submit one completed attempt per round. Answers cannot be changed after submission.</p>
