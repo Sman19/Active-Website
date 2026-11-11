@@ -56,20 +56,28 @@ async function loadActivity() {
   const now = new Date();
   const currentMonth = now.toISOString().slice(0, 7);
   document.getElementById('currentMonthLabel').textContent = formatter.format(new Date(currentMonth + '-01T00:00:00Z'));
-  if (SUPABASE_URL.includes('YOUR_') || SUPABASE_ANON_KEY.includes('YOUR_')) {
+  if (SUPABASE_URL.includes('YOUR_') || SUPABASE_PUBLISHABLE_KEY.includes('YOUR_')) {
     status.textContent = 'Database connection not configured yet.';
     history.innerHTML = '<div class="history-row"><span>Awaiting connection</span><span>—</span><span>—</span></div>';
     return;
   }
   try {
-    const response = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/public_database_activity_monthly', {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    let response;
+    try {
+      response = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/public_database_activity_monthly', {
       method: 'POST',
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
+        'apikey': SUPABASE_PUBLISHABLE_KEY,
         'Content-Type': 'application/json'
       },
-      body: '{}'
-    });
+      body: '{}',
+      signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const rows = await response.json();
     if (!Array.isArray(rows)) throw new Error('Unexpected response');
@@ -95,7 +103,7 @@ async function loadActivity() {
     }
   } catch (error) {
     console.error('Database activity:', error);
-    status.textContent = 'Database activity is temporarily unavailable. Please try again later.';
+    status.textContent = error.name === 'AbortError' ? 'Database request timed out. Please try again.' : 'Database activity is temporarily unavailable. Please try again later.';
     history.innerHTML = '<div class="history-row"><span>Unable to load activity</span><span>—</span><span>—</span></div>';
   }
 }
