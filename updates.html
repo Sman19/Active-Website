@@ -1,316 +1,105 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Database Updates | BMW M Archiv</title>
-
-<meta name="description"
-content="Latest BMW M Archiv database updates and improvements.">
-
-<link rel="icon" type="image/png"
-href="/carbo-insta_1080x1080%20Favicon.png">
-
+<meta name="description" content="Latest BMW M Archiv database activity and development updates.">
+<link rel="icon" type="image/png" href="/carbo-insta_1080x1080%20Favicon.png">
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #0b0e14;
-  --panel: #171c26;
-  --line: #303846;
-  --text: #f5f7fb;
-  --muted: #aab4c4;
-  --blue: #3989f7;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background:
-    radial-gradient(ellipse at 80% 0%,
-      #172b50 0%, transparent 45%),
-    var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system,
-    "Segoe UI", sans-serif;
-  line-height: 1.6;
-}
-
-a { color: inherit; }
-
-.wrap {
-  max-width: 1000px;
-  margin: auto;
-  padding: 0 24px;
-}
-
-.top {
-  border-bottom: 1px solid var(--line);
-  background: #10141bcc;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 21px 0;
-}
-
-.brand {
-  font-size: 1.2rem;
-  font-weight: 800;
-  letter-spacing: .07em;
-  text-decoration: none;
-}
-
-.back {
-  text-decoration: none;
-  color: var(--muted);
-}
-
-main { padding: 85px 0 95px; }
-
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: .2em;
-  font-size: .78rem;
-  font-weight: 800;
-  color: #8dbaff;
-}
-
-h1 {
-  font-size: clamp(2.5rem, 6vw, 4.7rem);
-  line-height: 1.08;
-  letter-spacing: -.05em;
-  margin: 15px 0 22px;
-}
-
-.intro {
-  max-width: 760px;
-  color: var(--muted);
-  font-size: 1.14rem;
-  margin-bottom: 45px;
-}
-
-.timeline {
-  border-left: 2px solid var(--line);
-  margin-left: 9px;
-  padding-left: 30px;
-}
-
-.entry {
-  position: relative;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 28px 30px;
-  margin-bottom: 24px;
-}
-
-.entry:before {
-  content: "";
-  position: absolute;
-  left: -39px;
-  top: 32px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--blue);
-  border: 3px solid var(--bg);
-}
-
-.meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.date {
-  font-size: .88rem;
-  color: var(--muted);
-}
-
-.tag {
-  font-size: .72rem;
-  text-transform: uppercase;
-  font-weight: 750;
-  color: #a5cfff;
-  background: #193657;
-  border-radius: 999px;
-  padding: 4px 10px;
-}
-
-.entry h2 {
-  font-size: 1.35rem;
-  margin: 12px 0 8px;
-}
-
-.entry p {
-  margin: 0;
-  color: var(--muted);
-}
-
-.bottom {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 28px;
-  margin-top: 35px;
-}
-
-.bottom h2 { margin: 0 0 8px; }
-.bottom p { color: var(--muted); }
-
-.button {
-  display: inline-block;
-  background: var(--blue);
-  padding: 12px 20px;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 800;
-}
-
-.button:hover { background: #2273df; }
-
-footer {
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  padding: 27px 0;
-  font-size: .88rem;
-}
-
-footer .wrap {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-@media(max-width:720px) {
-  main { padding: 55px 0 70px; }
-  .entry { padding: 23px; }
-  .timeline { padding-left: 23px; }
-  .entry:before { left: -32px; }
-}
+:root{color-scheme:dark;--bg:#0b0e14;--panel:#171c26;--line:#303846;--text:#f5f7fb;--muted:#aab4c4;--blue:#3989f7}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#172b50 0%,transparent 45%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}a{color:inherit}.wrap{max-width:1000px;margin:auto;padding:0 24px}.top{border-bottom:1px solid var(--line);background:#10141bcc}.nav{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:21px 0}.brand{font-size:1.2rem;font-weight:800;letter-spacing:.07em;text-decoration:none}.back{text-decoration:none;color:var(--muted)}main{padding:75px 0 95px}.eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:.78rem;font-weight:800;color:#8dbaff}h1{font-size:clamp(2.5rem,6vw,4.7rem);line-height:1.08;letter-spacing:-.05em;margin:15px 0 22px}.intro{max-width:760px;color:var(--muted);font-size:1.14rem;margin-bottom:38px}.section-title{font-size:1.5rem;margin:0 0 16px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}.stat-label{font-size:.85rem;color:var(--muted)}.stat-number{font-size:2rem;font-weight:800;margin:5px 0}.stat-note{font-size:.8rem;color:var(--muted)}.activity{margin-bottom:48px}.activity-status{color:var(--muted);font-size:.9rem;margin:0 0 15px}.history{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}.history-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line)}.history-row:last-child{border-bottom:0}.history-head{font-weight:700;color:var(--muted);font-size:.8rem;text-transform:uppercase}.timeline{border-left:2px solid var(--line);margin-left:9px;padding-left:30px}.entry{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px 30px;margin-bottom:24px}.entry:before{content:"";position:absolute;left:-39px;top:32px;width:14px;height:14px;border-radius:50%;background:var(--blue);border:3px solid var(--bg)}.meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.date{font-size:.88rem;color:var(--muted)}.tag{font-size:.72rem;text-transform:uppercase;font-weight:750;color:#a5cfff;background:#193657;border-radius:999px;padding:4px 10px}.entry h3{font-size:1.35rem;margin:12px 0 8px}.entry p{margin:0;color:var(--muted)}.bottom{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px;margin-top:35px}.bottom h2{margin:0 0 8px}.bottom p{color:var(--muted)}.button{display:inline-block;background:var(--blue);padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:800}.button:hover{background:#2273df}footer{border-top:1px solid var(--line);color:var(--muted);padding:27px 0;font-size:.88rem}footer .wrap{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}@media(max-width:720px){main{padding:55px 0 70px}.stats{grid-template-columns:1fr}.entry{padding:23px}.timeline{padding-left:23px}.entry:before{left:-32px}.history-row{padding:13px;gap:6px;font-size:.85rem}.nav{flex-wrap:wrap}}
 </style>
 </head>
-
 <body>
-
-<header class="top">
-  <div class="wrap nav">
-    <a class="brand" href="/">BMW M ARCHIV</a>
-    <a class="back" href="/">
-      &larr; Back to Database
-    </a>
-  </div>
-</header>
-
+<header class="top"><div class="wrap nav"><a class="brand" href="/">BMW M ARCHIV</a><a class="back" href="/">&larr; Back to Database</a></div></header>
 <main class="wrap">
-
-  <div class="eyebrow">
-    Independent Automotive Archive
-  </div>
-
-  <h1>Database Updates.</h1>
-
-  <p class="intro">
-    Explore the latest additions, improvements,
-    and milestones as BMW M Archiv continues to grow.
-  </p>
-
-  <div class="timeline">
-
-    <!--
-    ADD NEW UPDATES ABOVE THE FIRST ARTICLE.
-    Copy an article block and edit its content.
-    -->
-
-    <article class="entry">
-      <div class="meta">
-        <span class="date">November 2026</span>
-        <span class="tag">New Feature</span>
-      </div>
-
-      <h2>G8x M3 Vehicle Details</h2>
-
-      <p>
-        Expanded individual vehicle pages with factory
-        specifications, option information, and MSRP
-        calculation functionality.
-      </p>
-    </article>
-
-    <article class="entry">
-      <div class="meta">
-        <span class="date">November 2026</span>
-        <span class="tag">Database</span>
-      </div>
-
-      <h2>Model-Year MSRP References</h2>
-
-      <p>
-        Added MSRP reference values by model year
-        and model code for supported G8x M3
-        configurations.
-      </p>
-    </article>
-
-    <article class="entry">
-      <div class="meta">
-        <span class="date">October 2026</span>
-        <span class="tag">Improvement</span>
-      </div>
-
-      <h2>Vehicle Records and Color Refinements</h2>
-
-      <p>
-        Updated G8x vehicle data, Individual paint
-        names, and exterior color filtering.
-      </p>
-    </article>
-
-    <article class="entry">
-      <div class="meta">
-        <span class="date">October 2026</span>
-        <span class="tag">New Feature</span>
-      </div>
-
-      <h2>Notes and All-Years Filtering</h2>
-
-      <p>
-        Added vehicle notes and an all-years
-        browsing filter.
-      </p>
-    </article>
-
-  </div>
-
-  <section class="bottom">
-    <h2>Explore the Archive</h2>
-
-    <p>
-      Discover BMW M vehicle production information
-      and factory configurations.
-    </p>
-
-    <a class="button" href="/">
-      Return to Database &nearr;
-    </a>
-  </section>
-
+<div class="eyebrow">Independent Automotive Archive</div>
+<h1>Database Updates.</h1>
+<p class="intro">Explore the latest additions, database activity, and development milestones as BMW M Archiv continues to grow.</p>
+<section class="activity" aria-labelledby="activityTitle">
+<h2 class="section-title" id="activityTitle">Live Database Activity</h2>
+<div class="stats">
+<div class="stat"><div class="stat-label">Vehicles added this month</div><div class="stat-number" id="addedCount">—</div><div class="stat-note" id="currentMonthLabel">Loading…</div></div>
+<div class="stat"><div class="stat-label">Record updates this month</div><div class="stat-number" id="updatedCount">—</div><div class="stat-note">Counts edits, not unique vehicles</div></div>
+<div class="stat"><div class="stat-label">Last recorded activity</div><div class="stat-number" id="lastActivity" style="font-size:1.12rem;margin-top:16px">—</div><div class="stat-note">Tracking started November 2026</div></div>
+</div>
+<p class="activity-status" id="activityStatus" role="status">Loading database activity…</p>
+<div class="history" aria-label="Monthly database activity">
+<div class="history-row history-head"><span>Month</span><span>Vehicles added</span><span>Record updates</span></div>
+<div id="historyRows"><div class="history-row"><span>Loading…</span><span>—</span><span>—</span></div></div>
+</div>
+</section>
+<section aria-labelledby="developmentTitle">
+<h2 class="section-title" id="developmentTitle">Development Updates</h2>
+<div class="timeline">
+<!-- Manually add major website announcements here, newest first. -->
+<article class="entry"><div class="meta"><span class="date">November 2026</span><span class="tag">New Feature</span></div><h3>G8x M3 Vehicle Details</h3><p>Expanded individual vehicle pages with factory specifications, option information, and MSRP calculation functionality.</p></article>
+<article class="entry"><div class="meta"><span class="date">November 2026</span><span class="tag">Database</span></div><h3>Model-Year MSRP References</h3><p>Added MSRP reference values by model year and model code for supported G8x M3 configurations.</p></article>
+<article class="entry"><div class="meta"><span class="date">October 2026</span><span class="tag">Improvement</span></div><h3>Vehicle Records and Color Refinements</h3><p>Updated G8x vehicle data, Individual paint names, and exterior color filtering.</p></article>
+<article class="entry"><div class="meta"><span class="date">October 2026</span><span class="tag">New Feature</span></div><h3>Notes and All-Years Filtering</h3><p>Added vehicle notes and an all-years browsing filter.</p></article>
+</div>
+</section>
+<section class="bottom"><h2>Explore the Archive</h2><p>Discover BMW M vehicle production information and factory configurations.</p><a class="button" href="/">Return to Database &nearr;</a></section>
 </main>
+<footer><div class="wrap"><span>&copy; BMW M Archiv</span><a href="/">Return to the archive</a></div></footer>
+<script>
+// Enter your public Supabase project URL and publishable/anon key below.
+// NEVER put a service_role or secret key in a public HTML file.
+const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
 
-<footer>
-  <div class="wrap">
-    <span>&copy; BMW M Archiv</span>
-    <a href="/">Return to the archive</a>
-  </div>
-</footer>
-
+async function loadActivity() {
+  const status = document.getElementById('activityStatus');
+  const history = document.getElementById('historyRows');
+  const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const now = new Date();
+  const currentMonth = now.toISOString().slice(0, 7);
+  document.getElementById('currentMonthLabel').textContent = formatter.format(new Date(currentMonth + '-01T00:00:00Z'));
+  if (SUPABASE_URL.includes('YOUR_') || SUPABASE_ANON_KEY.includes('YOUR_')) {
+    status.textContent = 'Database connection not configured yet.';
+    history.innerHTML = '<div class="history-row"><span>Awaiting connection</span><span>—</span><span>—</span></div>';
+    return;
+  }
+  try {
+    const response = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/public_database_activity_monthly', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: '{}'
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const rows = await response.json();
+    if (!Array.isArray(rows)) throw new Error('Unexpected response');
+    const current = rows.find(r => String(r.month).slice(0, 7) === currentMonth);
+    document.getElementById('addedCount').textContent = Number(current?.vehicles_added || 0).toLocaleString();
+    document.getElementById('updatedCount').textContent = Number(current?.records_updated || 0).toLocaleString();
+    const latest = rows.reduce((max, r) => r.last_activity && (!max || r.last_activity > max) ? r.last_activity : max, null);
+    document.getElementById('lastActivity').textContent = latest ? new Date(latest).toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}) : 'No activity yet';
+    status.textContent = rows.length ? 'Activity is updated automatically as vehicle records change.' : 'Tracking is active. No vehicle changes have been recorded yet.';
+    history.replaceChildren();
+    if (!rows.length) {
+      const empty = document.createElement('div'); empty.className = 'history-row'; empty.textContent = 'No recorded activity yet.'; history.appendChild(empty);
+    }
+    for (const row of rows) {
+      const line = document.createElement('div'); line.className = 'history-row';
+      const month = document.createElement('span');
+      const added = document.createElement('span');
+      const updated = document.createElement('span');
+      month.textContent = formatter.format(new Date(String(row.month).slice(0,10) + 'T00:00:00Z'));
+      added.textContent = Number(row.vehicles_added || 0).toLocaleString();
+      updated.textContent = Number(row.records_updated || 0).toLocaleString();
+      line.append(month, added, updated); history.appendChild(line);
+    }
+  } catch (error) {
+    console.error('Database activity:', error);
+    status.textContent = 'Database activity is temporarily unavailable. Please try again later.';
+    history.innerHTML = '<div class="history-row"><span>Unable to load activity</span><span>—</span><span>—</span></div>';
+  }
+}
+loadActivity();
+</script>
 </body>
 </html>
