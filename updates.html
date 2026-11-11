@@ -38,8 +38,8 @@
 <!-- Manually add major website announcements here, newest first. -->
 <article class="entry"><div class="meta"><span class="date">November 2026</span><span class="tag">Database</span></div><h3>33AY, 43AY &amp; 53AY — Model-Year MSRP References</h3><p>Added base MSRP references by model year and model code for the G8x M3 lineup, covering 2021–2024 where applicable. This improves the accuracy of factory pricing information across supported configurations.</p></article>
 <article class="entry"><div class="meta"><span class="date">November 2026</span><span class="tag">New Feature</span></div><h3>G8x M3 Vehicle Details</h3><p>Expanded individual vehicle pages with factory specifications, option information, and MSRP calculation functionality, including development work on 43AY pricing and option packages.</p></article>
-<article class="entry"><div class="meta"><span class="date">Early November 2026</span><span class="tag">Database</span></div><h3>43AY Database Completed</h3><p>Completed the 43AY vehicle dataset, including record imports, replacements, and follow-up reviews of factory configuration and paint information.</p></article>
-<article class="entry"><div class="meta"><span class="date">October 2026</span><span class="tag">Database</span></div><h3>33AY &amp; 53AY Databases Completed</h3><p>Completed the 33AY and 53AY vehicle datasets, establishing their vehicle records and factory configuration information in the archive.</p></article>
+
+<article class="entry"><div class="meta"><span class="date">October 2026</span><span class="tag">Database</span></div><h3>G80 M3 Database — 15,799 Vehicle Records</h3><p>33AY — G80 M3 Competition RWD: 3,675 records.<br>43AY — G80 M3 Competition xDrive: 8,785 records.<br>53AY — G80 M3 6-Speed Manual: 3,339 records.</p></article>
 <article class="entry"><div class="meta"><span class="date">October 2026</span><span class="tag">Improvement</span></div><h3>Individual Paint &amp; Interior Data Refinements</h3><p>Standardized Individual exterior paint naming, refined color records and filtering, and maintained interior color codes across the G8x database.</p></article>
 <article class="entry"><div class="meta"><span class="date">October 2026</span><span class="tag">New Feature</span></div><h3>Notes and All-Years Filtering</h3><p>Added vehicle notes and an all-years browsing filter.</p></article>
 </div>
@@ -54,6 +54,8 @@ const SUPABASE_URL = "https://qaikzwqdjdxkhhzscish.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH";
 
 const TRACKING_START_MONTH = '2026-11';
+const HISTORICAL_ADDITIONS = {'2026-10': 15799};
+const HISTORICAL_BREAKDOWN = '33AY — G80 M3 Competition RWD: 3,675 · 43AY — G80 M3 Competition xDrive: 8,785 · 53AY — G80 M3 6-Speed Manual: 3,339';
 const formatter = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone:'UTC'});
 const select = document.getElementById('monthSelect');
 const status = document.getElementById('activityStatus');
@@ -78,11 +80,11 @@ function renderActivity() {
   const beforeTracking = selected < TRACKING_START_MONTH;
   const row = activityRows.find(r => String(r.month).slice(0,7) === selected);
   document.getElementById('currentMonthLabel').textContent = month.label;
-  document.getElementById('addedCount').textContent = beforeTracking ? '—' : Number(row?.vehicles_added || 0).toLocaleString();
+  document.getElementById('addedCount').textContent = Object.hasOwn(HISTORICAL_ADDITIONS, selected) ? HISTORICAL_ADDITIONS[selected].toLocaleString() : beforeTracking ? '—' : Number(row?.vehicles_added || 0).toLocaleString();
   document.getElementById('updatedCount').textContent = beforeTracking ? '—' : Number(row?.records_updated || 0).toLocaleString();
   if (activityLoaded) {
     status.textContent = beforeTracking
-      ? 'Historical change tracking was not available before November 2026.'
+      ? (Object.hasOwn(HISTORICAL_ADDITIONS, selected) ? 'Historical vehicle additions from October 2026 records. ' + HISTORICAL_BREAKDOWN + '. Historical edits were not tracked.' : 'Historical change tracking was not available before November 2026.')
       : row ? 'Activity is updated automatically as vehicle records change.'
       : 'No recorded vehicle changes for ' + month.label + '.';
   }
@@ -96,7 +98,7 @@ function renderActivity() {
     const added = document.createElement('span');
     const updated = document.createElement('span');
     name.textContent = m.label;
-    added.textContent = unavailable ? 'Not tracked' : Number(record?.vehicles_added || 0).toLocaleString();
+    added.textContent = Object.hasOwn(HISTORICAL_ADDITIONS, m.key) ? HISTORICAL_ADDITIONS[m.key].toLocaleString() : unavailable ? 'Not tracked' : Number(record?.vehicles_added || 0).toLocaleString();
     updated.textContent = unavailable ? 'Not tracked' : Number(record?.records_updated || 0).toLocaleString();
     line.append(name, added, updated);
     history.appendChild(line);
