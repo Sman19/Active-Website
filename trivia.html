@@ -19,14 +19,14 @@
 <main class="wrap">
 <div class="eyebrow">BMW M Archiv · Community Challenge</div><h1>Weekly M Trivia.</h1>
 <p class="intro">Five questions about BMW M history. New rounds open Mondays at 9:00 AM and close Fridays at 12:00 PM (noon) Central Time. Earn points toward the monthly Community Spotlight.</p>
-<div class="metrics"><div class="metric"><strong>5</strong><span>Questions per week</span></div><div class="metric"><strong>125</strong><span>Maximum weekly points</span></div><div class="metric"><strong id="weekLabel">—</strong><span>Current challenge week</span></div></div>
+<div class="metrics"><div class="metric"><strong>5</strong><span>Questions per week</span></div><div class="metric"><strong>150</strong><span>Maximum weekly points</span></div><div class="metric"><strong id="weekLabel">—</strong><span>Current challenge week</span></div></div>
 <div class="grid">
 <section class="panel" aria-labelledby="challengeTitle"><span class="pill" id="roundTag">Checking round</span><h2 id="challengeTitle" style="margin-top:12px">This week's challenge</h2><p class="status" id="scheduleText">Checking Central Time schedule…</p>
 <div id="closed"><p id="closedMessage">Checking for this week’s challenge…</p><div class="actions"><button class="btn" id="enrollBtn" type="button" hidden>Enroll for this month</button><a class="btn secondary" id="loginLink" href="/" hidden style="text-decoration:none">Sign in to participate</a><button class="btn secondary" id="refreshBtn" type="button">Refresh status</button></div></div>
-<div id="welcome" aria-labelledby="welcomeTitle"><div class="eyebrow">You are eligible to play</div><h2 id="welcomeTitle" style="margin-top:12px">Ready for the Challenge?</h2><p>Five BMW M history questions. One submission per round. Your answers count toward the monthly leaderboard.</p><div class="metrics" style="margin:18px 0"><div class="metric"><strong>+20</strong><span>Correct answer</span></div><div class="metric"><strong>−10</strong><span>Wrong answer</span></div><div class="metric"><strong>+25</strong><span>Perfect round bonus</span></div></div><p class="status">Answer all five questions before submitting. You cannot change your answers after submission.</p><div class="actions"><button class="btn" id="startBtn" type="button">Start Challenge →</button></div></div>
- <div id="quiz"><div class="actions"><span id="questionCount">Question 1 of 5</span><span class="pill">+20 correct / −10 wrong or missed</span></div><div class="progress"><div id="progressBar"></div></div><div class="question" id="questionText"></div><div class="options" id="options"></div><div class="actions"><span class="status" id="selectionStatus">Choose one answer.</span><button class="btn" id="nextBtn" disabled>Next question</button></div></div>
+<div id="welcome" aria-labelledby="welcomeTitle"><div class="eyebrow">You are eligible to play</div><h2 id="welcomeTitle" style="margin-top:12px">Ready for the Challenge?</h2><p>Five BMW M history questions. One submission per round. Your answers count toward the monthly leaderboard.</p><div class="metrics" style="margin:18px 0"><div class="metric"><strong>+25</strong><span>Correct within 10 sec</span></div><div class="metric"><strong>−10</strong><span>Wrong / timeout</span></div><div class="metric"><strong>+25</strong><span>Perfect round bonus</span></div></div><p class="status">Each question has 30 seconds. Your answer is locked when selected. Refreshing will not restart the timer.</p><div class="actions"><button class="btn" id="startBtn" type="button">Start Challenge →</button></div></div>
+ <div id="quiz"><div class="actions"><span id="questionCount">Question 1 of 5</span><span class="pill" id="timerDisplay" role="timer">30 seconds</span></div><div class="progress"><div id="progressBar"></div></div><div class="question" id="questionText"></div><div class="options" id="options"></div><div class="actions"><span class="status" id="selectionStatus">Choose one answer.</span></div></div>
 <div id="result" aria-live="polite"><h3 id="resultTitle">Round submitted</h3><p id="resultText"></p></div>
-<p class="notice" id="apiNotice">Official answers and scoring are handled by the server. One submission per round. Unanswered questions receive −10 points.</p><p class="status" id="apiStatus" role="status" aria-live="polite"></p></section>
+<p class="notice" id="apiNotice">Official answers and scoring are handled by the server. One submission per round. Each question has a server-validated 30-second limit.</p><p class="status" id="apiStatus" role="status" aria-live="polite"></p></section>
 <aside><section class="panel" style="margin-top:24px"><h2>Monthly leaderboard</h2><p class="subtle" id="monthLabel">—</p><div class="spotlight"><strong>Top 3 usernames</strong><div id="leaderboard"><p class="subtle">Leaderboard will appear after the public Top 3 endpoint is connected.</p></div><p class="notice">Only the top three usernames and their scores will be public.</p></div></section>
 <section class="panel"><h2>Community Spotlight</h2><p>Each month's top eligible player gets the opportunity to feature a photo of their BMW on BMW M Archiv.</p><div class="spotlight"><strong>Featured BMW of the Month</strong><p class="subtle">Winner's approved car photo, model, year, and story will appear here.</p></div><p class="notice">One scored attempt per weekly round. Tie-break rules will be published before prizes are offered. Photo submissions require permission to publish and moderator approval.</p></section></aside>
 </div>
@@ -37,9 +37,9 @@
   <div id="winnerFormWrap">
     <p>Submit one photo of your BMW for the Community Spotlight. Your photo will be reviewed before publication.</p>
     <form id="winnerForm" class="winner-fields">
-      <label for="winnerYear">Model year<input id="winnerYear" type="number" min="1920" max="2100" required placeholder="e.g. 2011"></label>
-      <label for="winnerModel">BMW model<input id="winnerModel" type="text" maxlength="100" required placeholder="e.g. M3 Sedan"></label>
-      <label for="winnerStory">Your BMW story (optional)<textarea id="winnerStory" maxlength="1000" placeholder="Tell us about your BMW"></textarea></label>
+      <label for="winnerYear">Model year<input id="winnerYear" type="number" min="1970" max="2100" required placeholder="e.g. 2011"></label>
+      <label for="winnerModel">BMW model<input id="winnerModel" type="text" maxlength="80" required placeholder="e.g. M3 Sedan"></label>
+      <label for="winnerStory">Your BMW story (optional)<textarea id="winnerStory" maxlength="500" placeholder="Tell us about your BMW"></textarea></label>
       <label for="winnerPhoto">Photo (JPG, PNG, or WebP, maximum 3 MB)<input id="winnerPhoto" type="file" accept="image/jpeg,image/png,image/webp" required></label>
       <img id="winnerPreview" alt="Preview of your selected BMW photo">
       <button class="btn" id="winnerSubmit" type="submit">Submit Photo for Approval</button>
@@ -49,8 +49,8 @@
 </section>
 <section class="panel" aria-labelledby="rulesTitle"><h2 id="rulesTitle">Official Rules &amp; Scoring</h2>
 <p><strong>Schedule:</strong> Each round opens Monday at 9:00 AM and closes Friday at 12:00 PM (noon), Central Time (America/Chicago). Five BMW M history questions are published per round.</p>
-<p><strong>Current live scoring:</strong> +20 points per correct answer, −10 points per incorrect answer, and +25 bonus points for answering all five correctly. Maximum: 125 points per round. Each enrolled member may submit one completed attempt per round. Answers cannot be changed after submission.</p>
-<p><strong>Speed scoring — coming soon:</strong> Once the timed system is activated, each question will have a 30-second limit. Correct within 10 seconds: +25; over 10 through 20 seconds: +20; over 20 through 30 seconds: +15; incorrect or unanswered: −10. Five correct answers earn an additional +25 bonus. Maximum: 150 points. The timer and points will be validated by the server. Until activation, the current live scoring above applies.</p>
+<p><strong>Timed scoring:</strong> Correct within 10 seconds: +25; over 10 through 20 seconds: +20; over 20 through 30 seconds: +15. Wrong or timed-out answers: −10. Five correct answers earn +25 bonus (maximum 150). Answers are locked immediately and times are recorded on the server.</p>
+
 <p><strong>Enrollment:</strong> Sign in and enroll for the month before a round opens to be eligible for that round. New participants are not penalized for rounds that opened before their enrollment. Enrolled eligible members who miss a round may receive missed-question penalties.</p>
 <p><strong>Monthly leaderboard:</strong> Weekly points accumulate within the Central Time calendar month. Negative totals are possible. Only the top three usernames and scores are displayed publicly. After the final Friday round closes, the monthly champion can submit one BMW photo for the Community Spotlight. The winner receives an in-site notification when signed in. Photos require administrator approval before publication. Tie-break rules and any prize terms will be published before awards are offered.</p>
 <p class="notice">A browser cannot reliably prevent looking up answers on another device. The competition uses authenticated accounts, private answer keys, server-side scoring, and one attempt per round to discourage abuse.</p></section>
@@ -66,6 +66,8 @@ let round = null;
 let questionIndex = 0;
 let selections = Array(5).fill(null);
 let sending = false;
+let timerHandle = null;
+let activeStep = null;
 const centralMonth = new Intl.DateTimeFormat('en-US', {timeZone:'America/Chicago',month:'long',year:'numeric'});
 $('monthLabel').textContent = centralMonth.format(new Date());
 $('scheduleText').textContent = 'Rounds open Mondays at 9:00 AM and close Fridays at noon, America/Chicago time.';
@@ -75,6 +77,7 @@ function message(text, isError=false) {
   $('apiStatus').className = isError ? 'status error' : 'status';
 }
 function showClosed(text, tag='Round status') {
+  stopClock();activeStep=null;
   $('closed').style.display='block'; $('welcome').style.display='none'; $('quiz').style.display='none'; $('result').style.display='none';
   $('closedMessage').textContent=text; $('roundTag').textContent=tag;
   $('enrollBtn').hidden=true; $('loginLink').hidden=Boolean(clerk?.user);
@@ -110,6 +113,7 @@ async function api(action, data={}) {
   return payload;
 }
 function showResult(result, prior=false) {
+  stopClock();activeStep=null;
   $('closed').style.display='none';$('welcome').style.display='none';$('quiz').style.display='none';$('result').style.display='block';
   $('roundTag').textContent='Round complete';
   $('resultTitle').textContent=prior?'You already completed this round':'Your answers were submitted';
@@ -119,31 +123,60 @@ function showResult(result, prior=false) {
     ? `${correct} of 5 correct · ${score} points for this round.`
     : 'Your submission was received. The score is not available yet.';
 }
-function displayQuestion() {
-  if(!round || !Array.isArray(round.questions)) return;
-  const q=round.questions[questionIndex];
-  $('questionCount').textContent=`Question ${questionIndex+1} of 5`;
-  $('progressBar').style.width=`${(questionIndex/5)*100}%`;
+function stopClock() { if (timerHandle !== null) clearInterval(timerHandle); timerHandle = null; }
+function showTimedStep(step) {
+  stopClock();
+  if (!step) { message('Missing timed response',true); return; }
+  if (step.state === 'complete') {
+    activeStep = null;
+    showResult({score:step.score, correct_count:step.correct_count});
+    message('Your timed round has been saved.');
+    return;
+  }
+  activeStep = step;
+  questionIndex = step.question_number - 1;
+  const q = round?.questions?.[questionIndex];
+  if (!q) {showClosed('Question unavailable','Error'); return;}
+  $('welcome').style.display='none'; $('closed').style.display='none';
+  $('quiz').style.display='block'; $('roundTag').textContent='Timed challenge in progress';
+  $('questionCount').textContent=`Question ${step.question_number} of 5`;
+  $('progressBar').style.width=`${questionIndex*20}%`;
   $('questionText').textContent=q.prompt;
+  $('selectionStatus').textContent='Choose an answer before time expires.';
   $('options').replaceChildren();
-  // API options may be an array of strings, or an object keyed by answer labels.
-  const choices=Array.isArray(q.options) ? q.options :
-    (q.options && typeof q.options==='object' ? Object.values(q.options) : []);
-  if(choices.length!==4) {showClosed('The question format needs administrator attention.','Unavailable');return;}
+  const choices=Array.isArray(q.options) ? q.options : Object.values(q.options || {});
+  if(choices.length!==4){showClosed('Invalid question format','Unavailable');return;}
   choices.forEach((choice,i)=>{
-    const button=document.createElement('button');button.type='button';button.className='option';
-    button.textContent=`${String.fromCharCode(65+i)}. ${String(choice)}`;
-    button.setAttribute('aria-pressed',String(selections[questionIndex]===i));
-    button.onclick=()=>{
-      selections[questionIndex]=i;
-      [...$('options').children].forEach((b,j)=>b.setAttribute('aria-pressed',String(j===i)));
-      $('selectionStatus').textContent='Answer selected.';
-    };
-    $('options').appendChild(button);
+    const btn=document.createElement('button');btn.type='button';btn.className='option';
+    btn.textContent=`${String.fromCharCode(65+i)}. ${String(choice)}`;
+    btn.onclick=()=>sendTimedAnswer(i);
+    $('options').appendChild(btn);
   });
-  $('selectionStatus').textContent=selections[questionIndex]===null?'You may skip this question.':'Answer selected.';
-  $('nextBtn').disabled=false;
-  $('nextBtn').textContent=questionIndex===4?'Submit five answers':'Next question';
+  const deadline=Date.parse(step.deadline_at);
+  const tick=()=>{
+    if(!activeStep || activeStep.question_number!==step.question_number) return;
+    const remaining=Math.max(0,(deadline-Date.now())/1000);
+    $('timerDisplay').textContent=`${Math.ceil(remaining)} seconds`;
+    if(remaining<=0){stopClock();sendTimedAnswer(null);}
+  };
+  tick();
+  if(activeStep && !sending) timerHandle=setInterval(tick,150);
+}
+async function sendTimedAnswer(selected) {
+  if(sending || !round || !activeStep) return;
+  sending=true;stopClock();
+  [...$('options').children].forEach(b=>b.disabled=true);
+  $('selectionStatus').textContent=selected===null?'Time expired. Saving…':'Saving answer…';
+  try {
+    const data=await api('timed_step',{week_id:round.week_id,selected,question_number:activeStep.question_number});
+    sending=false;showTimedStep(data.step);
+  } catch(err) {
+    sending=false;message(err.message,true);
+    // Do not restart the clock: server deadlines remain authoritative.
+    $('selectionStatus').textContent='Connection issue. Click Resume Challenge to recover.';
+    $('welcome').style.display='block';$('quiz').style.display='none';
+    $('startBtn').textContent='Resume Challenge';
+  }
 }
 async function loadRound() {
   message('');
@@ -156,20 +189,23 @@ async function loadRound() {
     if(data.submitted) {showResult(data.result,true);return;}
     if(!data.eligible) {showClosed(data.message||'Enroll before the next round opens.','Enrollment required');$('enrollBtn').hidden=false;return;}
     if(!Array.isArray(data.questions)||data.questions.length!==5) {showClosed('The five questions are not available yet.','Unavailable');return;}
-    round=data;questionIndex=0;selections=Array(5).fill(null);
+    stopClock();activeStep=null;round=data;questionIndex=0;selections=Array(5).fill(null);
+    $('startBtn').textContent='Start / Resume Challenge';
     $('weekLabel').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',month:'short',day:'numeric'}).format(new Date(data.closes_at));
     $('roundTag').textContent='Ready to start';$('closed').style.display='none';$('result').style.display='none';$('quiz').style.display='none';$('welcome').style.display='block';
   } catch(err) {showClosed('Unable to load trivia right now.','Connection issue');message(err.message,true);}
   finally {$('refreshBtn').disabled=false;}
 }
-$('startBtn').onclick=()=>{
-   if(!round || !Array.isArray(round.questions) || round.questions.length!==5) return;
-   $('welcome').style.display='none';
-   $('quiz').style.display='block';
-   $('roundTag').textContent='Challenge in progress';
-   displayQuestion();
- };
- $('refreshBtn').onclick=loadRound;
+$('startBtn').onclick=async()=>{
+  if(sending || !round) return;
+  sending=true;$('startBtn').disabled=true;message('Starting or resuming timed challenge…');
+  try {
+    const data=await api('timed_step',{week_id:round.week_id});
+    sending=false;message('');showTimedStep(data.step);
+  } catch(err){sending=false;message(err.message,true);}
+  finally{$('startBtn').disabled=false;}
+};
+$('refreshBtn').onclick=loadRound;
 $('enrollBtn').onclick=async()=>{
   $('enrollBtn').disabled=true;
   try {
@@ -178,20 +214,6 @@ $('enrollBtn').onclick=async()=>{
     await loadRound();
   } catch(err) {message(err.message,true);} finally {$('enrollBtn').disabled=false;}
 };
-$('nextBtn').onclick=async()=>{
-  if(sending || !round)return;
-  if(questionIndex<4) {questionIndex++;displayQuestion();return;}
-  const skipped=selections.filter(x=>x===null).length;
-  if(!confirm(`Submit your answers? ${skipped} unanswered question(s) will count as missed. You cannot change answers afterward.`))return;
-  // The current API requires integers 0–3; it does not accept nulls for missed answers.
-  // Never silently turn a skipped answer into a guess.
-  if(skipped) {message('The scoring API does not yet accept skipped answers. Please select an answer for each question before submitting.',true);return;}
-  sending=true;$('nextBtn').disabled=true;message('Submitting securely…');
-  try {const data=await api('submit',{week_id:round.week_id,answers:selections});showResult(data.result);message('');}
-  catch(err){message(err.message,true);$('nextBtn').disabled=false;}
-  finally {sending=false;}
-};
-
 // Winner notification is shown to the signed-in champion when visiting Trivia.
 // This does not send an email or push notification.
 let championMonth = null;
