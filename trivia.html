@@ -13,7 +13,7 @@
 <header class="top"><div class="wrap nav"><a class="brand" href="/">BMW M ARCHIV</a><a class="back" href="/">&larr; Back to Database</a></div></header>
 <main class="wrap">
 <div class="eyebrow">BMW M Archiv · Community Challenge</div><h1>Weekly M Trivia.</h1>
-<p class="intro">Five questions about BMW M history. New rounds open Mondays at 9:00 AM and close Tuesdays at 12:00 PM (noon) Central Time. Earn points toward the monthly Community Spotlight.</p>
+<p class="intro">Five questions about BMW M history. New rounds open Mondays at 9:00 AM and close Fridays at 12:00 PM (noon) Central Time. Earn points toward the monthly Community Spotlight.</p>
 <div class="metrics"><div class="metric"><strong>5</strong><span>Questions per week</span></div><div class="metric"><strong>125</strong><span>Maximum weekly points</span></div><div class="metric"><strong id="weekLabel">—</strong><span>Current challenge week</span></div></div>
 <div class="grid">
 <section class="panel" aria-labelledby="challengeTitle"><span class="pill" id="roundTag">Checking round</span><h2 id="challengeTitle" style="margin-top:12px">This week's challenge</h2><p class="status" id="scheduleText">Checking Central Time schedule…</p>
@@ -24,7 +24,13 @@
 <aside><section class="panel" style="margin-top:24px"><h2>Monthly leaderboard</h2><p class="subtle" id="monthLabel">—</p><div class="spotlight"><strong>Top 3 usernames</strong><div id="leaderboard"><p class="subtle">Leaderboard will appear after the public Top 3 endpoint is connected.</p></div><p class="notice">Only the top three usernames and their scores will be public.</p></div></section>
 <section class="panel"><h2>Community Spotlight</h2><p>Each month's top eligible player gets the opportunity to feature a photo of their BMW on BMW M Archiv.</p><div class="spotlight"><strong>Featured BMW of the Month</strong><p class="subtle">Winner's approved car photo, model, year, and story will appear here.</p></div><p class="notice">One scored attempt per weekly round. Tie-break rules will be published before prizes are offered. Photo submissions require permission to publish and moderator approval.</p></section></aside>
 </div>
-<section class="panel"><h2>How the challenge works</h2><p>Five new historical questions open every Monday at 9:00 AM and close the following Tuesday at 12:00 PM (noon), using <strong>America/Chicago</strong> time. Each correct answer earns 20 points; each wrong or missed answer costs 10 points; answering all five correctly earns a 25-point bonus. Weekly points add up within each calendar month. The highest-ranked eligible player wins that month's Community Spotlight opportunity. Only the top three usernames and scores appear on the public leaderboard. Missed-week penalties apply only to registered players eligible for that round. A verified account, server-side grading, and official contest rules will be required before prizes are offered.</p></section>
+<section class="panel" aria-labelledby="rulesTitle"><h2 id="rulesTitle">Official Rules &amp; Scoring</h2>
+<p><strong>Schedule:</strong> Each round opens Monday at 9:00 AM and closes Friday at 12:00 PM (noon), Central Time (America/Chicago). Five BMW M history questions are published per round.</p>
+<p><strong>Current live scoring:</strong> +20 points per correct answer, −10 points per incorrect answer, and +25 bonus points for answering all five correctly. Maximum: 125 points per round. Each enrolled member may submit one completed attempt per round. Answers cannot be changed after submission.</p>
+<p><strong>Speed scoring — coming soon:</strong> Once the timed system is activated, each question will have a 30-second limit. Correct within 10 seconds: +25; over 10 through 20 seconds: +20; over 20 through 30 seconds: +15; incorrect or unanswered: −10. Five correct answers earn an additional +25 bonus. Maximum: 150 points. The timer and points will be validated by the server. Until activation, the current live scoring above applies.</p>
+<p><strong>Enrollment:</strong> Sign in and enroll for the month before a round opens to be eligible for that round. New participants are not penalized for rounds that opened before their enrollment. Enrolled eligible members who miss a round may receive missed-question penalties.</p>
+<p><strong>Monthly leaderboard:</strong> Weekly points accumulate within the Central Time calendar month. Negative totals are possible. Only the top three usernames and scores are displayed publicly. The highest-ranked eligible member may be invited to submit a BMW photo for the Community Spotlight, subject to permission and moderation. Tie-break rules and any prize terms will be published before awards are offered.</p>
+<p class="notice">A browser cannot reliably prevent looking up answers on another device. The competition uses authenticated accounts, private answer keys, server-side scoring, and one attempt per round to discourage abuse.</p></section>
 </main><footer><div class="wrap">&copy; BMW M Archiv · Independent enthusiast project</div></footer>
 <script>
 'use strict';
@@ -39,7 +45,7 @@ let selections = Array(5).fill(null);
 let sending = false;
 const centralMonth = new Intl.DateTimeFormat('en-US', {timeZone:'America/Chicago',month:'long',year:'numeric'});
 $('monthLabel').textContent = centralMonth.format(new Date());
-$('scheduleText').textContent = 'Rounds open Mondays at 9:00 AM and close Tuesdays at noon, America/Chicago time.';
+$('scheduleText').textContent = 'Rounds open Mondays at 9:00 AM and close Fridays at noon, America/Chicago time.';
 $('loginLink').href = '/?redirect_url=' + encodeURIComponent(location.href);
 function message(text, isError=false) {
   $('apiStatus').textContent = text;
