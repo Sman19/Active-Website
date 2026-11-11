@@ -1328,6 +1328,22 @@
     .youtube-intro iframe { position:absolute; top:50%; left:50%; width:max(100%,177.78vh); height:max(100%,56.25vw); transform:translate(-50%,-50%); border:0; pointer-events:none; }
     .hero > .youtube-intro-play { position:absolute; z-index:5; bottom:26px; right:24px; padding:13px 19px; border:1px solid #fff8; border-radius:999px; background:#161b24e8; color:#fff; font-weight:700; cursor:pointer; }
     .hero > .youtube-intro[hidden], .hero > .youtube-intro-play[hidden] { display:none!important; }
+
+    /* BMW M Archiv monthly trivia leaderboard */
+    .trivia-home-card{margin-top:22px;padding:24px;border-radius:18px;background:linear-gradient(115deg,#171d2a,#263449);color:#f5f7fb;border:1px solid #354459;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+    .trivia-home-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+    .trivia-home-kicker{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#9dc4ff;font-weight:800}
+    .trivia-home-title{font-size:24px;margin:6px 0 5px;font-weight:800}
+    .trivia-home-desc{font-size:14px;color:#c0ccdd;line-height:1.5}
+    .trivia-home-link{background:#1f73ff;color:#fff;text-decoration:none;font-size:14px;font-weight:800;padding:11px 17px;border-radius:10px;white-space:nowrap}
+    .trivia-home-link:hover{background:#165fd3}
+    .trivia-home-standings{margin-top:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .trivia-home-player{border:1px solid #415069;background:#202a3a;border-radius:12px;padding:14px;min-width:0}
+    .trivia-home-rank{font-size:12px;color:#aebed4;font-weight:800;margin-bottom:7px}
+    .trivia-home-name{font-size:16px;font-weight:800;overflow-wrap:anywhere}
+    .trivia-home-score{font-size:14px;color:#a9d0ff;margin-top:4px}
+    .trivia-home-status{font-size:13px;color:#b6c4d7;margin-top:14px}
+    @media(max-width:760px){.trivia-home-standings{grid-template-columns:1fr}.trivia-home-card{padding:19px}}
   </style>
 
   <style>
@@ -1511,6 +1527,7 @@
           </div>
         </div>        
         <a href="/updates.html">Database Updates</a>
+        <a href="/trivia.html">Trivia Challenge</a>
         <a href="/donate.html">Support the Archiv</a>
       </div>
     </div>
@@ -1690,6 +1707,23 @@
           <a class="open-link" href="F97%20X3M.html">Open</a>
         </div>
       </div>
+    </section>
+
+    <section class="trivia-home-card" aria-labelledby="triviaHomeTitle">
+      <div class="trivia-home-head">
+        <div>
+          <div class="trivia-home-kicker">BMW M Archiv · Weekly Challenge</div>
+          <h2 class="trivia-home-title" id="triviaHomeTitle">Monthly Trivia Leaderboard</h2>
+          <p class="trivia-home-desc"><span id="triviaHomeMonth">Current month</span> · Top three usernames only · New questions Mondays at 9 AM Central · Closes Tuesdays at noon</p>
+        </div>
+        <a class="trivia-home-link" href="/trivia.html">Play Trivia →</a>
+      </div>
+      <div class="trivia-home-standings" id="triviaHomeStandings" aria-live="polite">
+        <div class="trivia-home-player"><div class="trivia-home-rank">1st place</div><div class="trivia-home-name">Awaiting scores</div></div>
+        <div class="trivia-home-player"><div class="trivia-home-rank">2nd place</div><div class="trivia-home-name">Awaiting scores</div></div>
+        <div class="trivia-home-player"><div class="trivia-home-rank">3rd place</div><div class="trivia-home-name">Awaiting scores</div></div>
+      </div>
+      <p class="trivia-home-status" id="triviaHomeStatus">Live standings will appear once the trivia scoring system is connected.</p>
     </section>
   </main>
   <!-- Homepage only. Replace the placeholder with an approved AdSense unit
@@ -3310,6 +3344,38 @@
       first.addEventListener('ended', () => { if (active === first) advance(); });
       second.addEventListener('ended', () => { if (active === second) advance(); });
     })();
+  </script>
+
+  <script>
+  // Homepage trivia leaderboard. This public RPC must be created separately in Supabase.
+  // Expected rows: [{ username: '...', score: 100 }, ...] (up to three).
+  (function () {
+    const monthLabel = document.getElementById('triviaHomeMonth');
+    const standings = document.getElementById('triviaHomeStandings');
+    const status = document.getElementById('triviaHomeStatus');
+    if (!monthLabel || !standings || !status) return;
+    const centralParts = new Intl.DateTimeFormat('en-US', {timeZone:'America/Chicago',year:'numeric',month:'long'}).format(new Date());
+    monthLabel.textContent = centralParts;
+    const url = 'https://qaikzwqdjdxkhhzscish.supabase.co/rest/v1/rpc/public_trivia_leaderboard_top3';
+    const key = 'sb_publishable_vYctD5nCWCFg5l02VHg8uA_OFOLOlYH';
+    fetch(url, {method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:'{}'})
+      .then(r => {if (!r.ok) throw new Error('Leaderboard not configured');return r.json();})
+      .then(rows => {
+        if (!Array.isArray(rows)) throw new Error('Unexpected leaderboard response');
+        standings.replaceChildren();
+        for (let i=0;i<3;i++) {
+          const row=rows[i], card=document.createElement('div');
+          card.className='trivia-home-player';
+          const rank=document.createElement('div'),name=document.createElement('div'),score=document.createElement('div');
+          rank.className='trivia-home-rank';rank.textContent=['1st place','2nd place','3rd place'][i];
+          name.className='trivia-home-name';name.textContent=row && typeof row.username==='string' ? row.username : 'Awaiting scores';
+          score.className='trivia-home-score';score.textContent=row && Number.isFinite(Number(row.score)) ? Number(row.score).toLocaleString()+' pts' : '—';
+          card.append(rank,name,score);standings.append(card);
+        }
+        status.textContent=rows.length ? 'Monthly standings update automatically.' : 'No scores recorded for this month yet.';
+      })
+      .catch(() => {status.textContent='Leaderboard coming soon — scoring is not connected yet.';});
+  })();
   </script>
 </body>
 </html>
