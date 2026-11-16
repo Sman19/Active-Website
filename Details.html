@@ -413,44 +413,70 @@ async function exportDetailsInstagram(){
     await new Promise(resolve=>setTimeout(resolve,200));
 
     const vin=(detailsVehicle&&detailsVehicle.vin?detailsVehicle.vin:'vehicle').replace(/[^A-Za-z0-9_-]/g,'');
-    // Two purpose-designed pages. Preserve all sections without squeezing the whole page.
+    // Export each content group as its own readable 1080 x 1920 story.
+    // Hidden/empty sections are skipped (including CRT-only restrictions).
     const storyStyle=document.createElement('style');
     storyStyle.textContent=`
-      .topbar{height:auto!important;min-height:78px!important;padding:16px 34px!important;}
+      .topbar{height:auto!important;min-height:82px!important;padding:18px 34px!important;}
       .title{gap:12px!important;flex-wrap:wrap!important;height:auto!important;}
-      .title h1{font-size:25px!important;}
-      .meta{font-size:14px!important;gap:10px!important;max-width:100%!important;}
-      .shell, main, #content, #detailPanel{width:100%!important;max-width:none!important;min-width:0!important;}
-      main{padding:0 38px!important;}
-      .hero{margin:12px auto 14px!important;max-width:100%!important;}
-      .hero img{max-height:440px!important;object-fit:contain!important;}
-      .section{padding-top:16px!important;padding-bottom:16px!important;margin-top:0!important;}
-      .heading{font-size:25px!important;margin-bottom:12px!important;}
-      .summary-row,.details-grid,.colors,.pills,.pricing,.dealer-preview,.card{font-size:17px!important;}
-      .dealer-map{max-height:205px!important;}
-      .dealer-card-actions{display:flex!important;flex-wrap:wrap!important;}
-      #pricing .pricing{font-size:16px!important;}
-      #comments{margin-top:12px!important;}
+      .title h1{font-size:29px!important;}
+      .meta{display:flex!important;font-size:15px!important;gap:10px!important;max-width:100%!important;}
+      .shell,main,#content,#detailPanel{width:100%!important;max-width:none!important;min-width:0!important;}
+      main{padding:0 42px!important;}
+      .hero{min-height:340px!important;padding:16px 28px!important;margin:8px 0 12px!important;}
+      .hero img{max-height:320px!important;object-fit:contain!important;}
+      .section{padding:20px 10px 26px!important;margin:0!important;scroll-margin-top:0!important;}
+      .heading{font-size:29px!important;margin-bottom:18px!important;}
+      .two-col{gap:28px!important;grid-template-columns:1.35fr 1fr!important;}
+      .summary-row{padding:11px 13px!important;}
+      .colors{gap:12px!important;padding:15px 5px 0!important;}
+      .swatch,.interior{width:55px!important;height:55px!important;flex-basis:55px!important;}
+      .dealer-preview{margin-top:12px!important;}
+      .dealer-map{height:150px!important;}
+      .dealer-contact-row{padding:8px 0!important;}
+      .dealer-card-actions{display:none!important;}
+      .details-grid{gap:0 14px!important;}
+      .detail{padding:8px 0!important;}
+      .pricing td{padding:11px 14px!important;}
+      .feature-groups{gap:12px!important;}
+      .feature-card{padding:15px!important;}
+      .warranty-grid{gap:12px!important;}
+      .warranty-card{padding:14px!important;}
+      .quality-assurance{margin-top:18px!important;}
     `;
     frame.appendChild(storyStyle);
-    for(let page=1;page<=2;page++){
-      const hero=frame.querySelector('.hero');
-      const basics=frame.querySelector('#basics');
-      const comments=frame.querySelector('#comments');
-      const secondPageSections=['pricing','packages','options','dealer'];
-      [hero,basics].forEach(el=>{if(el)el.style.display=page===1?'':'none';});
-      if(comments)comments.style.display=page===2?'':'none';
-      secondPageSections.forEach(id=>{
-        const el=frame.querySelector('#'+id);
-        if(el)el.style.display=page===2?'':'none';
-      });
+
+    const groups=[
+      {label:'Vehicle Overview',ids:['hero','basics']},
+      {label:'Pricing & Packages',ids:['pricing','packages']},
+      {label:'Standard Features',ids:['options']},
+      {label:'Warranty & Vehicle Notes',ids:['warranty','comments']}
+    ];
+    const allIds=['hero','basics','comments','pricing','packages','options','warranty','dealer'];
+    const sections={};
+    for(const id of allIds){
+      sections[id]=id==='hero'?frame.querySelector('.hero'):frame.querySelector('#'+id);
+    }
+    // Preserve actual visibility from the live vehicle page, including CRT exclusions.
+    const eligible={};
+    for(const id of allIds){
+      const live=id==='hero'?document.querySelector('.hero'):document.getElementById(id);
+      eligible[id]=!!live && getComputedStyle(live).display!=='none' &&
+        (id!=='comments'||(live.textContent||'').trim()!=='');
+    }
+    const activeGroups=groups.filter(group=>group.ids.some(id=>eligible[id]));
+    const pages=activeGroups.slice(0,4);
+    for(let index=0;index<pages.length;index++){
+      const group=pages[index];
+      for(const id of allIds){
+        const element=sections[id];
+        if(element)element.style.display=group.ids.includes(id)&&eligible[id]?'':'none';
+      }
       await new Promise(resolve=>requestAnimationFrame(resolve));
-      const naturalHeight=Math.max(frame.scrollHeight,1);
-      const scale=Math.min(1,1650/naturalHeight);
-      const renderedWidth=Math.round(1080*scale);
-      const renderedHeight=Math.round(naturalHeight*scale);
-      const offsetX=Math.floor((1080-renderedWidth)/2);
-      const offsetY=Math.max(130,Math.floor((1920-renderedHeight)/2));
+      await waitForDetailsImages(frame);
+      const naturalHeight=Math.ceil(frame.getBoundingClientRect().height);
+      const maxContentHeight=1660;
+      const scale=Math.min(1,maxContentHeight/Math.max(naturalHeight,1));
       const fullCanvas=await html2canvas(frame,{
         backgroundColor:'#ffffff',scale:2,useCORS:true,allowTaint:false,
         logging:false,width:1080,height:naturalHeight,
@@ -460,14 +486,21 @@ async function exportDetailsInstagram(){
       out.width=1080;out.height=1920;
       const ctx=out.getContext('2d');
       ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1080,1920);
+      const renderedWidth=Math.round(1080*scale);
+      const renderedHeight=Math.round(naturalHeight*scale);
+      const offsetX=Math.floor((1080-renderedWidth)/2);
+      const offsetY=Math.max(130,Math.floor((1920-renderedHeight)/2));
       ctx.drawImage(fullCanvas,0,0,fullCanvas.width,fullCanvas.height,
         offsetX,offsetY,renderedWidth,renderedHeight);
-      const a=document.createElement('a');
-      a.href=out.toDataURL('image/png');
-      a.download=`E90-M3-${vin}-Instagram-Story-${page}-TEST.png`;
-      document.body.appendChild(a);a.click();a.remove();
-      // Give the browser a moment to register each separate download.
-      await new Promise(resolve=>setTimeout(resolve,350));
+      // A modest footer provides context when stories are shared separately.
+      ctx.fillStyle='#64748b';ctx.font='24px system-ui, sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText(`BMW M ARCHIV  •  ${group.label}  •  ${index+1}/${pages.length}`,540,1840);
+      const link=document.createElement('a');
+      link.href=out.toDataURL('image/png');
+      link.download=`BMW-M3-${vin}-Instagram-Story-${index+1}-of-${pages.length}.png`;
+      document.body.appendChild(link);link.click();link.remove();
+      await new Promise(resolve=>setTimeout(resolve,400));
     }
     stage.innerHTML='';
   }catch(error){
