@@ -238,7 +238,7 @@
     <div class="quick-menu" id="quickMenu">
       <button class="quick-item" type="button" onclick="goBackToChart()"><span class="quick-icon">⌂</span><span>Home</span><span class="quick-note">Back to chart</span></button>
       <button class="quick-item" type="button" onclick="triggerDocument('specButton')"><span class="quick-icon">📋</span><span>BMW Spec Sheet</span></button>
-      <button class="quick-item" type="button" onclick="triggerDocument('stickerButton')"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
+      <button class="quick-item disabled" id="quickSticker" type="button" disabled aria-disabled="true"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
       <button class="quick-item" id="quickOem" type="button" onclick="triggerDocument('oemButton')"><span class="quick-icon">🏷️</span><span>OEM Sticker</span></button>
       <button class="quick-item" id="quickInvoice" type="button" onclick="triggerDocument('invoiceButton')"><span class="quick-icon">📄</span><span>Invoice</span></button>
       <button class="quick-item" id="quickInstagram" type="button" onclick="exportDetailsInstagram()"><span class="quick-icon">↓</span><span>Instagram Story</span><span class="quick-note">TEST · 1 × 1080 × 1920 PNG</span></button>
@@ -1554,7 +1554,8 @@ function render(row){
     });
 
   document.getElementById("specButton").onclick=handleBackgroundSpecSheet;
-  document.getElementById("stickerButton").onclick=()=>openConfigurator("sticker",vehicle);
+  document.getElementById("stickerButton").disabled=true;
+  document.getElementById("stickerButton").onclick=null;
   const oemBtn=document.getElementById("oemButton"),invBtn=document.getElementById("invoiceButton");
   oemBtn.disabled=!available(oem);invBtn.disabled=!available(invoice);
   const quickOem=document.getElementById("quickOem"),quickInvoice=document.getElementById("quickInvoice");
