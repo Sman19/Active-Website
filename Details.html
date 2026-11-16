@@ -503,7 +503,7 @@ async function exportDetailsInstagram(){
       if(index>0)pdf.addPage([405,720],'portrait');
       pdf.addImage(out.toDataURL('image/jpeg',0.92),'JPEG',0,0,405,720,undefined,'FAST');
     }
-    pdf.save(`BMW-M3-${vin}-Vehicle-Details-${pages.length}-Pages.pdf`);
+    pdf.save(`BMW-M3-${vin}-Vehicle-Details.pdf`);
     stage.innerHTML='';
   }catch(error){
     console.error(error);
