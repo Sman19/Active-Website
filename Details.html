@@ -1439,7 +1439,7 @@ function render(row){
   optionCodes.forEach(code=>{
     const cat=PACKAGE_CODES.has(code)?"PACKAGES":"FACTORY INSTALLED";
     if(cat!==lastCategory){pricing.insertAdjacentHTML("beforeend",`<tr class="category"><td colspan="2">${cat}</td></tr>`);lastCategory=cat}
-    pricing.insertAdjacentHTML("beforeend",`<tr><td><span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year).replace(/^.*? - /,""))}</td><td>${money(getPriceForCode(code,year))}</td></tr>`)
+    pricing.insertAdjacentHTML("beforeend",`<tr><td><span class="code">${escapeHtml(code)}</span> – ${escapeHtml(descriptionFor(code,year).replace(/\s+-\s+\$[\d,.]+$/, ""))}</td><td>${money(getPriceForCode(code,year))}</td></tr>`)
   });
   pricing.insertAdjacentHTML("beforeend",`<tr><td>Destination Charge</td><td>${money(destination)}</td></tr><tr><td>Gas-Guzzler Tax</td><td>${money(gas)}</td></tr><tr class="total"><td>Total MSRP</td><td>${money(total)}</td></tr>`);
 
