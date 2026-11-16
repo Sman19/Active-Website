@@ -258,12 +258,12 @@
           <div class="two-col">
             <div>
               <h2 class="heading">Basics</h2>
-              <div class="bar">PRICE</div>
+              <div id="basicPriceSummary"><div class="bar">PRICE</div>
               <div class="summary-row"><span>Base MSRP</span><strong id="basePrice">—</strong></div>
               <div class="summary-row"><span>Installed packages / options</span><strong id="optionPrice">—</strong></div>
               <div class="summary-row"><span>Destination charge</span><strong id="destinationPrice">—</strong></div>
               <div class="summary-row"><span>Gas-guzzler tax</span><strong id="gasPrice">—</strong></div>
-              <div class="summary-row total"><span>MSRP</span><strong id="totalPrice">—</strong></div>
+              <div class="summary-row total"><span>MSRP</span><strong id="totalPrice">—</strong></div></div>
               <div class="bar" style="margin-top:22px">COLOR</div>
               <div class="colors">
                 <div class="color-card"><div class="swatch" id="exteriorSwatch"></div><div><div class="small-label">Exterior color</div><div class="value" id="exteriorText">—</div></div></div>
@@ -1369,6 +1369,12 @@ function render(row){
   const exteriorRaw=getField(row,["EXTERIOR","Exterior","Color","Paint Code","PAINT"]);
   const interiorRaw=getField(row,["INTERIOR","Interior","Trim","Upholstery"]);
   const year=getField(row,["YEAR","Year","Model Year","MY"])||params.get("year")||"";
+  // The 2012 E90 M3 Sedan CRT is a limited edition; standard pricing is not applicable.
+  const is2012CRT = String(year).trim() === "2012" && /E90 M3 Sedan/i.test(fileName);
+  document.getElementById("basicPriceSummary").style.display = is2012CRT ? "none" : "";
+  document.getElementById("pricing").style.display = is2012CRT ? "none" : "";
+  const pricingNav = document.querySelector('.nav a[href="#pricing"]');
+  if (pricingNav) pricingNav.style.display = is2012CRT ? "none" : "";
   const vin=getField(row,["VIN","Vin","Full VIN","Full VIN Number"]).trim();
   const model=getField(row,["MODEL","Model"])||"M3";
   const dealer=getField(row,["DEALER NAME","Dealer Name","Dealer","Selling Dealer","Dealer Name "]);
