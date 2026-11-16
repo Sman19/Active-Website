@@ -411,26 +411,48 @@ async function exportDetailsInstagram(){
     frame.appendChild(clone);
     stage.appendChild(frame);
 
-    // html2canvas can omit cross-origin CSS background images. For the PDF,
-    // render the upholstery swatch as an actual image with CORS enabled.
+    // The source upholstery image may be hosted on github.com, which does not
+    // consistently permit cross-origin canvas capture. Convert GitHub raw links
+    // to raw.githubusercontent.com and preload before taking the screenshot.
     const liveInterior=document.getElementById('interiorImage');
     const exportInterior=frame.querySelector('#interiorImage');
     if(liveInterior&&exportInterior){
       const bg=getComputedStyle(liveInterior).backgroundImage;
       const match=bg&&bg.match(/^url\(["']?(.*?)["']?\)$/);
-      if(match&&match[1]){
-        const img=document.createElement('img');
+      const originalUrl=match?.[1]||'';
+      let imageUrl=originalUrl;
+      try{
+        const u=new URL(originalUrl,location.href);
+        if(u.hostname==='github.com'){
+          const parts=u.pathname.split('/').filter(Boolean);
+          if(parts[2]==='raw'&&parts.length>=5){
+            imageUrl='https://raw.githubusercontent.com/'+
+              [parts[0],parts[1],...parts.slice(3)].join('/');
+          }else if(parts[2]==='blob'&&parts.length>=5){
+            imageUrl='https://raw.githubusercontent.com/'+
+              [parts[0],parts[1],...parts.slice(3)].join('/');
+          }
+        }
+      }catch(e){/* use original URL */}
+      const code=(document.getElementById('interiorText')?.textContent||'').split(/[\s–-]/)[0].trim().toUpperCase();
+      // Visible backup for upholstery photos that cannot be fetched with CORS.
+      // NCH5 is Fox Red / Black; other interiors retain a neutral backup.
+      exportInterior.style.backgroundImage=code==='NCH5'
+        ? 'linear-gradient(125deg,#913c35 0%,#913c35 52%,#242326 52%,#242326 100%)'
+        : 'linear-gradient(135deg,#8c8b89,#343638)';
+      exportInterior.style.backgroundSize='cover';
+      if(imageUrl){
+        const img=new Image();
         img.crossOrigin='anonymous';
         img.alt='Interior upholstery swatch';
         img.style.cssText='display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit;';
-        exportInterior.style.backgroundImage='none';
-        exportInterior.appendChild(img);
-        await new Promise(resolve=>{
-          img.onload=resolve;
-          img.onerror=()=>{img.remove();exportInterior.style.backgroundImage=bg;resolve();};
-          img.src=match[1];
-          if(img.complete)resolve();
+        const loaded=await new Promise(resolve=>{
+          img.onload=()=>resolve(img.naturalWidth>0);
+          img.onerror=()=>resolve(false);
+          img.src=imageUrl;
+          if(img.complete)resolve(img.naturalWidth>0);
         });
+        if(loaded)exportInterior.appendChild(img);
       }
     }
     await waitForDetailsImages(frame);
