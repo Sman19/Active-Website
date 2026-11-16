@@ -1490,8 +1490,8 @@
     }
 
     function getCsvFileFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const year = params.get("year");
+      const url = new URL(window.location.href);
+      const params = url.searchParams;
       const yearFiles = {
         "2008": "2008 E90 M3 Sedan.csv",
         "2009": "2009 E90 M3 Sedan.csv",
@@ -1499,11 +1499,22 @@
         "2011": "2011 E90 M3 Sedan.csv",
         "2012": "2012 E90 M3 Sedan CRT.csv"
       };
-      if (year && Object.prototype.hasOwnProperty.call(yearFiles, year)) return yearFiles[year];
-      // Backward compatibility with existing bookmarks and indexed ?file= URLs.
-      const oldFile = params.get("file");
-      if (oldFile && Object.values(yearFiles).includes(oldFile)) return oldFile;
-      return yearFiles["2008"];
+
+      let year = params.get("year");
+      if (!Object.prototype.hasOwnProperty.call(yearFiles, year)) {
+        const oldFile = params.get("file");
+        year = Object.keys(yearFiles).find(key => yearFiles[key] === oldFile) || "2008";
+      }
+
+      // Keep existing bookmarks working, but display a clean year-based URL.
+      if (params.has("file") || params.get("year") !== year) {
+        params.delete("file");
+        params.set("year", year);
+        window.history.replaceState(window.history.state, "", url.toString());
+      }
+
+      // Legacy filenames remain internal dataset identifiers; data loading is unchanged.
+      return yearFiles[year];
     }
 
     function syncDatasetDropdown() {
