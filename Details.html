@@ -411,6 +411,28 @@ async function exportDetailsInstagram(){
     frame.appendChild(clone);
     stage.appendChild(frame);
 
+    // html2canvas can omit cross-origin CSS background images. For the PDF,
+    // render the upholstery swatch as an actual image with CORS enabled.
+    const liveInterior=document.getElementById('interiorImage');
+    const exportInterior=frame.querySelector('#interiorImage');
+    if(liveInterior&&exportInterior){
+      const bg=getComputedStyle(liveInterior).backgroundImage;
+      const match=bg&&bg.match(/^url\(["']?(.*?)["']?\)$/);
+      if(match&&match[1]){
+        const img=document.createElement('img');
+        img.crossOrigin='anonymous';
+        img.alt='Interior upholstery swatch';
+        img.style.cssText='display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit;';
+        exportInterior.style.backgroundImage='none';
+        exportInterior.appendChild(img);
+        await new Promise(resolve=>{
+          img.onload=resolve;
+          img.onerror=()=>{img.remove();exportInterior.style.backgroundImage=bg;resolve();};
+          img.src=match[1];
+          if(img.complete)resolve();
+        });
+      }
+    }
     await waitForDetailsImages(frame);
     await new Promise(resolve=>setTimeout(resolve,200));
 
