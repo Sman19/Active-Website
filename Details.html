@@ -189,6 +189,25 @@
     .auth-loading-title{font-size:23px;font-weight:800;letter-spacing:.12em}
     .auth-loading-caption{margin-top:10px;color:#aebcd0;font-size:14px}
     #authRetry{display:none;margin:20px auto 0;padding:11px 20px;background:#1769ff;border:0;border-radius:8px;color:#fff;font-weight:700;cursor:pointer}
+
+    /* Factory-spec inspired feature and historical coverage panels */
+    .feature-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .feature-subtitle{font-size:11px;letter-spacing:.12em;font-weight:750;color:#88919b}
+    .feature-groups,.warranty-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+    .feature-card{background:#f8f9fa;border:1px solid #e3e7eb;border-radius:11px;padding:20px 22px;min-width:0}
+    .feature-card-title{margin:0 0 13px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:10px;color:#29313a}
+    .feature-card-icon{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:7px;background:#e9edf1;color:#5a6570;font-size:17px}
+    .feature-list{margin:0;padding-left:18px;display:grid;gap:9px;color:#4b5661;font-size:13px;line-height:1.5}
+    .feature-list li::marker{color:#9aa4ad}
+    .warranty-card{border:1px solid #e3e7eb;border-radius:11px;padding:18px 20px;display:flex;align-items:flex-start;gap:13px;background:#fff}
+    .warranty-icon{width:35px;height:35px;flex:0 0 35px;border-radius:9px;background:#f1f3f5;display:grid;place-items:center;color:#67727e;font-size:19px}
+    .warranty-term{font-size:15px;font-weight:800;color:#29313a;line-height:1.35}
+    .warranty-label{font-size:12px;color:#6d7782;margin-top:5px;line-height:1.45}
+    .warranty-note{margin:15px 0 0;color:#7b858f;font-size:12px}
+    .quality-assurance{margin-top:24px;padding:18px 21px;border-left:3px solid #cbd2d9;background:#f8f9fa;border-radius:0 9px 9px 0}
+    .quality-assurance h3{font-size:14px;margin:0 0 7px}
+    .quality-assurance p{font-size:12px;line-height:1.65;color:#59636e;margin:0}
+    @media(max-width:720px){.feature-groups,.warranty-grid{grid-template-columns:1fr}.feature-card{padding:17px}.feature-list{font-size:13px}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -310,8 +329,8 @@
         </section>
 
         <section class="section" id="packages"><h2 class="heading">Packages</h2><div class="pills" id="packageList"></div></section>
-        <section class="section" id="options"><h2 class="heading">Standard Features</h2><div class="pills standard-features" id="optionList"></div></section>
-        <section class="section" id="warranty"><h2 class="heading">Warranty &amp; Maintenance</h2><div class="pills" id="warrantyList"></div><p class="small-label" style="margin-top:16px">Original new-vehicle coverage when sold; not remaining warranty coverage.</p></section>
+        <section class="section" id="options"><div class="feature-heading"><h2 class="heading">Standard Features</h2><span class="feature-subtitle">E90 M3 SEDAN · 2008–2011</span></div><div class="feature-groups" id="optionList"></div></section>
+        <section class="section" id="warranty"><h2 class="heading">Warranty &amp; Maintenance</h2><div class="warranty-grid" id="warrantyList"></div><p class="warranty-note">Original BMW new-vehicle coverage when sold. This does not indicate remaining warranty coverage.</p><div class="quality-assurance"><h3>BMW Delivery Quality Assurance</h3><p>This BMW vehicle has been designed, engineered and manufactured under strict quality control guidelines. It has been prepared and inspected to ensure that it is free of defects in workmanship and materials in accordance with the New Vehicle Limited Warranty issued by BMW of North America, LLC.</p></div></section>
         <section class="section" id="dealer"><h2 class="heading">Dealer Information</h2><div class="details-grid" id="dealerGrid"></div></section>
 
         <!-- Hidden document controls retained only so Quick Actions can trigger the existing handlers. -->
@@ -1484,15 +1503,34 @@ function render(row){
   if(standardNav)standardNav.style.display=showCommonFeatures?"":"none";
   if(warrantyNav)warrantyNav.style.display=showCommonFeatures?"":"none";
   if(showCommonFeatures){
-    commonFeatures.forEach(name=>{
-      const el=document.createElement("div");el.className="pill";el.textContent=name;opts.appendChild(el);
+    const featureGroups=[
+      {title:"Performance & Handling",icon:"◈",indices:[0,2,3,1,4]},
+      {title:"Lighting & Convenience",icon:"☼",indices:[5,9,10,7,6]},
+      {title:"Safety & Protection",icon:"◇",indices:[11,12,13,14,15,8]},
+      {title:"Vehicle Security",icon:"⌁",indices:[16]}
+    ];
+    featureGroups.forEach(group=>{
+      const card=document.createElement("div");card.className="feature-card";
+      const heading=document.createElement("h3");heading.className="feature-card-title";
+      const symbol=document.createElement("span");symbol.className="feature-card-icon";symbol.textContent=group.icon;
+      heading.append(symbol,document.createTextNode(group.title));card.appendChild(heading);
+      const list=document.createElement("ul");list.className="feature-list";
+      group.indices.forEach(i=>{const li=document.createElement("li");li.textContent=commonFeatures[i];list.appendChild(li)});
+      card.appendChild(list);opts.appendChild(card);
     });
     [
-      "4 years / 50,000 miles — Full Maintenance Program",
-      "4 years / 50,000 miles — New Vehicle Limited Warranty",
-      "12 years — Rust Perforation Limited Warranty",
-      "4 years / unlimited miles — BMW Roadside Assistance"
-    ].forEach(name=>{const el=document.createElement("div");el.className="pill";el.textContent=name;warranty.appendChild(el)});
+      {term:"4 years / 50,000 miles",label:"Full Maintenance Program",icon:"⚙"},
+      {term:"4 years / 50,000 miles",label:"New Vehicle Limited Warranty",icon:"◇"},
+      {term:"12 years",label:"Rust Perforation Limited Warranty",icon:"▣"},
+      {term:"4 years / unlimited miles",label:"BMW Roadside Assistance",icon:"✦"}
+    ].forEach(item=>{
+      const card=document.createElement("div");card.className="warranty-card";
+      const icon=document.createElement("span");icon.className="warranty-icon";icon.textContent=item.icon;
+      const content=document.createElement("div");
+      const term=document.createElement("div");term.className="warranty-term";term.textContent=item.term;
+      const label=document.createElement("div");label.className="warranty-label";label.textContent=item.label;
+      content.append(term,label);card.append(icon,content);warranty.appendChild(card);
+    });
   }
   // Keep all VIN-specific option codes (including no-cost selections) in
   // Packages rather than misrepresenting them as universal standard equipment.
