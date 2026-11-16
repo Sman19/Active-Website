@@ -210,6 +210,7 @@
     @media(max-width:720px){.feature-groups,.warranty-grid{grid-template-columns:1fr}.feature-card{padding:17px}.feature-list{font-size:13px}}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="authLoading" role="status" aria-live="polite">
@@ -241,7 +242,7 @@
       <button class="quick-item disabled" id="quickSticker" type="button" disabled aria-disabled="true"><span class="quick-icon">🏷️</span><span>Sticker</span></button>
       <button class="quick-item" id="quickOem" type="button" onclick="triggerDocument('oemButton')"><span class="quick-icon">🏷️</span><span>OEM Sticker</span></button>
       <button class="quick-item" id="quickInvoice" type="button" onclick="triggerDocument('invoiceButton')"><span class="quick-icon">📄</span><span>Invoice</span></button>
-      <button class="quick-item" id="quickInstagram" type="button" onclick="exportDetailsInstagram()"><span class="quick-icon">↓</span><span>Instagram Story</span><span class="quick-note">TEST · 1 × 1080 × 1920 PNG</span></button>
+      <button class="quick-item" id="quickInstagram" type="button" onclick="exportDetailsInstagram()"><span class="quick-icon">↓</span><span>Instagram Story</span><span class="quick-note">2–4 pages · 1 PDF</span></button>
     </div>
   </div>
 </header>
@@ -377,6 +378,7 @@ async function exportDetailsInstagram(){
 
   try{
     if(typeof html2canvas!=='function')throw new Error('Screenshot library unavailable.');
+    if(!window.jspdf?.jsPDF)throw new Error('PDF library unavailable.');
     const source=document.querySelector('.app-shell')||document.body;
     const clone=source.cloneNode(true);
     clone.querySelectorAll('.quick-menu').forEach(el=>el.classList.remove('open'));
@@ -466,6 +468,8 @@ async function exportDetailsInstagram(){
     }
     const activeGroups=groups.filter(group=>group.ids.some(id=>eligible[id]));
     const pages=activeGroups.slice(0,4);
+    if(!pages.length)throw new Error('No exportable sections found.');
+    const pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'pt',format:[405,720],compress:true});
     for(let index=0;index<pages.length;index++){
       const group=pages[index];
       for(const id of allIds){
@@ -496,16 +500,14 @@ async function exportDetailsInstagram(){
       ctx.fillStyle='#64748b';ctx.font='24px system-ui, sans-serif';
       ctx.textAlign='center';
       ctx.fillText(`BMW M ARCHIV  •  ${group.label}  •  ${index+1}/${pages.length}`,540,1840);
-      const link=document.createElement('a');
-      link.href=out.toDataURL('image/png');
-      link.download=`BMW-M3-${vin}-Instagram-Story-${index+1}-of-${pages.length}.png`;
-      document.body.appendChild(link);link.click();link.remove();
-      await new Promise(resolve=>setTimeout(resolve,400));
+      if(index>0)pdf.addPage([405,720],'portrait');
+      pdf.addImage(out.toDataURL('image/jpeg',0.92),'JPEG',0,0,405,720,undefined,'FAST');
     }
+    pdf.save(`BMW-M3-${vin}-Vehicle-Details-${pages.length}-Pages.pdf`);
     stage.innerHTML='';
   }catch(error){
     console.error(error);
-    alert('Instagram Story export could not be created. Please try again.');
+    alert('PDF export could not be created. Please try again.');
   }finally{
     if(button)button.classList.remove('exporting');
   }
