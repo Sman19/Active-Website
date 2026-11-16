@@ -256,7 +256,6 @@
       <a href="#packages">Packages</a>
       <a href="#options">Standard Features</a>
       <a href="#warranty">Warranty &amp; Maintenance</a>
-      <a href="#dealer">Dealer Information</a>
     </nav>
   </aside>
   <main>
@@ -331,7 +330,6 @@
         <section class="section" id="packages"><h2 class="heading">Packages</h2><div class="pills" id="packageList"></div></section>
         <section class="section" id="options"><div class="feature-heading"><h2 class="heading">Standard Features</h2><span class="feature-subtitle">E90 M3 SEDAN · 2008–2011</span></div><div class="feature-groups" id="optionList"></div></section>
         <section class="section" id="warranty"><h2 class="heading">Warranty &amp; Maintenance</h2><div class="warranty-grid" id="warrantyList"></div><p class="warranty-note">Original BMW new-vehicle coverage when sold. This does not indicate remaining warranty coverage.</p><div class="quality-assurance"><h3>BMW Delivery Quality Assurance</h3><p>This BMW vehicle has been designed, engineered and manufactured under strict quality control guidelines. It has been prepared and inspected to ensure that it is free of defects in workmanship and materials in accordance with the New Vehicle Limited Warranty issued by BMW of North America, LLC.</p></div></section>
-        <section class="section" id="dealer"><h2 class="heading">Dealer Information</h2><div class="details-grid" id="dealerGrid"></div></section>
 
         <!-- Hidden document controls retained only so Quick Actions can trigger the existing handlers. -->
         <div id="documentControls" hidden aria-hidden="true">
@@ -1328,7 +1326,7 @@ function renderG80(row){
   if(image&&/^https:\/\//i.test(image)){car.src=image;car.style.display="block";}
   else {car.style.display="none";const note=document.querySelector(".hero-note");if(note)note.textContent="G80 vehicle image not yet available";}
   const dg=document.getElementById("detailsGrid");dg.innerHTML="";
-  [["VIN",vin],["Model Year",year],["Model",model],["Model Code",raw(["Model Code","Type Code"])],["Production Date",production],["Exterior",exterior],["Interior",interior]].forEach(x=>dg.appendChild(detail(...x)));
+  [["VIN",vin],["Model Year",year],["Model",model],["Model Code",raw(["Model Code","Type Code"])],["Production Date",production],["Exterior",exterior],["Interior",interior],["Country",raw(["Country","Market","Destination Country"])||"—"]].forEach(x=>dg.appendChild(detail(...x)));
   set("commentsText",raw(["Comments","Notes","COMMENTS"])||lookup("Notes","COMMENTS")||"No comments entered.");
   const pricing=document.getElementById("pricingRows");pricing.innerHTML="";
   const addPrice=(label,value,total=false)=>{const tr=document.createElement("tr");if(total)tr.className="total";const a=document.createElement("td"),b=document.createElement("td");a.textContent=label;b.textContent=value||"—";tr.append(a,b);pricing.append(tr)};
@@ -1370,9 +1368,12 @@ function renderG80(row){
       const pill=document.createElement("div");pill.className="pill";pill.textContent=name;opts.appendChild(pill);
     });
   }else opts.textContent="Standard equipment details are not yet mapped for this vehicle.";
-  const dealerGrid=document.getElementById("dealerGrid");dealerGrid.innerHTML="";
-  [["Dealer Name",dealer],["Production Date",production],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
-  loadDealerRecord(dealer).then(record=>{renderDealerPreview(record,dealer);if(record){dealerGrid.innerHTML="";[["Dealer Name",record.name],["Dealer Code",record.code],["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],["Phone",record.phone],["Country",record.country],["Production Date",production],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===6)))}}).catch(()=>renderDealerPreview(null,dealer));
+  const g80Country=dg.lastElementChild?.querySelector(".detail-value");
+  loadDealerRecord(dealer).then(record=>{
+    renderDealerPreview(record,dealer);
+    if(g80Country && (!g80Country.textContent || g80Country.textContent==="—") && record?.country)
+      g80Country.textContent=record.country;
+  }).catch(()=>renderDealerPreview(null,dealer));
   const spec=document.getElementById("specButton"),sticker=document.getElementById("stickerButton"),oem=document.getElementById("oemButton"),invoice=document.getElementById("invoiceButton");
   [spec,sticker,oem,invoice].forEach(b=>{b.disabled=true;b.onclick=null});
   const oemUrl=raw(["Monroney","OEM Sticker","Sticker URL"]);
@@ -1454,7 +1455,7 @@ function render(row){
   }
 
   const dg=document.getElementById("detailsGrid");
-  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Exterior Code",exteriorCode],["Interior Code",interiorCode]].forEach((x)=>dg.appendChild(detail(x[0],x[1])));
+  [["VIN",vin],["Model Year",year],["Model",model],["Production Date",prod],["Transmission",codes.includes("2MK")?"M Double-Clutch Transmission":"6-Speed Manual"],["Exterior Code",exteriorCode],["Interior Code",interiorCode],["Country","—"]].forEach((x)=>dg.appendChild(detail(x[0],x[1])));
   set("commentsText",getComments(row)||"No comments entered.");
 
   const pricing=document.getElementById("pricingRows");
@@ -1541,25 +1542,11 @@ function render(row){
   });
   if(!packs.children.length)packs.innerHTML="<div class='pill'>No factory packages or options listed.</div>";
 
-  const dealerGrid=document.getElementById("dealerGrid");
-  [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
-
+  const countryValue=dg.lastElementChild?.querySelector(".detail-value");
   loadDealerRecord(dealer)
     .then(record=>{
       renderDealerPreview(record,dealer);
-
-      if(record){
-        dealerGrid.innerHTML="";
-        [
-          ["Dealer Name",record.name],
-          ["Dealer Code",record.code],
-          ["Address",[record.street,[record.city,record.state].filter(Boolean).join(", "),record.zip].filter(Boolean).join(", ")],
-          ["Phone",record.phone],
-          ["Country",record.country],
-          ["Production Date",prod],
-          ["VIN",vin]
-        ].forEach((item,index)=>dealerGrid.appendChild(detail(item[0],item[1],index===6)));
-      }
+      if(countryValue && record?.country) countryValue.textContent=record.country;
     })
     .catch(error=>{
       console.error(error);
