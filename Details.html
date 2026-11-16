@@ -160,6 +160,7 @@
     .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}.detail{padding:13px 0;border-bottom:1px solid var(--line)}.detail.full{grid-column:1/-1}.detail-label{color:#7b848d;font-size:13px}.detail-value{font-size:16px;font-weight:650;overflow-wrap:anywhere}
     .card{padding:21px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 5px 16px rgba(0,0,0,.04)}
     .pricing{width:100%;border-collapse:collapse;table-layout:fixed}.pricing th{padding:13px 17px;background:#eceff2;text-align:left;font-size:13px;letter-spacing:.12em}.pricing th:last-child,.pricing td:last-child{text-align:right}.pricing td{padding:17px;border-bottom:1px solid var(--line);color:#4a5561}.pricing .category td{padding:11px 17px;background:#eceff2;color:var(--red);font-size:13px;font-weight:850;letter-spacing:.12em}.pricing .total td{font-size:18px;font-weight:900;color:var(--red)}
+    .standard-features{font-size:13px;line-height:1.45;gap:8px 12px}.standard-features .pill{padding:10px 12px}
     .pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}.pill{padding:13px 15px;border:1px solid var(--line);border-radius:8px;background:#fafbfc}.code{font-weight:850;margin-right:6px}.price{float:right;font-weight:750}
     .actions{display:flex;flex-wrap:wrap;gap:13px}.action{padding:12px 17px;border:1px solid #cfd5da;border-radius:7px;background:#fff;font-weight:750;cursor:pointer}.action.primary{background:var(--red);border-color:var(--red);color:#fff}.action:disabled{opacity:.45;cursor:not-allowed}
     .history{display:none;padding:45px 7%}.history.active{display:block}.detail-panel.hidden{display:none}.mobile-menu{display:none}
@@ -234,7 +235,8 @@
       <a href="#comments">Comments</a>
       <a href="#pricing">Pricing</a>
       <a href="#packages">Packages</a>
-      <a href="#options">Standard Options</a>
+      <a href="#options">Standard Features</a>
+      <a href="#warranty">Warranty &amp; Maintenance</a>
       <a href="#dealer">Dealer Information</a>
     </nav>
   </aside>
@@ -308,7 +310,8 @@
         </section>
 
         <section class="section" id="packages"><h2 class="heading">Packages</h2><div class="pills" id="packageList"></div></section>
-        <section class="section" id="options"><h2 class="heading">Standard Options</h2><div class="pills" id="optionList"></div></section>
+        <section class="section" id="options"><h2 class="heading">Standard Features</h2><div class="pills standard-features" id="optionList"></div></section>
+        <section class="section" id="warranty"><h2 class="heading">Warranty &amp; Maintenance</h2><div class="pills" id="warrantyList"></div><p class="small-label" style="margin-top:16px">Original new-vehicle coverage when sold; not remaining warranty coverage.</p></section>
         <section class="section" id="dealer"><h2 class="heading">Dealer Information</h2><div class="details-grid" id="dealerGrid"></div></section>
 
         <!-- Hidden document controls retained only so Quick Actions can trigger the existing handlers. -->
@@ -654,7 +657,7 @@ const PACKAGE_TEXT={
 "ZPP.2":"Premium Package - $2,000.00","ZPP.3":"Premium Package - $2,000.00","ZP2":"Premium Package 2 - $2,000.00",
 "ZP2.1":"Premium Package 2 - $2,500.00","ZP2.2":"Premium Package 2 - $2,500.00","ZP2.3":"Premium Package 2 - $2,500.00",
 "ZP3.1":"Premium Package 3 - $2,500.00","ZP3.2":"Premium Package 3 - $2,500.00","ZP3.3":"Premium Package 3 - $2,500.00",
-"ZTP":"Technology Package - $3,250.00","1CC":"Automatic Start/Stop Function - $0.00", "223":"Dynamic Damper Control - $1,000.00","2MK":"M Double-Clutch Transmission - $2,900.00",
+"ZTP":"Technology Package - $3,250.00","223":"Dynamic Damper Control - $1,000.00","2MK":"M Double-Clutch Transmission - $2,900.00",
 "2MT":"19-inch Alloy Wheels - $1,250.00","2MT.1":"19-inch Alloy Wheels - $1,200.00","302":"Anti-Theft Alarm System - $400.00",
 "403":"Moonroof - $1,050.00","417":"Rear Manual Side Window Shades - $575.00","465":"Split Fold-Down Rear Seat - $475.00",
 "494":"Heated Front Seats - $500.00","507":"Park Distance Control (rear) - $380.00","5AC":"Automatic High Beams - $250.00",
@@ -1244,6 +1247,8 @@ const G80_BASE_MSRP_BY_YEAR = {
   "2024": {"33AY":80200,"43AY":84300,"53AY":76000}
 };
 function renderG80(row){
+  document.getElementById("warranty").style.display="none";
+  const wn=document.querySelector('.nav a[href="#warranty"]');if(wn)wn.style.display="none";
   const raw=(names)=>getField(row,names);
   const vin=raw(["VIN"]),year=raw(["Year","Model Year","YEAR"]);
   const model=raw(["Model","Trim","MODEL"])||"BMW M3";
@@ -1447,20 +1452,56 @@ function render(row){
   packs.innerHTML="";
   opts.innerHTML="";
 
-  // Anything carrying a retail cost belongs in Packages, even when it is a
-  // standalone factory option. Standard Options is reserved for no-cost /
-  // standard-equipment items so it can mirror the informational content used
-  // at the bottom of the BMW PDF.
+  // The common equipment list is based on features appearing in both supplied
+  // 2008 and 2011 E90 M3 window stickers. Do not apply it to the 2012 CRT.
+  const commonFeatures=[
+    "4.0-liter 32-valve V-8 engine with M Double-VANOS variable valve timing",
+    "Dynamic Stability Control (DSC)",
+    "All Season Traction with Variable M Differential Lock",
+    "M Suspension",
+    "High-performance anti-lock braking system (ABS) with Dynamic Brake Control",
+    "Xenon Adaptive low- and high-beam headlights with auto-leveling and cornering lights",
+    "Service interval indicator with miles-to-service display",
+    "On-board computer with check control vehicle monitoring system",
+    "Tire Pressure Monitor",
+    "Rain-sensing windshield wipers with automatic headlight control",
+    "Cruise Control",
+    "Driver and passenger front airbags with advanced SRS technology",
+    "Front-seat-mounted side-impact airbags",
+    "Head Protection System (HPS), front and rear",
+    "BMW Advanced Safety System",
+    "Adaptive Brake Lights",
+    "Coded Driveaway Protection"
+  ];
+  const warranty=document.getElementById("warrantyList");
+  const warrantySection=document.getElementById("warranty");
+  const standardSection=document.getElementById("options");
+  const standardNav=document.querySelector('.nav a[href="#options"]');
+  const warrantyNav=document.querySelector('.nav a[href="#warranty"]');
+  const showCommonFeatures=["2008","2009","2010","2011"].includes(String(year).trim()) && !is2012CRT;
+  standardSection.style.display=showCommonFeatures?"":"none";
+  warrantySection.style.display=showCommonFeatures?"":"none";
+  if(standardNav)standardNav.style.display=showCommonFeatures?"":"none";
+  if(warrantyNav)warrantyNav.style.display=showCommonFeatures?"":"none";
+  if(showCommonFeatures){
+    commonFeatures.forEach(name=>{
+      const el=document.createElement("div");el.className="pill";el.textContent=name;opts.appendChild(el);
+    });
+    [
+      "4 years / 50,000 miles — Full Maintenance Program",
+      "4 years / 50,000 miles — New Vehicle Limited Warranty",
+      "12 years — Rust Perforation Limited Warranty",
+      "4 years / unlimited miles — BMW Roadside Assistance"
+    ].forEach(name=>{const el=document.createElement("div");el.className="pill";el.textContent=name;warranty.appendChild(el)});
+  }
+  // Keep all VIN-specific option codes (including no-cost selections) in
+  // Packages rather than misrepresenting them as universal standard equipment.
   optionCodes.forEach(code=>{
-    const el=document.createElement("div");
-    el.className="pill";
-    el.innerHTML=`<span class="code">${escapeHtml(code)}</span>${escapeHtml(descriptionFor(code,year))}`;
-    const hasCost=getPriceForCode(code,year)>0;
-    (hasCost?packs:opts).appendChild(el);
+    const el=document.createElement("div");el.className="pill";
+    el.innerHTML=`<span class="code">${escapeHtml(code)}</span> ${escapeHtml(descriptionFor(code,year))}`;
+    packs.appendChild(el);
   });
-
-  if(!packs.children.length)packs.innerHTML="<div class='pill'>No priced packages or options listed.</div>";
-  if(!opts.children.length)opts.innerHTML="<div class='pill'>Standard-equipment details will appear here when available.</div>";
+  if(!packs.children.length)packs.innerHTML="<div class='pill'>No factory packages or options listed.</div>";
 
   const dealerGrid=document.getElementById("dealerGrid");
   [["Dealer Name",dealer],["Production Date",prod],["VIN",vin]].forEach((x,i)=>dealerGrid.appendChild(detail(x[0],x[1],i===2)));
