@@ -28,6 +28,81 @@
     @keyframes clerk-spin { to { transform: rotate(360deg); } }
     html.clerk-authenticated #clerk-loading-screen { display: none; }
   </style>
+  <style>
+    /* The entire footer row is clickable, not just a centered pill. */
+    .vehicle-load-more-row {
+      display: block;
+      width: 100%;
+      min-height: 76px;
+      padding: 22px 18px;
+      border: 0;
+      border-top: 1px solid #d1d5db;
+      background: #eceff1;
+      color: #111827;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+    .vehicle-load-more-row .load-more-heading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 750;
+    }
+    .vehicle-load-more-row .load-more-tickers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid #cbd5e1;
+    }
+    .vehicle-load-more-row .load-more-ticker {
+      display: block;
+      overflow: hidden;
+      min-width: 0;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .07em;
+      white-space: nowrap;
+    }
+    .vehicle-load-more-row .load-more-ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: loadMoreTicker 14s linear infinite;
+      will-change: transform;
+    }
+    .vehicle-load-more-row .load-more-ticker:nth-child(2) .load-more-ticker-text {
+      animation-delay: -4.5s;
+    }
+    .vehicle-load-more-row .load-more-ticker:nth-child(3) .load-more-ticker-text {
+      animation-delay: -9s;
+    }
+    @keyframes loadMoreTicker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    .vehicle-load-more-row:hover .load-more-ticker-text,
+    .vehicle-load-more-row:focus-visible .load-more-ticker-text { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .vehicle-load-more-row .load-more-ticker-text {
+        animation: none;
+        padding-left: 0;
+        white-space: normal;
+      }
+    }
+    .vehicle-load-more-row:hover { background: #dbe4ee; }
+    .vehicle-load-more-row:focus-visible {
+      outline: 3px solid #2563eb;
+      outline-offset: -3px;
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -1198,8 +1273,8 @@
     // Each model year is fetched only once per page visit; concurrent requests share a promise.
     const yearDataCache = new Map();
     let datasetRequestId = 0;
-    let visibleRowLimit = 150;
-    const ROW_PAGE_SIZE = 150;
+    let visibleRowLimit = 100;
+    const ROW_PAGE_SIZE = 100;
     let vehicles = [];
     let filteredVehicles = [];
     let selectedVehicles = new Set();
@@ -3466,20 +3541,47 @@
         });
       });
 
+      // Display rows in batches so the browser does not create thousands of
+      // image, tooltip, and textarea elements before showing the first results.
+      // Filtering, sorting and charts still operate on the COMPLETE dataset.
       if (rowsToRender.length > visibleRowLimit) {
-        const more = document.createElement('div');
-        more.style.cssText = 'padding:18px;text-align:center;background:#fff';
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'column-reset-btn';
-        button.textContent = `Show more vehicles (${Math.min(visibleRowLimit, rowsToRender.length).toLocaleString()} of ${rowsToRender.length.toLocaleString()})`;
-        button.addEventListener('click', () => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "vehicle-load-more-row";
+        const nextCount = Math.min(ROW_PAGE_SIZE, rowsToRender.length - visibleRowLimit);
+        const displayedCount = Math.min(visibleRowLimit, rowsToRender.length);
+        button.setAttribute("aria-label", `Show next ${nextCount} vehicles. ${displayedCount} of ${rowsToRender.length} displayed.`);
+        const heading = document.createElement("span");
+        heading.className = "load-more-heading";
+        heading.textContent = `Show next ${nextCount} vehicles ↓`;
+        const tickers = document.createElement("span");
+        tickers.className = "load-more-tickers";
+        tickers.setAttribute("aria-hidden", "true");
+        const tickerMessages = [
+          "BMW M ARCHIV",
+          `${displayedCount.toLocaleString()} OF ${rowsToRender.length.toLocaleString()} DISPLAYED`,
+          "CLICK ANYWHERE TO LOAD MORE"
+        ];
+        tickerMessages.forEach(message => {
+          const ticker = document.createElement("span");
+          ticker.className = "load-more-ticker";
+          const tickerText = document.createElement("span");
+          tickerText.className = "load-more-ticker-text";
+          tickerText.textContent = `${message}  •  ${message}  •  `;
+          ticker.appendChild(tickerText);
+          tickers.appendChild(ticker);
+        });
+        button.append(heading, tickers);
+        button.addEventListener("click", () => {
+          // Preserve the reader's position while adding the next batch.
+          const previousScrollY = window.scrollY;
           visibleRowLimit += ROW_PAGE_SIZE;
           renderTable(rowsToRender);
+          window.scrollTo({ top: previousScrollY, behavior: "instant" });
         });
-        more.appendChild(button);
-        table.appendChild(more);
+        table.appendChild(button);
       }
+
       updateAdminMode();
       initCopyButtons();
       applyColumnOrder();
