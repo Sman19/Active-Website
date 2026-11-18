@@ -1556,6 +1556,14 @@
       </button>
 
       <div id="userDropdown" class="user-dropdown hidden">
+        <button id="clerkProfileBtn" class="profile-action-btn" type="button" aria-label="Open My Profile">
+          <span class="profile-action-icon" aria-hidden="true">👤</span>
+          <span class="profile-action-text">
+            <span class="profile-action-title">My Profile</span>
+            <span class="profile-action-sub">Manage your Clerk account</span>
+          </span>
+        </button>
+        <div class="profile-menu-divider"></div>
         <button id="instagramExportBtn" class="profile-action-btn" type="button">
           <span class="profile-action-icon">↓</span>
           <span class="profile-action-text">
@@ -2979,6 +2987,20 @@
       configuratorMenuBtn.addEventListener("click", function (event) {
         event.stopPropagation();
         configuratorMenu.classList.toggle("hidden");
+      });
+    }
+
+    const clerkProfileBtn = document.getElementById("clerkProfileBtn");
+    if (clerkProfileBtn) {
+      clerkProfileBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        userDropdown.classList.add("hidden");
+        const clerk = window.Clerk;
+        if (!clerk || !clerk.user || typeof clerk.openUserProfile !== "function") {
+          alert("Your profile is not available yet. Please refresh and sign in again.");
+          return;
+        }
+        clerk.openUserProfile();
       });
     }
 
