@@ -170,6 +170,30 @@
 
     .top-nav .divider { opacity: 0.7; }
     .user-icon { font-size: 18px; }
+    .user-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; display: none; flex-shrink: 0; border: 2px solid #bfc5ce; }
+    .user-menu-dropdown { min-width: 300px !important; max-width: min(360px, calc(100vw - 24px)); padding: 12px !important; }
+    .profile-action-btn { width: 100%; display: flex; align-items: center; gap: 12px; border: 0; background: transparent; color: #1f2937; text-align: left; padding: 12px 10px; border-radius: 10px; cursor: pointer; font: inherit; }
+    .profile-action-btn:hover { background: #f3f4f6; }
+    .profile-action-icon { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 10px; background: #eaf2ff; color: #2563eb; font-size: 20px; font-weight: 700; }
+    .profile-action-text { display: flex; flex-direction: column; gap: 3px; }
+    .profile-action-title { font-size: 15px; font-weight: 700; }
+    .profile-action-sub { font-size: 12px; color: #6b7280; }
+    .profile-action-btn.logout-action { color: #dc2626; }
+    .profile-action-btn.logout-action .profile-action-icon { color: #dc2626; background: #fef2f2; }
+    #feedbackOverlay { position: fixed; inset: 0; z-index: 20000; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    #feedbackOverlay[hidden] { display: none !important; }
+    .feedback-card { background: #fff; color: #202124; border-radius: 16px; width: min(100%,480px); padding: 25px; box-shadow: 0 18px 55px #0005; font-family: Arial,sans-serif; }
+    .feedback-card h2 { font-size: 23px; margin: 0 0 8px; }
+    .feedback-card p { font-size: 13px; color: #667085; margin: 0 0 17px; line-height: 1.4; }
+    .feedback-card label { display: block; font-size: 13px; font-weight: 700; margin: 13px 0 6px; }
+    .feedback-card input,.feedback-card textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 9px; font: 15px Arial,sans-serif; }
+    .feedback-card textarea { min-height: 125px; resize: vertical; }
+    .feedback-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+    .feedback-actions button { border: 0; border-radius: 9px; padding: 12px 18px; font-weight: 700; cursor: pointer; }
+    .feedback-actions button[type=submit] { background: #1f73ff; color: #fff; }
+    .feedback-actions button:disabled { opacity: .55; cursor: wait; }
+    #feedbackStatus { font-size: 13px; margin-top: 12px; line-height: 1.4; }
+
 
     .user-menu {
       position: relative;
@@ -1082,12 +1106,16 @@
         <div class="user-menu" id="user-menu">
           <button class="user-menu-btn" id="user-menu-btn" type="button" onclick="toggleUserMenu()">
             <span id="auth-username">Member</span>
-            <span class="user-icon">👤</span>
+            <img id="auth-avatar" class="user-avatar" alt="Profile photo" referrerpolicy="no-referrer" />
+            <span id="auth-avatar-fallback" class="user-icon">👤</span>
           </button>
           <div class="user-menu-dropdown" id="user-menu-dropdown">
-            <button class="instagram-menu-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)">Instagram Story</button>
+            <button class="profile-action-btn" type="button" onclick="openClerkProfile()"><span class="profile-action-icon">👤</span><span class="profile-action-text"><span class="profile-action-title">My Profile</span><span class="profile-action-sub">Manage your Clerk account</span></span></button>
+            <button class="profile-action-btn" type="button" onclick="openFeedback('issue')"><span class="profile-action-icon">⚑</span><span class="profile-action-text"><span class="profile-action-title">Report an Issue</span><span class="profile-action-sub">Report incorrect or missing information</span></span></button>
+            <button class="profile-action-btn" type="button" onclick="openFeedback('suggestion')"><span class="profile-action-icon">✦</span><span class="profile-action-text"><span class="profile-action-title">Suggest an Improvement</span><span class="profile-action-sub">Share an idea for BMW M ARCHIV</span></span></button>
             <div class="user-menu-separator"></div>
-            <a class="user-menu-link" href="index.html" onclick="event.preventDefault(); window.Clerk?.signOut({ redirectUrl: 'https://www.bmwmarchiv.com/index.html' });">Logout</a>
+            <button class="profile-action-btn" id="instagram-story-btn" type="button" onclick="downloadInstagramStory(event)"><span class="profile-action-icon">▣</span><span class="profile-action-text"><span class="profile-action-title">Instagram Story</span><span class="profile-action-sub">Download a story image</span></span></button>
+            <button class="profile-action-btn logout-action" type="button" onclick="logoutClerk()"><span class="profile-action-icon">↪</span><span class="profile-action-text"><span class="profile-action-title">Logout</span></span></button>
           </div>
         </div>
       </div>
@@ -1272,6 +1300,9 @@
       </div>
     </div>
   </div>
+
+  <div id="feedbackOverlay" hidden><div class="feedback-card" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle"><form id="feedbackForm"><h2 id="feedbackTitle">Report an Issue</h2><p id="feedbackDescription">Report errors or missing data</p><label for="feedbackVin">VIN (optional)</label><input id="feedbackVin" maxlength="17" placeholder="Full VIN or last 7 digits"><label for="feedbackMessage">Description</label><textarea id="feedbackMessage" maxlength="3000" required minlength="10" placeholder="Describe the issue or your suggestion..."></textarea><div id="feedbackStatus" role="status" aria-live="polite"></div><div class="feedback-actions"><button type="button" id="feedbackCancel">Cancel</button><button type="submit" id="feedbackSubmit">Submit</button></div></form></div></div>
+
 
   <script>
     const colorLookup = {};
@@ -1541,7 +1572,30 @@
 
     function updateAuthUser() {
       const el = document.getElementById("auth-username");
-      if (el) el.textContent = getCurrentLoginName() || "Member";
+      const user = window.Clerk?.user;
+      if (el) el.textContent = user?.username || user?.primaryEmailAddress?.emailAddress || "Member";
+      const avatar = document.getElementById("auth-avatar");
+      const fallback = document.getElementById("auth-avatar-fallback");
+      if (avatar && fallback) {
+        if (user?.imageUrl) {
+          avatar.src = user.imageUrl;
+          avatar.style.display = "block";
+          fallback.style.display = "none";
+          avatar.onerror = () => { avatar.style.display = "none"; fallback.style.display = ""; };
+        } else {
+          avatar.style.display = "none";
+          fallback.style.display = "";
+        }
+      }
+    }
+
+    function openClerkProfile() {
+      document.getElementById("user-menu-dropdown")?.classList.remove("open");
+      if (typeof window.Clerk?.openUserProfile === "function") window.Clerk.openUserProfile();
+    }
+
+    async function logoutClerk() {
+      await window.Clerk.signOut({ redirectUrl: "https://www.bmwmarchiv.com/index.html" });
     }
 
     async function downloadInstagramStory(event) {
@@ -3582,6 +3636,48 @@
       initializeClerkPage();
     });
 
+  </script>
+  <script>
+    (() => {
+      const overlay = document.getElementById('feedbackOverlay');
+      const form = document.getElementById('feedbackForm');
+      const status = document.getElementById('feedbackStatus');
+      const submit = document.getElementById('feedbackSubmit');
+      let kind = 'issue';
+      const close = () => { overlay.hidden = true; document.body.style.overflow = ''; };
+      window.openFeedback = (type) => {
+        kind = type;
+        form.reset(); status.textContent = '';
+        document.getElementById('feedbackTitle').textContent = type === 'issue' ? 'Report an Issue' : 'Suggest an Improvement';
+        document.getElementById('feedbackDescription').textContent = type === 'issue' ? 'Report errors or missing data' : 'Share ideas for the archive';
+        document.getElementById('user-menu-dropdown')?.classList.remove('open');
+        overlay.hidden = false; document.body.style.overflow = 'hidden';
+        document.getElementById('feedbackMessage').focus();
+      };
+      document.getElementById('feedbackCancel').addEventListener('click', close);
+      overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) close(); });
+      form.addEventListener('submit', async e => {
+        e.preventDefault(); if (!form.reportValidity()) return;
+        submit.disabled = true; status.textContent = 'Sending...';
+        try {
+          const clerk = window.Clerk;
+          if (!clerk?.user?.id || !clerk.session) throw Error('Please sign in first.');
+          const token = await clerk.session.getToken();
+          if (!token) throw Error('Could not get your sign-in token.');
+          const response = await fetch('https://qaikzwqdjdxkhhzscish.supabase.co/functions/v1/dynamic-worker', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ type: kind, vin: document.getElementById('feedbackVin').value.trim(), message: document.getElementById('feedbackMessage').value.trim(), page_url: location.href })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw Error(result.error || 'Unable to submit. Please try again.');
+          status.textContent = 'Thank you! Your submission has been received.';
+          form.reset(); setTimeout(close, 1800);
+        } catch (err) { status.textContent = err.message || 'Unable to submit.'; }
+        finally { submit.disabled = false; }
+      });
+    })();
   </script>
 </body>
 </html>
