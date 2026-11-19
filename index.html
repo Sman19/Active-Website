@@ -1586,6 +1586,32 @@
     #clerkGate .reset-panel button:disabled { opacity:.55; cursor:not-allowed; }
     #clerkGate .reset-panel .reset-back { background:transparent; color:#285eaa; margin-top:6px; }
     #clerkGate .reset-panel .reset-message { margin-top:12px; white-space:pre-wrap; color:#a30000; }
+
+/* Coordinated M3 convoy: G80 leads, E90 follows, no overtaking. */
+.topbar-drive-car.g80-drive {
+  animation: archivG80Lead 24s linear infinite;
+}
+.topbar-drive-car:not(.g80-drive) {
+  animation: archivE90Follow 24s linear infinite;
+}
+@keyframes archivG80Lead {
+  0% { transform: translateX(-180px); }
+  72%, 100% { transform: translateX(calc(100vw + 180px)); }
+}
+@keyframes archivE90Follow {
+  0%, 20% { transform: translateX(-180px); }
+  96%, 100% { transform: translateX(calc(100vw + 180px)); }
+}
+/* Subtle, accurately positioned rotating wheel cutouts on the G80. */
+.g80-drive .g80-wheel {
+  display: block;
+  animation: archivWheelSpin .78s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar-drive-car.g80-drive,
+  .topbar-drive-car:not(.g80-drive) { animation: none; transform: translateX(-180px); }
+  .g80-drive .g80-wheel { animation: none; }
+}
   </style>
 <style>
 #feedbackOverlay{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
