@@ -1409,6 +1409,34 @@
       .topbar::after { animation: none; transform: none; opacity: .15; }
     }
 
+
+    /* Mini E90 M3 crossing the carbon navigation banner */
+    .topbar { overflow: visible; }
+    .topbar-drive-lane {
+      position: absolute; inset: 0; overflow: hidden;
+      pointer-events: none; z-index: 0;
+    }
+    .topbar-drive-car {
+      position: absolute; width: 112px; height: 43px;
+      left: 0; bottom: 2px;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,.55));
+      animation: e90Drive 16s linear infinite;
+      will-change: transform;
+    }
+    @keyframes e90Drive {
+      0%, 8% { transform: translateX(-135px); }
+      83%, 100% { transform: translateX(calc(100vw + 145px)); }
+    }
+    .topbar > .topbar-home,
+    .topbar > .topbar-title,
+    .topbar > .topbar-user { position: relative; z-index: 2; }
+    .topbar::after { animation: none; opacity: .12; transform: none; }
+    @media (max-width: 900px) {
+      .topbar-drive-car { width: 85px; height: 33px; bottom: 3px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .topbar-drive-car { animation: none; transform: translateX(-135px); }
+    }
   </style>
 
   <style>
@@ -1577,6 +1605,23 @@
     <div class="login-footer">Presented by CARBOI-CREATIONS</div>
   </div>
   <header class="topbar">
+    <div class="topbar-drive-lane" aria-hidden="true">
+      <svg class="topbar-drive-car" viewBox="0 0 230 88" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="e90Paint" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f4f6f7"/><stop offset=".46" stop-color="#aeb6bf"/><stop offset=".8" stop-color="#d9dee4"/><stop offset="1" stop-color="#6e7782"/></linearGradient>
+        </defs>
+        <ellipse cx="114" cy="76" rx="106" ry="7" fill="#000" opacity=".32"/>
+        <path d="M13 57 L21 46 55 41 78 18 Q83 13 95 13 L151 14 Q162 15 171 26 L186 41 211 46 Q220 49 222 58 L220 68 11 68 8 62 Z" fill="url(#e90Paint)" stroke="#555e69" stroke-width="2"/>
+        <path d="M64 41 L82 21 Q87 18 95 18 L116 18 116 41 Z" fill="#172534" stroke="#c7d1db" stroke-width="2"/>
+        <path d="M121 18 L150 19 Q159 19 166 29 L177 41 121 41 Z" fill="#172534" stroke="#c7d1db" stroke-width="2"/>
+        <path d="M118 17 L118 65 M60 43 L59 64 M181 43 L181 65" stroke="#7a838d" stroke-width="2"/>
+        <path d="M87 47 H107 M136 47 H156" stroke="#626c76" stroke-width="2" stroke-linecap="round"/>
+        <path d="M11 54 L22 51 24 57 9 60 Z" fill="#d84545"/><path d="M206 50 L221 54 223 61 207 58 Z" fill="#fff5d5"/>
+        <path d="M30 64 H200" stroke="#4a515a" stroke-width="3"/>
+        <circle cx="56" cy="68" r="17" fill="#171b21"/><circle cx="56" cy="68" r="11" fill="#c8d0d7"/><circle cx="56" cy="68" r="5" fill="#6c7784"/>
+        <circle cx="182" cy="68" r="17" fill="#171b21"/><circle cx="182" cy="68" r="11" fill="#c8d0d7"/><circle cx="182" cy="68" r="5" fill="#6c7784"/>
+      </svg>
+    </div>
     <div class="topbar-home dropdown">
       <button class="home-btn" id="homeDropdownBtn" type="button">
         Home ▼
